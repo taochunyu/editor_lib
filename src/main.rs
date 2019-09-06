@@ -5,11 +5,12 @@ trait Node {
     fn to_string(&self) -> String;
 }
 
-impl dyn Node {
+impl dyn Node {}
 
+enum Mark {
+    Strong,
+    Em,
 }
-
-enum Mark { Strong, Em, }
 
 struct TextNode {
     mark_list: Option<Vec<Mark>>,
@@ -17,19 +18,23 @@ struct TextNode {
 }
 
 impl Node for TextNode {
-    fn children(&self) -> Option<&Vec<Box<dyn Node>>> { None }
-    fn size(&self) -> usize { self.text_content.len() }
+    fn children(&self) -> Option<&Vec<Box<dyn Node>>> {
+        None
+    }
+    fn size(&self) -> usize {
+        self.text_content.len()
+    }
     fn to_string(&self) -> String {
         let mut result = String::from("<span data-marks=\"");
         match &self.mark_list {
-            None => {},
+            None => {}
             Some(marks) => {
                 let mut divide = "";
                 for mark in marks {
                     result.push_str(divide);
                     match mark {
-                        Mark::Strong => { result.push_str("strong") },
-                        Mark::Em => { result.push_str("em") }
+                        Mark::Strong => result.push_str("strong"),
+                        Mark::Em => result.push_str("em"),
                     }
                     divide = " ";
                 }
@@ -43,7 +48,11 @@ impl Node for TextNode {
     }
 }
 
-enum Align { Left, Center, Right, }
+enum Align {
+    Left,
+    Center,
+    Right,
+}
 
 struct ParagraphNode {
     align: Align,
@@ -52,7 +61,11 @@ struct ParagraphNode {
 
 impl Node for ParagraphNode {
     fn children(&self) -> Option<&Vec<Box<dyn Node>>> {
-        if self.children.len() == 0 { None } else { Some(&self.children) }
+        if self.children.len() == 0 {
+            None
+        } else {
+            Some(&self.children)
+        }
     }
     fn size(&self) -> usize {
         self.children.iter().fold(0, |acc, x| acc + x.size()) + 2
@@ -60,9 +73,9 @@ impl Node for ParagraphNode {
     fn to_string(&self) -> String {
         let mut result = String::from("<p data-align=\"");
         match self.align {
-            Align::Left => { result.push_str("left") },
-            Align::Center => { result.push_str("center") },
-            Align::Right => { result.push_str("right") },
+            Align::Left => result.push_str("left"),
+            Align::Center => result.push_str("center"),
+            Align::Right => result.push_str("right"),
         };
         result.push_str("\">");
         for child in &self.children {
@@ -79,7 +92,11 @@ struct DocNode {
 
 impl Node for DocNode {
     fn children(&self) -> Option<&Vec<Box<dyn Node>>> {
-        if self.children.len() == 0 { None } else { Some(&self.children) }
+        if self.children.len() == 0 {
+            None
+        } else {
+            Some(&self.children)
+        }
     }
     fn size(&self) -> usize {
         self.children.iter().fold(0, |acc, x| acc + x.size())
@@ -102,13 +119,16 @@ fn build_paragraph(content: &str) -> Box<dyn Node> {
 
     Box::new(ParagraphNode {
         align: Align::Left,
-        children: vec![text_node_box]
+        children: vec![text_node_box],
     })
 }
 
-fn resolve_position(node: &Box<dyn Node>, position: usize) -> Result<Vec<(&Box<dyn Node>, usize, usize)>, &str> {
+fn resolve_position(
+    node: &Box<dyn Node>,
+    position: usize,
+) -> Result<Vec<(&Box<dyn Node>, usize, usize)>, &str> {
     if node.size() < position {
-        return Err("Position out of Range.")
+        return Err("Position out of Range.");
     }
 
     let mut path: Vec<(&Box<dyn Node>, usize, usize)> = vec![];
@@ -118,7 +138,7 @@ fn resolve_position(node: &Box<dyn Node>, position: usize) -> Result<Vec<(&Box<d
 
     while let Some(parent) = cursor {
         match parent.children() {
-            None => { cursor = None }
+            None => cursor = None,
             Some(children) => {
                 let mut index = 0;
                 let mut offset = 0;
@@ -136,8 +156,12 @@ fn resolve_position(node: &Box<dyn Node>, position: usize) -> Result<Vec<(&Box<d
 
                 let rem: usize = parent_offset - offset;
 
-                if rem == 0 { break; }
-                if cursor.unwrap().children().is_none() { break; }
+                if rem == 0 {
+                    break;
+                }
+                if cursor.unwrap().children().is_none() {
+                    break;
+                }
 
                 parent_offset = rem - 1;
                 start += offset + 1;
@@ -150,7 +174,7 @@ fn resolve_position(node: &Box<dyn Node>, position: usize) -> Result<Vec<(&Box<d
 
 fn main() {
     let tree: Box<dyn Node> = Box::new(DocNode {
-        children: vec![build_paragraph("hi"), build_paragraph("hello")]
+        children: vec![build_paragraph("hi"), build_paragraph("hello")],
     });
 
     for (node, index, parent_offset) in resolve_position(&tree, 4).unwrap_or(vec![]) {
