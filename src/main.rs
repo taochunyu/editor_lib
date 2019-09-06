@@ -159,9 +159,6 @@ fn resolve_position(
                 if rem == 0 {
                     break;
                 }
-                if cursor.unwrap().children().is_none() {
-                    break;
-                }
 
                 parent_offset = rem - 1;
                 start += offset + 1;
@@ -172,12 +169,17 @@ fn resolve_position(
     Ok(path)
 }
 
+fn replace(
+    from: Vec<(&Box<dyn Node>, usize, usize)>,
+    to: Vec<(&Box<dyn Node>, usize, usize)>,
+) {}
+
 fn main() {
     let tree: Box<dyn Node> = Box::new(DocNode {
         children: vec![build_paragraph("hi"), build_paragraph("hello")],
     });
 
-    for (node, index, parent_offset) in resolve_position(&tree, 4).unwrap_or(vec![]) {
+    for (node, index, parent_offset) in resolve_position(&tree, 11).unwrap_or(vec![]) {
         println!("{} {} {}", node.to_string(), index, parent_offset);
     }
 }
