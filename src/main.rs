@@ -1,11 +1,47 @@
 #[allow(dead_code)]
+enum Action {
+    KeyDown(usize),
+    KeyPress(String),
+}
+
+struct ResolvedPosition {
+    position: usize,
+    path: Vec<(usize, usize)>,
+    parent_offset: usize,
+}
+
+impl Default for ResolvedPosition {
+    fn default() -> ResolvedPosition {
+        ResolvedPosition {
+            position: 0,
+            path: vec![],
+            parent_offset: 0,
+        }
+    }
+}
+
+struct Message {
+    resolved_from: ResolvedPosition,
+    resolved_to: ResolvedPosition,
+    action: Action,
+}
+
+impl Default for Message<> {
+    fn default() -> Message {
+        Message {
+            resolved_from: ResolvedPosition::default(),
+            resolved_to: ResolvedPosition::default(),
+            action: Action::KeyDown(0),
+        }
+    }
+}
+
 trait Node {
     fn children(&self) -> Option<&Vec<Box<dyn Node>>>;
     fn size(&self) -> usize;
     fn to_string(&self) -> String;
+    fn update(self: Box<Self>, msg: &Message, depth: usize) -> Box<dyn Node>;
 }
-
-impl dyn Node {}
 
 enum Mark {
     Strong,
@@ -46,6 +82,26 @@ impl Node for TextNode {
         result.push_str("</span>");
         result
     }
+    fn update(self: Box<Self>, msg: &Message, depth: usize) -> Box<dyn Node> {
+        let action = &msg.action;
+        let from_parent_offset = msg.resolved_from.parent_offset;
+        let to_parent_offset = msg.resolved_to.parent_offset;
+
+        match action {
+            Action::KeyPress(text) => {
+                Box::new(TextNode {
+                    mark_list: None,
+                    text_content: format!(
+                        "{}{}{}",
+                        self.text_content.get(0..from_parent_offset).unwrap_or(""),
+                        text,
+                        self.text_content.get(to_parent_offset..self.size()).unwrap_or(""),
+                    ),
+                })
+            }
+            _ => { self }
+        }
+    }
 }
 
 enum Align {
@@ -84,6 +140,29 @@ impl Node for ParagraphNode {
         result.push_str("</p>");
         result
     }
+    fn update(self: Box<Self>, msg: &Message, depth: usize) -> Box<dyn Node> {
+        let from = msg.resolved_from.position;
+        let to = msg.resolved_to.position;
+        let mut start: usize = msg.resolved_from.path[depth].1;
+        let mut temp: Vec<Box<dyn Node>> = vec![];
+
+        for child in self.children {
+            let end = start + child.size();
+
+            if start > to || end < from {
+                temp.push(child);
+            } else {
+                temp.push(child.update(msg, depth + 1));
+            }
+
+            start = end;
+        }
+
+        Box::new(ParagraphNode {
+            align: self.align,
+            children: temp,
+        })
+    }
 }
 
 struct DocNode {
@@ -109,6 +188,28 @@ impl Node for DocNode {
         result.push_str("</div>");
         result
     }
+    fn update(self: Box<Self>, msg: &Message, depth: usize) -> Box<dyn Node> {
+        let from = msg.resolved_from.position;
+        let to = msg.resolved_to.position;
+        let mut start: usize = 0;
+        let mut temp: Vec<Box<dyn Node>> = vec![];
+
+        for child in self.children {
+            let end = start + child.size();
+
+            if start > to || end < from {
+                temp.push(child);
+            } else {
+                temp.push(child.update(msg, depth + 1));
+            }
+
+            start = end;
+        }
+
+        Box::new(DocNode {
+            children: temp,
+        })
+    }
 }
 
 fn build_paragraph(content: &str) -> Box<dyn Node> {
@@ -126,12 +227,12 @@ fn build_paragraph(content: &str) -> Box<dyn Node> {
 fn resolve_position(
     node: &Box<dyn Node>,
     position: usize,
-) -> Result<Vec<(&Box<dyn Node>, usize, usize)>, &str> {
+) -> Result<ResolvedPosition, &str> {
     if node.size() < position {
         return Err("Position out of Range.");
     }
 
-    let mut path: Vec<(&Box<dyn Node>, usize, usize)> = vec![];
+    let mut path: Vec<(usize, usize)> = vec![];
     let mut cursor: Option<&Box<dyn Node>> = Some(node);
     let mut start: usize = 0;
     let mut parent_offset: usize = position;
@@ -152,11 +253,15 @@ fn resolve_position(
                     offset += child.size();
                 }
 
-                path.push((parent, index, start + offset));
+                path.push((index, start + offset));
 
                 let rem: usize = parent_offset - offset;
 
                 if rem == 0 {
+                    break;
+                }
+
+                if cursor.is_some() && cursor.unwrap().children().is_none() {
                     break;
                 }
 
@@ -166,20 +271,28 @@ fn resolve_position(
         }
     }
 
-    Ok(path)
+    Ok(ResolvedPosition {
+        position,
+        path,
+        parent_offset,
+    })
 }
 
-fn replace(
-    from: Vec<(&Box<dyn Node>, usize, usize)>,
-    to: Vec<(&Box<dyn Node>, usize, usize)>,
-) {}
-
 fn main() {
-    let tree: Box<dyn Node> = Box::new(DocNode {
+    let doc: Box<dyn Node> = Box::new(DocNode {
         children: vec![build_paragraph("hi"), build_paragraph("hello")],
     });
+    let msg = {
+        let resolved_from = resolve_position(&doc, 8).unwrap_or(ResolvedPosition::default());
+        let resolved_to = resolve_position(&doc, 8).unwrap_or(ResolvedPosition::default());
 
-    for (node, index, parent_offset) in resolve_position(&tree, 11).unwrap_or(vec![]) {
-        println!("{} {} {}", node.to_string(), index, parent_offset);
-    }
+        Message {
+            resolved_from,
+            resolved_to,
+            action: Action::KeyPress(String::from("u")),
+        }
+    };
+
+
+    println!("{}", doc.update(&msg, 0).to_string());
 }
