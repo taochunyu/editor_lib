@@ -1,5 +1,5 @@
 #[allow(dead_code)]
-enum Action {
+enum Event {
     KeyDown(usize),
     KeyPress(String),
 }
@@ -23,7 +23,7 @@ impl Default for ResolvedPosition {
 struct Message {
     resolved_from: ResolvedPosition,
     resolved_to: ResolvedPosition,
-    action: Action,
+    event: Event,
 }
 
 impl Default for Message<> {
@@ -31,7 +31,7 @@ impl Default for Message<> {
         Message {
             resolved_from: ResolvedPosition::default(),
             resolved_to: ResolvedPosition::default(),
-            action: Action::KeyDown(0),
+            event: Event::KeyDown(0),
         }
     }
 }
@@ -83,12 +83,12 @@ impl Node for TextNode {
         result
     }
     fn update(self: Box<Self>, msg: &Message, depth: usize) -> Box<dyn Node> {
-        let action = &msg.action;
+        let event = &msg.event;
         let from_parent_offset = msg.resolved_from.parent_offset;
         let to_parent_offset = msg.resolved_to.parent_offset;
 
-        match action {
-            Action::KeyPress(text) => {
+        match event {
+            Event::KeyPress(text) => {
                 Box::new(TextNode {
                     mark_list: None,
                     text_content: format!(
@@ -289,7 +289,7 @@ fn main() {
         Message {
             resolved_from,
             resolved_to,
-            action: Action::KeyPress(String::from("u")),
+            event: Event::KeyPress(String::from("u")),
         }
     };
 
