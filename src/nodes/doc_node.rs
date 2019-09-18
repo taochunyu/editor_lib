@@ -1,4 +1,3 @@
-use crate::core::action::Message;
 use crate::core::node::Node;
 
 pub struct DocNode {
@@ -23,27 +22,5 @@ impl Node for DocNode {
         }
         result.push_str("</div>");
         result
-    }
-    fn update(self: Box<Self>, msg: &Message, depth: usize) -> Box<dyn Node> {
-        let from = msg.resolved_from.position;
-        let to = msg.resolved_to.position;
-        let mut start: usize = 0;
-        let mut temp: Vec<Box<dyn Node>> = vec![];
-
-        for child in self.children {
-            let end = start + child.size();
-
-            if start > to || end < from {
-                temp.push(child);
-            } else {
-                temp.push(child.update(msg, depth + 1));
-            }
-
-            start = end;
-        }
-
-        Box::new(DocNode {
-            children: temp,
-        })
     }
 }

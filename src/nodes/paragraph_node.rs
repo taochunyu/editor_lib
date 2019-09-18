@@ -1,5 +1,4 @@
 use crate::core::node::Node;
-use crate::core::action::Message;
 
 pub enum Align {
     Left,
@@ -36,28 +35,5 @@ impl Node for ParagraphNode {
         }
         result.push_str("</p>");
         result
-    }
-    fn update(self: Box<Self>, msg: &Message, depth: usize) -> Box<dyn Node> {
-        let from = msg.resolved_from.position;
-        let to = msg.resolved_to.position;
-        let mut start: usize = msg.resolved_from.path[depth].1;
-        let mut temp: Vec<Box<dyn Node>> = vec![];
-
-        for child in self.children {
-            let end = start + child.size();
-
-            if start > to || end < from {
-                temp.push(child);
-            } else {
-                temp.push(child.update(msg, depth + 1));
-            }
-
-            start = end;
-        }
-
-        Box::new(ParagraphNode {
-            align: self.align,
-            children: temp,
-        })
     }
 }
