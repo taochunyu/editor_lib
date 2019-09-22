@@ -1,14 +1,22 @@
 use crate::core::model::fragment;
 use crate::core::model::fragment::Fragment;
+use std::rc::Rc;
 
 pub struct Slice {
-    pub content: Fragment,
+    pub content: Rc<Fragment>,
     pub open_start: usize,
     pub open_end: usize,
 }
 
 impl Slice {
-   fn size(&self) -> usize {
-       self.content.size()
-   }
+    pub fn new(content: Rc<Fragment>, open_start: usize, open_end: usize) -> Slice {
+        Slice {
+            content,
+            open_start,
+            open_end,
+        }
+    }
+    pub fn size(&self) -> usize {
+        self.content.size
+    }
 }

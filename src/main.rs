@@ -1,3 +1,5 @@
-use editor_core_rust::core::*;
+use editor_core_rust::pre::one_test;
 
-fn main() {}
+fn main() {
+    one_test();
+}

@@ -1,26 +1,12 @@
-use crate::core::node::Node;
+use crate::core::model::node::Node;
 
-pub struct DocNode {
-    pub children: Vec<Box<dyn Node>>,
-}
+pub struct DocNode;
 
 impl Node for DocNode {
-    fn children(&self) -> Option<&Vec<Box<dyn Node>>> {
-        if self.children.len() == 0 {
-            None
-        } else {
-            Some(&self.children)
-        }
+    fn to_string(&self, content: String) -> String {
+        format!("<div class=\"editor\">{}</div>", content)
     }
-    fn size(&self) -> usize {
-        self.children.iter().fold(0, |acc, x| acc + x.size())
-    }
-    fn to_string(&self) -> String {
-        let mut result = String::from("<div class=\"editor\">");
-        for child in &self.children {
-            result.push_str(child.to_string().as_str());
-        }
-        result.push_str("</div>");
-        result
+    fn mark_to_string(&self) -> String {
+        String::from("")
     }
 }

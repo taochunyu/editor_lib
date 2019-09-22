@@ -1,50 +1,113 @@
 use crate::core::model::node::TreeNode;
+use std::rc::Rc;
 
 pub struct Fragment {
-    pub(crate) content: Vec<Box<TreeNode>>,
-    size: usize,
+    pub(crate) content: Vec<Rc<TreeNode>>,
+    pub(crate) size: usize,
 }
 
 impl Fragment {
-    fn empty() -> Fragment {
-        Fragment {
-            content: vec![],
-            size: 0,
-        }
+    pub(crate) fn new(content: Vec<Rc<TreeNode>>, size: usize) -> Self {
+        Self { content, size }
     }
-    fn new(content: Vec<Box<TreeNode>>, size: usize) -> Fragment {
-        Fragment {
-            content,
-            size,
-        }
-    }
-    pub(crate) fn content(&self) -> &Vec<Box<TreeNode>> {
-        &self.content
-    }
-    pub(crate) fn size(&self) -> usize {
-        self.size
-    }
-    fn first_child(&self) -> Option<&Box<TreeNode>> {
-        self.content.first()
-    }
-    fn last_child(&self) -> Option<&Box<TreeNode>> {
-        self.content.last()
-    }
-    fn child(self, index: usize) -> Result<Box<TreeNode>, String> {
-        if index < self.content.len() {
-            Ok(self.content[index])
-        } else {
-            Err(format!("Index {} out of Range", index))
-        }
-    }
-    pub(crate) fn replace_child(mut self, index: usize, tree_node: Box<TreeNode>) -> Box<Fragment> {
+    pub(crate) fn replace_child(&self, index: usize, tree_node: Rc<TreeNode>) -> Rc<Self> {
         let size = self.size + tree_node.size() - self.content[index].size();
+        let mut content = vec![];
 
-        self.content[index] = tree_node;
+        for (i, node) in self.content.iter().enumerate() {
+            if i != index {
+                content.push(Rc::clone(node));
+            } else {
+                content.push(Rc::clone(&tree_node));
+            }
+        }
 
-        Box::new(Fragment {
-            content: self.content,
-            size,
-        })
+        Rc::new(Self { content, size })
+    }
+    pub(crate) fn append(this: &Rc<Self>, other: &Rc<Self>) -> Rc<Self> {
+        if let Some(last_child) = this.content.last() {
+            if let Some(first_child) = other.content.first() {
+                let mut content = vec![];
+                let cursor = if last_child.need_join(&first_child) {
+                    1
+                } else {
+                    0
+                };
+
+                for (index, child) in this.content.iter().enumerate() {
+                    if index + cursor < this.content.len() {
+                        content.push(Rc::clone(child))
+                    }
+                }
+                if cursor == 1 {
+                    println!("9  {}",first_child.to_string());
+                    content.push(last_child.join(&first_child));
+                    println!("1  {}",content[0].to_string());
+
+                }
+                for (index, child) in other.content.iter().enumerate() {
+                    if index + 1 > cursor {
+                        content.push(Rc::clone(child))
+                    }
+                }
+
+                println!("{} {}", content[0].to_string(), cursor);
+
+                Rc::new(Self::new(content, this.size + other.size))
+            } else {
+                Rc::clone(&this)
+            }
+        } else {
+            Rc::clone(&other)
+        }
+    }
+    pub(crate) fn cut(&self, from: usize, to: usize) -> Rc<Self> {
+        let mut content: Vec<Rc<TreeNode>> = vec![];
+        let mut size = 0;
+        let mut pos = 0;
+
+        if to > from {
+            for (index, tree_node) in self.content.iter().enumerate() {
+                if pos >= to {
+                    break;
+                }
+
+                let end = pos + tree_node.size();
+
+                if end > from {
+                    let child = if pos < from || end > to {
+                        let deep = if tree_node.is_text() {
+                            let cut_from = if from > pos { from - pos } else { 0 };
+                            let cut_to = if tree_node.size() + pos < to {
+                                tree_node.size()
+                            } else {
+                                to - pos
+                            };
+                            tree_node.cut(cut_from, cut_to)
+                        } else {
+                            let cut_from = if from > pos + 1 { from - pos - 1 } else { 0 };
+                            let tree_node_content_size = match &tree_node.content {
+                                Some(content) => content.size,
+                                None => 0,
+                            };
+                            let cut_to = if tree_node_content_size + 1 + pos < to {
+                                tree_node_content_size
+                            } else {
+                                to - pos - 1
+                            };
+                            tree_node.cut(cut_from, cut_to)
+                        };
+                        Rc::clone(&deep)
+                    } else {
+                        Rc::clone(tree_node)
+                    };
+                    size += child.size();
+                    content.push(child);
+                }
+                pos = end;
+            }
+        }
+
+        Rc::new(Self::new(content, size))
     }
 }
