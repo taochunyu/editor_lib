@@ -13,6 +13,7 @@ pub struct TextNode {
 }
 
 impl Node for TextNode {
+    fn type_name(&self) -> String { String::from("text") }
     fn is_text(&self) -> bool {
         true
     }
@@ -37,7 +38,6 @@ impl Node for TextNode {
             None => None,
             Some(ml) => Some(ml.clone()),
         };
-        println!("{}", other.text_content());
         Ok(Rc::new(TextNode {
             mark_list,
             text_content: format!("{}{}", self.text_content, other.text_content()),

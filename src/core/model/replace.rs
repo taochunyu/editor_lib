@@ -8,6 +8,14 @@ fn close(node: Rc<TreeNode>, content: Option<Rc<Fragment>>) -> Result<Rc<TreeNod
     Ok(node.copy(content))
 }
 
+fn add_node(target: &mut Vec<Rc<TreeNode>>, node: &Rc<TreeNode>) {
+    if let Some(last_child) = target.last() && last_child.need_join(node) {
+        target[target.len() - 1] = last_child.join(node)
+    } else {
+        target.push(Rc::clone(node))
+    }
+}
+
 pub fn replace(
     root: Rc<TreeNode>,
     from: usize,
@@ -57,14 +65,8 @@ fn replace_outer(
             Some(content) => {
                 let step_1 = content.cut(0, resolved_from.parent_offset);
                 let step_2 = Fragment::append(&step_1, &slice.content);
-                let step_3 = Fragment::append(&step_2, &content.cut(resolved_to.parent_offset, content.size));
 
-                println!("{} {} {}", step_1.size, step_2.size, step_3.size);
-
-                for n in &step_3.content {
-                    println!("{}", n.to_string())
-                }
-                Some(step_3)
+                Some(Fragment::append(&step_2, &content.cut(resolved_to.parent_offset, content.size)))
             },
             None => None,
         };

@@ -4,7 +4,26 @@ use crate::nodes::text_node::Mark::Strong;
 use std::any::Any;
 use std::rc::Rc;
 
+trait TextNode {
+    fn is_text(&self) -> bool {
+        false
+    }
+    fn text_content(&self) -> &str {
+        ""
+    }
+    fn slice_text_content(&self, from: usize, to: usize) -> Result<Rc<dyn Node>, String> {
+        Err(format!("must override!"))
+    }
+    fn need_join(&self, other: &dyn Node) -> bool {
+        false
+    }
+    fn join(&self, other: &dyn Node) -> Result<Rc<dyn Node>, String> {
+        Err(format!("must override!"))
+    }
+}
+
 pub trait Node {
+    fn type_name(&self) -> String;
     fn is_text(&self) -> bool {
         false
     }

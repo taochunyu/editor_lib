@@ -43,7 +43,7 @@ pub mod pre {
         let slice_content = vec![mk_text("a")];
         let slice = Slice::new(Rc::new(Fragment::new(slice_content, 1)), 0, 0);
 
-        match replace(doc, 8, 8, slice) {
+        match replace(doc, 7, 8, slice) {
             Ok(new_doc) => println!("ok: {}", new_doc.to_string()),
             Err(msg) => println!("error: {}", msg),
         };

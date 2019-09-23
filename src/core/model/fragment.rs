@@ -40,19 +40,13 @@ impl Fragment {
                     }
                 }
                 if cursor == 1 {
-                    println!("9  {}",first_child.to_string());
                     content.push(last_child.join(&first_child));
-                    println!("1  {}",content[0].to_string());
-
                 }
                 for (index, child) in other.content.iter().enumerate() {
                     if index + 1 > cursor {
                         content.push(Rc::clone(child))
                     }
                 }
-
-                println!("{} {}", content[0].to_string(), cursor);
-
                 Rc::new(Self::new(content, this.size + other.size))
             } else {
                 Rc::clone(&this)
