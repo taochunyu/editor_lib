@@ -6,9 +6,65 @@ pub struct Fragment {
     pub(crate) size: usize,
 }
 
+pub enum FragmentSource {
+    Node(Rc<TreeNode>),
+    Nodes(Vec<Rc<TreeNode>>),
+    Fragment(Fragment),
+    None,
+}
+
 impl Fragment {
     pub(crate) fn new(content: Vec<Rc<TreeNode>>, size: usize) -> Self {
         Self { content, size }
+    }
+    pub(crate) fn empty() -> Self {
+        Self { content: vec![], size: 0 }
+    }
+    pub(crate) fn from(from: FragmentSource) -> Self {
+        match from {
+            FragmentSource::None => Self::empty(),
+            FragmentSource::Fragment(fragment) => fragment,
+            FragmentSource::Node(node) => {
+                let len = node.size();
+
+                Self::new(vec![node], len)
+            },
+            FragmentSource::Nodes(nodes) => {
+                if nodes.len() == 0 {
+                    Self::empty()
+                } else {
+                    let mut joined: Vec<Rc<TreeNode>> = vec![];
+                    let mut size = 0;
+
+                    for (index, node) in nodes.iter().enumerate() {
+                        size += node.size();
+                        if index > 0 {
+                            let len = joined.len();
+
+                            if joined[len - 1].need_join(node) {
+                                let temp = joined[index - 1].join(node);
+
+                                joined.pop();
+                                joined.push(temp);
+                            } else {
+                                joined.push(Rc::clone(node))
+                            }
+                        } else {
+                            joined.push(Rc::clone(node))
+                        }
+                    }
+
+                    Fragment::new(joined, size)
+                }
+            }
+        }
+    }
+    pub(crate) fn child(&self, index: usize) -> Result<Rc<TreeNode>, String> {
+        if index < self.content.len() {
+            Ok(Rc::clone(&self.content[index]))
+        } else {
+            Err(format!("Fragment::child: Index {} out of range when", index))
+        }
     }
     pub(crate) fn replace_child(&self, index: usize, tree_node: Rc<TreeNode>) -> Rc<Self> {
         let size = self.size + tree_node.size() - self.content[index].size();

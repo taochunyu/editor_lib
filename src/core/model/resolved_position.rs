@@ -17,11 +17,52 @@ impl ResolvedPosition {
     pub fn node(&self, depth: usize) -> Rc<TreeNode> {
         Rc::clone(&self.path[depth].0)
     }
+    pub fn text_offset(&self) -> usize {
+        self.depth - self.path.last().unwrap().2
+    }
+    pub fn node_after(&self) -> Option<Rc<TreeNode>> {
+        let parent = self.node(self.depth);
+        let index = self.index(self.depth);
+
+        if index == parent.child_count() {
+            None
+        } else {
+            Some({
+                let text_offset = self.text_offset();
+                let child = parent.child(index).unwrap();
+
+                if text_offset != 0 {
+                    child.cut(text_offset, child.size())
+                } else {
+                    child
+                }
+            })
+        }
+    }
+    pub fn node_before(&self) -> Option<Rc<TreeNode>> {
+        let index = self.index(self.depth);
+
+        if index == 0 {
+            None
+        } else {
+            Some({
+                let parent = self.node(self.depth);
+                let text_offset = self.text_offset();
+
+                if text_offset != 0 {
+                    parent.child(index).unwrap().cut(0, text_offset)
+                } else {
+                    parent.child(index - 1).unwrap()
+                }
+            })
+        }
+
+    }
 }
 
 pub fn resolve_position(root: &Rc<TreeNode>, position: usize) -> Result<ResolvedPosition, String> {
     if root.size() < position {
-        return Err(format!("Position {} out of Range.", position));
+        return Err(format!("resolve_position: Position {} out of Range.", position));
     }
 
     let mut path: Path = vec![];

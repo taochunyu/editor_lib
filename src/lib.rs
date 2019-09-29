@@ -40,7 +40,7 @@ pub mod pre {
             mk_paragraph(vec![mk_text("hi")]),
             mk_paragraph(vec![mk_text("hello")]),
         ]);
-        let slice_content = vec![mk_text("a")];
+        let slice_content = vec![mk_text("")];
         let slice = Slice::new(Rc::new(Fragment::new(slice_content, 1)), 0, 0);
 
         match replace(doc, 7, 8, slice) {

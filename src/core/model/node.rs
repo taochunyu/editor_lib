@@ -3,6 +3,7 @@ use crate::core::model::slice::Slice;
 use crate::nodes::text_node::Mark::Strong;
 use std::any::Any;
 use std::rc::Rc;
+use crate::core::model::resolved_position::{ResolvedPosition, resolve_position};
 
 trait TextNode {
     fn is_text(&self) -> bool {
@@ -77,6 +78,27 @@ impl TreeNode {
         match &self.content {
             Some(content) => self.node.border_size() + self.node.content_size() + content.size,
             None => self.node.content_size(),
+        }
+    }
+    pub fn content_size(&self) -> usize {
+        if let Some(content) = &self.content {
+            content.size
+        } else {
+            0
+        }
+    }
+    pub fn child_count(&self) -> usize {
+        if let Some(content) = &self.content {
+            content.content.len()
+        } else {
+            0
+        }
+    }
+    pub fn child(&self, index: usize) -> Result<Rc<TreeNode>, String> {
+        if let Some(content) = &self.content {
+            content.child(index)
+        } else {
+            Err(String::from("TreeNode::child: content is None"))
         }
     }
     pub fn need_join(&self, other: &Rc<Self>) -> bool {
