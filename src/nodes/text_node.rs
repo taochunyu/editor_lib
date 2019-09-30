@@ -13,7 +13,9 @@ pub struct TextNode {
 }
 
 impl Node for TextNode {
-    fn type_name(&self) -> String { String::from("text") }
+    fn type_name(&self) -> String {
+        String::from("text")
+    }
     fn is_text(&self) -> bool {
         true
     }

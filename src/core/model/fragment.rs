@@ -18,7 +18,10 @@ impl Fragment {
         Self { content, size }
     }
     pub(crate) fn empty() -> Self {
-        Self { content: vec![], size: 0 }
+        Self {
+            content: vec![],
+            size: 0,
+        }
     }
     pub(crate) fn from(from: FragmentSource) -> Self {
         match from {
@@ -28,7 +31,7 @@ impl Fragment {
                 let len = node.size();
 
                 Self::new(vec![node], len)
-            },
+            }
             FragmentSource::Nodes(nodes) => {
                 if nodes.len() == 0 {
                     Self::empty()
@@ -63,7 +66,10 @@ impl Fragment {
         if index < self.content.len() {
             Ok(Rc::clone(&self.content[index]))
         } else {
-            Err(format!("Fragment::child: Index {} out of range when", index))
+            Err(format!(
+                "Fragment::child: Index {} out of range when",
+                index
+            ))
         }
     }
     pub(crate) fn replace_child(&self, index: usize, tree_node: Rc<TreeNode>) -> Rc<Self> {

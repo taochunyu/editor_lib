@@ -1,5 +1,5 @@
 use crate::core::model::fragment::{Fragment, FragmentSource};
-use crate::core::model::node::TreeNode;
+use crate::core::model::node::{Node, TreeNode};
 use crate::core::model::resolved_position::{resolve_position, ResolvedPosition};
 use crate::core::model::slice::Slice;
 use std::rc::Rc;
@@ -42,7 +42,10 @@ fn replace_outer(
         };
         Ok(tree_node.copy(content))
     } else if slice.content.size == 0 {
-        close(tree_node, Some(replace_two_way(&resolved_from, &resolved_to, depth)))
+        close(
+            tree_node,
+            Some(replace_two_way(&resolved_from, &resolved_to, depth)),
+        )
     } else if slice.open_start == 0
         && slice.open_end == 0
         && resolved_from.depth == depth
@@ -66,7 +69,16 @@ fn replace_outer(
     } else {
         let (start, end) = prepare_slice_for_replace(slice, &resolved_from);
 
-        close(tree_node, Some(replace_three_way(&resolved_from, &start, &end, &resolved_to, depth)))
+        close(
+            tree_node,
+            Some(replace_three_way(
+                &resolved_from,
+                &start,
+                &end,
+                &resolved_to,
+                depth,
+            )),
+        )
     }
 }
 
@@ -131,6 +143,22 @@ fn add_range(
     }
 }
 
+fn check_join(main: &TreeNode, sub: &TreeNode) -> Result<(), String> {
+    Ok(())
+}
+
+fn joinable(
+    before: &ResolvedPosition,
+    after: &ResolvedPosition,
+    depth: usize,
+) -> Result<Rc<TreeNode>, String> {
+    let node = before.node(depth);
+
+    check_join(&node, &after.node(depth))?;
+
+    Ok(node)
+}
+
 fn replace_two_way(
     resolved_from: &ResolvedPosition,
     resolved_to: &ResolvedPosition,
@@ -154,21 +182,67 @@ fn replace_two_way(
     Rc::new(Fragment::new(content, size))
 }
 
-fn prepare_slice_for_replace(slice: Slice, along: &ResolvedPosition) -> (ResolvedPosition, ResolvedPosition) {
+fn prepare_slice_for_replace(
+    slice: Slice,
+    along: &ResolvedPosition,
+) -> (ResolvedPosition, ResolvedPosition) {
     let extra = along.depth - slice.open_start;
     let parent = along.node(extra);
     let mut node = parent.copy(Some(slice.content));
 
     for depth in (extra - 1)..0 {
-        node = along.node(depth).copy(Some(Rc::new(Fragment::from(FragmentSource::Node(node)))));
+        node = along
+            .node(depth)
+            .copy(Some(Rc::new(Fragment::from(FragmentSource::Node(node)))));
     }
 
     (
         resolve_position(&node, slice.open_start + extra).unwrap(),
-        resolve_position(&node, node.content_size() - slice.open_end - extra).unwrap()
+        resolve_position(&node, node.content_size() - slice.open_end - extra).unwrap(),
     )
 }
 
-fn replace_three_way(from: &ResolvedPosition, start: &ResolvedPosition, end: &ResolvedPosition, to: &ResolvedPosition, depth: usize) -> Rc<Fragment> {
-    Rc::new(Fragment::empty())
+fn replace_three_way(
+    from: &ResolvedPosition,
+    start: &ResolvedPosition,
+    end: &ResolvedPosition,
+    to: &ResolvedPosition,
+    depth: usize,
+) -> Rc<Fragment> {
+    let open_start = if from.depth > depth {
+        Some(joinable(from, start, depth + 1).unwrap())
+    } else {
+        None
+    };
+    let open_end = if to.depth > depth {
+        Some(joinable(end, to, depth + 1).unwrap())
+    } else {
+        None
+    };
+    let mut content: Vec<Rc<TreeNode>> = vec![];
+
+    add_range(None, Some(&from), depth, &mut content);
+    if open_start.is_some() && open_end.is_some() && start.index(depth) == end.index(depth) {
+        add_node(
+            &close(
+                open_start.unwrap(),
+                Some(replace_three_way(from, start, end, to, depth + 1)),
+            )
+            .unwrap(),
+            &mut content,
+        )
+    } else {
+        if open_start.is_some() {
+            add_node(&close(open_start.unwrap(), Some(replace_two_way(from, start, depth + 1))).unwrap(), &mut content);
+        }
+        add_range(Some(start), Some(end), depth, &mut content);
+        if open_end.is_some() {
+            add_node(&close(open_end.unwrap(), Some(replace_two_way(end, to, depth + 1))).unwrap(), &mut content);
+        }
+    }
+    add_range(Some(to), None, depth, &mut content);
+
+    let size = content.iter().fold(0, |acc, x| acc + x.size());
+
+    Rc::new(Fragment::new(content, size))
 }

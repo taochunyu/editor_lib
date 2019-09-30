@@ -56,13 +56,15 @@ impl ResolvedPosition {
                 }
             })
         }
-
     }
 }
 
 pub fn resolve_position(root: &Rc<TreeNode>, position: usize) -> Result<ResolvedPosition, String> {
     if root.size() < position {
-        return Err(format!("resolve_position: Position {} out of Range.", position));
+        return Err(format!(
+            "resolve_position: Position {} out of Range.",
+            position
+        ));
     }
 
     let mut path: Path = vec![];
@@ -96,7 +98,7 @@ pub fn resolve_position(root: &Rc<TreeNode>, position: usize) -> Result<Resolved
 
                 if let Some(node) = cursor {
                     if node.is_text() {
-                        break
+                        break;
                     }
                 }
 

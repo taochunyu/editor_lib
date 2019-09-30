@@ -1,9 +1,9 @@
 use crate::core::model::fragment::Fragment;
+use crate::core::model::resolved_position::{resolve_position, ResolvedPosition};
 use crate::core::model::slice::Slice;
 use crate::nodes::text_node::Mark::Strong;
 use std::any::Any;
 use std::rc::Rc;
-use crate::core::model::resolved_position::{ResolvedPosition, resolve_position};
 
 trait TextNode {
     fn is_text(&self) -> bool {
@@ -110,7 +110,7 @@ impl TreeNode {
             content: match &self.content {
                 Some(content) => Some(Rc::clone(content)),
                 None => None,
-            }
+            },
         })
     }
     pub fn is_text(&self) -> bool {

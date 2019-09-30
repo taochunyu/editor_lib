@@ -11,7 +11,9 @@ pub struct ParagraphNode {
 }
 
 impl Node for ParagraphNode {
-    fn type_name(&self) -> String { String::from("paragraph") }
+    fn type_name(&self) -> String {
+        String::from("paragraph")
+    }
     fn to_string(&self, content: String) -> String {
         format!(
             "<p data-align=\"{}\">{}</p>",
