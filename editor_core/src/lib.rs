@@ -1,14 +1,16 @@
-pub mod core;
+pub mod model;
 pub mod nodes;
+pub mod view;
 pub mod pre {
-    use crate::core::model::fragment::Fragment;
-    use crate::core::model::node::TreeNode;
-    use crate::core::model::replace::replace;
-    use crate::core::model::slice::Slice;
+    use crate::model::fragment::Fragment;
+    use crate::model::node::TreeNode;
+    use crate::model::replace::replace;
+    use crate::model::slice::Slice;
     use crate::nodes::doc_node::DocNode;
     use crate::nodes::paragraph_node::{Align, ParagraphNode};
     use crate::nodes::text_node::TextNode;
     use std::rc::Rc;
+    use crate::view::virtual_node::VirtualNode;
 
     fn mk_text(text: &str) -> Rc<TreeNode> {
         Rc::new(TreeNode {
@@ -35,7 +37,7 @@ pub mod pre {
         })
     }
 
-    pub fn one_test() {
+    pub fn one_test(from: usize, to: usize) -> Result<Rc<VirtualNode>, String> {
         let doc = mk_doc(vec![
             mk_paragraph(vec![mk_text("hi")]),
             mk_paragraph(vec![mk_text("hello")]),
@@ -43,9 +45,9 @@ pub mod pre {
         let slice_content = vec![mk_text("")];
         let slice = Slice::new(Rc::new(Fragment::new(slice_content, 1)), 0, 0);
 
-        match replace(doc, 7, 8, slice) {
-            Ok(new_doc) => println!("ok: {}", new_doc.to_string()),
-            Err(msg) => println!("error: {}", msg),
-        };
+        match replace(doc, from, to, slice) {
+            Ok(new_doc) => Ok(new_doc.render()),
+            Err(msg) => Err(msg),
+        }
     }
 }

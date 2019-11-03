@@ -1,5 +1,5 @@
-use crate::core::model::fragment;
-use crate::core::model::fragment::Fragment;
+use crate::model::fragment;
+use crate::model::fragment::Fragment;
 use std::rc::Rc;
 
 pub struct Slice {

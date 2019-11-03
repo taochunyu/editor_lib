@@ -1,0 +1,1 @@
+cd editor_wasm && wasm-pack build --target web

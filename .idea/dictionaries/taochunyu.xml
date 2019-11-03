@@ -1,7 +1,10 @@
 <component name="ProjectDictionaryState">
   <dictionary name="taochunyu">
     <words>
+      <w>bindgen</w>
       <w>joinable</w>
+      <w>todomvc</w>
+      <w>wasm</w>
     </words>
   </dictionary>
 </component>

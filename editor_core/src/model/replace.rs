@@ -1,7 +1,7 @@
-use crate::core::model::fragment::{Fragment, FragmentSource};
-use crate::core::model::node::{Node, TreeNode};
-use crate::core::model::resolved_position::{resolve_position, ResolvedPosition};
-use crate::core::model::slice::Slice;
+use crate::model::fragment::{Fragment, FragmentSource};
+use crate::model::node::{Node, TreeNode};
+use crate::model::resolved_position::{resolve_position, ResolvedPosition};
+use crate::model::slice::Slice;
 use std::rc::Rc;
 
 pub fn replace(
@@ -233,11 +233,21 @@ fn replace_three_way(
         )
     } else {
         if open_start.is_some() {
-            add_node(&close(open_start.unwrap(), Some(replace_two_way(from, start, depth + 1))).unwrap(), &mut content);
+            add_node(
+                &close(
+                    open_start.unwrap(),
+                    Some(replace_two_way(from, start, depth + 1)),
+                )
+                .unwrap(),
+                &mut content,
+            );
         }
         add_range(Some(start), Some(end), depth, &mut content);
         if open_end.is_some() {
-            add_node(&close(open_end.unwrap(), Some(replace_two_way(end, to, depth + 1))).unwrap(), &mut content);
+            add_node(
+                &close(open_end.unwrap(), Some(replace_two_way(end, to, depth + 1))).unwrap(),
+                &mut content,
+            );
         }
     }
     add_range(Some(to), None, depth, &mut content);

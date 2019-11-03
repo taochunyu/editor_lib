@@ -1,27 +1,10 @@
-use crate::core::model::fragment::Fragment;
-use crate::core::model::resolved_position::{resolve_position, ResolvedPosition};
-use crate::core::model::slice::Slice;
+use crate::model::fragment::Fragment;
+use crate::model::resolved_position::{resolve_position, ResolvedPosition};
+use crate::model::slice::Slice;
 use crate::nodes::text_node::Mark::Strong;
 use std::any::Any;
 use std::rc::Rc;
-
-trait TextNode {
-    fn is_text(&self) -> bool {
-        false
-    }
-    fn text_content(&self) -> &str {
-        ""
-    }
-    fn slice_text_content(&self, from: usize, to: usize) -> Result<Rc<dyn Node>, String> {
-        Err(format!("must override!"))
-    }
-    fn need_join(&self, other: &dyn Node) -> bool {
-        false
-    }
-    fn join(&self, other: &dyn Node) -> Result<Rc<dyn Node>, String> {
-        Err(format!("must override!"))
-    }
-}
+use crate::view::virtual_node::VirtualNode;
 
 pub trait Node {
     fn type_name(&self) -> String;
@@ -32,13 +15,13 @@ pub trait Node {
         ""
     }
     fn slice_text_content(&self, from: usize, to: usize) -> Result<Rc<dyn Node>, String> {
-        Err(format!("must override!"))
+        Err(format!("trait node slice_text_content must override!"))
     }
     fn need_join(&self, other: &dyn Node) -> bool {
         false
     }
     fn join(&self, other: &dyn Node) -> Result<Rc<dyn Node>, String> {
-        Err(format!("must override!"))
+        Err(format!("trait node join must override!"))
     }
     fn is_leaf(&self) -> bool {
         false
@@ -57,6 +40,7 @@ pub trait Node {
     }
     fn to_string(&self, content: String) -> String;
     fn mark_to_string(&self) -> String;
+    fn render(&self, children: Vec<Rc<VirtualNode>>) -> Rc<VirtualNode>;
 }
 
 impl dyn Node {
@@ -126,6 +110,17 @@ impl TreeNode {
         }
 
         self.node.to_string(content_str)
+    }
+    pub fn render(&self) -> Rc<VirtualNode> {
+        let mut content_virtual_node: Vec<Rc<VirtualNode>> = vec![];
+
+        if let Some(content) = &self.content {
+            for tree_node in &content.content {
+                content_virtual_node.push(tree_node.render());
+            }
+        };
+
+        self.node.render(content_virtual_node)
     }
     pub(crate) fn copy(&self, content: Option<Rc<Fragment>>) -> Rc<Self> {
         Rc::new(Self {

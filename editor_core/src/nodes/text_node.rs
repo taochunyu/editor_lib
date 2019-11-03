@@ -1,5 +1,6 @@
-use crate::core::model::node::{Node, TreeNode};
+use crate::model::node::{Node, TreeNode};
 use std::rc::Rc;
+use crate::view::virtual_node::VirtualNode;
 
 #[derive(Copy, Clone)]
 pub enum Mark {
@@ -74,5 +75,15 @@ impl Node for TextNode {
         };
 
         mark_list_string
+    }
+    fn render(&self, _children: Vec<Rc<VirtualNode>>) -> Rc<VirtualNode> {
+        let child = Rc::new(VirtualNode::create(
+            String::from("4"),
+            String::from("text"),
+            String::from(&self.text_content),
+            vec![],
+        ));
+
+        Rc::new(VirtualNode::create(String::from("3"), String::from("span"), String::from(""), vec![child]))
     }
 }

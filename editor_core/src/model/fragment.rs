@@ -1,4 +1,4 @@
-use crate::core::model::node::TreeNode;
+use crate::model::node::TreeNode;
 use std::rc::Rc;
 
 pub struct Fragment {

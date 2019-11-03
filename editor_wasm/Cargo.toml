@@ -1,0 +1,22 @@
+[package]
+name = "editor_wasm"
+version = "0.1.0"
+authors = ["taochunyu <tao_chunyu@foxmail.com>"]
+edition = "2018"
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+wasm-bindgen = "0.2.51"
+editor_core = { path = "../editor_core" }
+
+[dependencies.web-sys]
+version = "0.3.4"
+features = [
+  'Document',
+  'Element',
+  'Node',
+  'Text',
+  'Window',
+]

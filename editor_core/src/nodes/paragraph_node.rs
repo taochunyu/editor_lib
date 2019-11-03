@@ -1,4 +1,6 @@
-use crate::core::model::node::Node;
+use crate::model::node::Node;
+use crate::view::virtual_node::VirtualNode;
+use std::rc::Rc;
 
 pub enum Align {
     Left,
@@ -27,5 +29,8 @@ impl Node for ParagraphNode {
             Align::Center => "center",
             Align::Right => "right",
         })
+    }
+    fn render(&self, children: Vec<Rc<VirtualNode>>) -> Rc<VirtualNode> {
+        Rc::new(VirtualNode::create(String::from("2"), String::from("p"), String::from(""), children))
     }
 }
