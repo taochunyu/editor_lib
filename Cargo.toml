@@ -1,2 +1,4 @@
 [workspace]
-members=["editor_core", "editor_wasm"]
+members=[
+    "editor_core",
+]
