@@ -9,11 +9,14 @@ pub struct ResolvedPosition {
 }
 
 impl ResolvedPosition {
-    fn position(&self) -> usize {
+    pub fn position(&self) -> usize {
         self.position
     }
+    pub fn depth(&self) -> usize {
+        self.depth
+    }
 
-    fn resolve(base: &Rc<Node>, position: usize) -> Result<ResolvedPosition, String> {
+    pub fn resolve(base: &Rc<Node>, position: usize) -> Result<ResolvedPosition, String> {
         if position > doc.content_size() {
             return Err(format!("Position {} out of range", position));
         }
