@@ -1,29 +1,44 @@
-use crate::node::node_content::node_content::NodeContent;
+use crate::node::content::content::Content;
 use crate::node::node_type::NodeType;
 use std::rc::Rc;
 
 pub struct Node {
     node_type: Rc<NodeType>,
-    node_content: Rc<NodeContent>,
+    content: Rc<Content>,
 }
 
 impl Node {
     pub fn node_type(&self) -> Rc<NodeType> {
         Rc::clone(&self.node_type)
     }
-    pub fn node_content(&self) -> Rc<NodeContent> {
-        Rc::clone(&self.node_content)
+    pub fn node_content(&self) -> Rc<Content> {
+        Rc::clone(&self.content)
     }
     pub fn size(&self) -> usize {
-        self.node_content.size() + self.node_type.border_size()
+        self.content.size() + self.node_type.border_size()
     }
     pub fn content_size(&self) -> usize {
-        self.node_content.size()
+        self.content.size()
     }
     pub fn child(&self, index: usize) -> Result<Rc<Node>, String> {
-        self.node_content.child(index)
+        self.content.child(index)
     }
     pub fn is_text(&self) -> bool {
         self.node_type.is_text()
+    }
+
+    pub fn new(node_type: Rc<NodeType>, node_content: Rc<Content>) -> Node {
+        Node {
+            node_type,
+            content: node_content,
+        }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    #[test]
+    fn it_works() {
+        assert_eq!(2 + 2, 4);
     }
 }

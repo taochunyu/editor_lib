@@ -55,3 +55,17 @@ impl ResolvedPosition {
         })
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use crate::node::node_type::NodeType;
+
+    fn mock_text_node(content: &str) -> Node {
+        let node_type = NodeType::new();
+        let node_content = NodeContent::
+    }
+
+    fn mock_data() -> Node {
+
+    }
+}

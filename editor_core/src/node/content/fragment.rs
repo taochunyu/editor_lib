@@ -6,6 +6,32 @@ pub struct Fragment {
     size: usize,
 }
 
+impl From<Rc<Node>> for Fragment {
+    fn from(node: Rc<Node>) -> Self {
+        Fragment {
+            content: vec![Rc::clone(&node)],
+            size: node.size(),
+        }
+    }
+}
+
+impl From<Vec<Rc<Node>>> for Fragment {
+    fn from(nodes: Vec<Rc<Node>>) -> Self {
+        let mut content: Vec<Rc<Node>> = vec![];
+        let mut size: usize = 0;
+
+        for node in &nodes {
+            content.push(Rc::clone(node));
+            size += node.size();
+        }
+
+        Fragment {
+            content,
+            size,
+        }
+    }
+}
+
 impl Fragment {
     pub fn size(&self) -> usize {
         self.size
