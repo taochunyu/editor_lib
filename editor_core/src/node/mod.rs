@@ -1,6 +1,5 @@
 pub mod node;
-pub mod node_manager;
+pub mod node_content;
 
-mod content;
-mod node_type;
-mod replace;
+mod fragment;
+// mod replace;

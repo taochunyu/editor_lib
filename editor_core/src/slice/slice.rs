@@ -1,10 +1,10 @@
-use crate::fragment::fragment::Fragment;
+use crate::node::node_content::NodeContent;
 use std::rc::Rc;
 
 pub struct Slice {
     open_start: usize,
     open_end: usize,
-    content: Rc<Fragment>,
+    content: Rc<NodeContent>,
 }
 
 impl Slice {

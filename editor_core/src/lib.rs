@@ -2,6 +2,7 @@ mod input;
 mod mark;
 mod node;
 mod position;
+mod schema;
 mod selection;
 mod slice;
 mod state;

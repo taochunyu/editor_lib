@@ -1,17 +1,17 @@
-use crate::node::content::content::Content;
-use crate::node::node_type::NodeType;
+use crate::node::node_content::NodeContent;
+use crate::schema::node_type::NodeType;
 use std::rc::Rc;
 
 pub struct Node {
     node_type: Rc<NodeType>,
-    content: Rc<Content>,
+    content: Rc<NodeContent>,
 }
 
 impl Node {
     pub fn node_type(&self) -> Rc<NodeType> {
         Rc::clone(&self.node_type)
     }
-    pub fn node_content(&self) -> Rc<Content> {
+    pub fn node_content(&self) -> Rc<NodeContent> {
         Rc::clone(&self.content)
     }
     pub fn size(&self) -> usize {
@@ -27,7 +27,7 @@ impl Node {
         self.node_type.is_text()
     }
 
-    pub fn new(node_type: Rc<NodeType>, node_content: Rc<Content>) -> Node {
+    pub fn new(node_type: Rc<NodeType>, node_content: Rc<NodeContent>) -> Node {
         Node {
             node_type,
             content: node_content,

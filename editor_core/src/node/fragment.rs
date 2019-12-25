@@ -42,21 +42,23 @@ impl Fragment {
             d if d == self.size => Ok((self.content.len(), d)),
             d if d > self.size => Err(format!("Offset {} outside of fragment", d)),
             _ => {
-                let mut index: usize = 0;
                 let mut cursor: usize = 0;
 
-                for item in &self.content {
-                    let mut end = offset + item.size();
+                for (index, item) in self.content.iter().enumerate() {
+                    let end = cursor + item.size();
 
-                    if offset < end {
-                        let pos = if round { end } else { cursor };
-
-                        return Ok((index, pos));
+                    if offset <= end {
+                        if round || end == offset {
+                            return Ok((index + 1, end))
+                        } else {
+                            return Ok((index, cursor))
+                        };
                     }
 
-                    index += 1;
                     cursor = end;
                 }
+
+                return Err(format!("Offset {} outside of fragment", offset));
             }
         }
     }
