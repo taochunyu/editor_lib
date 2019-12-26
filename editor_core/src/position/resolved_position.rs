@@ -15,6 +15,12 @@ impl ResolvedPosition {
     pub fn depth(&self) -> usize {
         self.depth
     }
+    pub fn index(&self, depth: usize) -> usize {
+        self.path[depth].1
+    }
+    pub fn node(&self, depth: usize) -> Rc<Node> {
+        Rc::clone(&self.path[depth].0)
+    }
 
     pub fn resolve(base: Rc<Node>, position: usize) -> Result<ResolvedPosition, String> {
         if position > base.content_size() {
@@ -47,7 +53,7 @@ impl ResolvedPosition {
         }
 
         Ok(ResolvedPosition {
-            depth: path.len() - 1,
+            depth: path.len(),
             position,
             path,
             parent_offset,
@@ -59,13 +65,13 @@ impl ResolvedPosition {
 mod tests {
     use crate::node::node::Node;
     use crate::schema::node_type::NodeType;
-    use crate::node::node_content::NodeContent;
+    use crate::node::content::Content;
     use std::rc::Rc;
     use crate::position::resolved_position::ResolvedPosition;
 
     fn mock_text_node(content: &str) -> Node {
         let node_type = NodeType::new(String::from("text"), String::from(""));
-        let node_content = NodeContent::Text(String::from(content));
+        let node_content = Content::Text(String::from(content));
 
         node_type.create_node(Rc::new(node_content))
     }
@@ -73,10 +79,10 @@ mod tests {
     fn mock_leaf_node(name: &str) -> Node {
         let node_type = NodeType::new(String::from(name), String::from(""));
 
-        node_type.create_node(Rc::new(NodeContent::None))
+        node_type.create_node(Rc::new(Content::None))
     }
 
-    fn mock_container_node(name: &str, content: NodeContent) -> Node {
+    fn mock_container_node(name: &str, content: Content) -> Node {
         let node_type = NodeType::new(String::from(name), String::from("123131"));
 
         node_type.create_node(Rc::new(content))
@@ -90,17 +96,17 @@ mod tests {
         assert_eq!(hello.size(), 5);
         assert_eq!(image.size(), 1);
 
-        let paragraph_1 = mock_container_node("paragraph", NodeContent::from(Rc::new(apple)));
+        let paragraph_1 = mock_container_node("paragraph", Content::from(Rc::new(apple)));
         let paragraph_2 = mock_container_node(
             "paragraph",
-            NodeContent::from(vec![Rc::new(hello), Rc::new(image), Rc::new(world)])
+            Content::from(vec![Rc::new(hello), Rc::new(image), Rc::new(world)])
         );
 
         assert_eq!(paragraph_1.size(), 7);
         assert_eq!(paragraph_2.size(), 13);
 
 
-        mock_container_node("doc", NodeContent::from(vec![Rc::new(paragraph_1), Rc::new(paragraph_2)]))
+        mock_container_node("doc", Content::from(vec![Rc::new(paragraph_1), Rc::new(paragraph_2)]))
     }
 
     fn check_resolve_result(base: &Rc<Node>, position: usize, depth: usize, parent_offset: usize) {

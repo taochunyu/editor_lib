@@ -33,8 +33,11 @@ impl From<Vec<Rc<Node>>> for Fragment {
 }
 
 impl Fragment {
-    pub fn size(&self) -> usize {
-        self.size
+    pub fn child(&self, index: usize) -> Result<Rc<Node>, String> {
+        match self.content.get(index) {
+            Some(node) => Ok(Rc::clone(node)),
+            None => Err(format!("Index {} out range of fragment", index)),
+        }
     }
     pub fn find_index(&self, offset: usize, round: bool) -> Result<(usize, usize), String> {
         match offset {
@@ -62,10 +65,21 @@ impl Fragment {
             }
         }
     }
-    pub fn child(&self, index: usize) -> Result<Rc<Node>, String> {
-        match self.content.get(index) {
-            Some(node) => Ok(Rc::clone(node)),
-            None => Err(format!("Index {} out range of fragment", index)),
+    pub fn replace_child(mut self, index: usize, node: Rc<Node>) -> Self {
+        if Rc::ptr_eq(&self.content[index], &node) {
+            self
+        } else {
+            let size = self.size + node.size() - self.content[index].size();
+
+            self.content.splice(index..index, [node].iter().cloned());
+
+            Fragment {
+                size,
+                content: self.content,
+            }
         }
+    }
+    pub fn size(&self) -> usize {
+        self.size
     }
 }
