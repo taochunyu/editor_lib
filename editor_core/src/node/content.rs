@@ -8,56 +8,76 @@ pub enum Content {
     None,
 }
 
+use Content::*;
+
 impl From<String> for Content {
     fn from(content: String) -> Self {
-        Content::Text(content)
+        Text(content)
     }
 }
 
 impl From<Rc<Node>> for Content {
     fn from(node: Rc<Node>) -> Self {
-        Content::Elements(Fragment::from(node))
+        Elements(Fragment::from(node))
     }
 }
 
 impl From<Vec<Rc<Node>>> for Content {
     fn from(nodes: Vec<Rc<Node>>) -> Self {
-        Content::Elements(Fragment::from(nodes))
+        Elements(Fragment::from(nodes))
     }
 }
 
 impl Content {
-    pub fn child(&self, index: usize) -> Result<Rc<Node>, String> {
+    pub fn get(&self, index: usize) -> Result<&Rc<Node>, String> {
         match self {
-            Content::Elements(ref fragment) => fragment.child(index),
-            Content::Text(_) => Err(format!("Cannot get child in content text")),
-            Content::None => Err(format!("Cannot get child in content none")),
+            Elements(ref fragment) => fragment.get(index),
+            Text(_) => Err(format!("Cannot get child in content text")),
+            None => Err(format!("Cannot get child in content none")),
         }
-    }
-    pub fn concat(&self, other: &Rc<Content>) -> Rc<Content> {
-
     }
     pub fn find_index(&self, offset: usize, round: bool) -> Result<(usize, usize), String> {
         match self {
-            Content::Elements(ref fragment) => fragment.find_index(offset, round),
-            Content::Text(_) => Err(format!("Cannot find index in content text")),
-            Content::None => Err(format!("Cannot find index in content none")),
+            Elements(ref fragment) => fragment.find_index(offset, round),
+            Text(_) => Err(format!("Cannot find index in content text")),
+            None => Err(format!("Cannot find index in content none")),
         }
     }
-    pub fn replace_child(&self, index: usize, node: Rc<Node>) -> Result<Rc<Content>, String> {
-        match self {
-            Content::Elements(ref fragment) => {
-                Ok(Rc::new(Content::Elements(fragment.replace_child(index, node))))
+    pub fn replace_child(self: Rc<Self>, index: usize, node: Rc<Node>) -> Result<Rc<Self>, String> {
+        match self.as_ref() {
+            Elements(ref fragment) => {
+                let n = fragment.get(index)?;
+
+                if Rc::ptr_eq(&n, &node) {
+                    Ok(Rc::clone(&self))
+                } else {
+                    Ok(Rc::new(Elements(fragment.replace_child(index, node))))
+                }
             },
-            Content::Text(_) => Err(format!("Cannot replace child in content text")),
-            Content::None => Err(format!("Cannot replace child in content none")),
+            Text(_) => Err(format!("Cannot replace child in content text")),
+            None => Err(format!("Cannot replace child in content none")),
         }
     }
     pub fn size(&self) -> usize {
         match self {
-            Content::Elements(ref fragment) => fragment.size(),
-            Content::Text(ref text) => text.len(),
-            Content::None => 0,
+            Elements(ref fragment) => fragment.size(),
+            Text(ref text) => text.len(),
+            None => 0,
+        }
+    }
+
+    pub fn concat(this: &Rc<Self>, other: &Rc<Self>) -> Result<Self, String> {
+        match (this.as_ref(), other.as_ref()) {
+            (Elements(ref a), Elements(ref b)) => {
+                Ok(Elements(Fragment::concat(a, b)))
+            },
+            (Text(ref a), Text(ref b)) => {
+                Ok(Text(format!("{}{}", a, b)))
+            },
+            (None, None) => {
+                Ok(None)
+            },
+            _ => Err(format!("Cannot concat different type node content")),
         }
     }
 }

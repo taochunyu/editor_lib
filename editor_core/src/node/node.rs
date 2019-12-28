@@ -8,8 +8,11 @@ pub struct Node {
 }
 
 impl Node {
-    pub fn child(&self, index: usize) -> Result<Rc<Node>, String> {
-        self.content.child(index)
+    pub fn get(&self, index: usize) -> Result<&Rc<Node>, String> {
+        self.content.get(index)
+    }
+    pub fn content(&self) -> Rc<Content> {
+        Rc::clone(&self.content)
     }
     pub fn content_size(&self) -> usize {
         self.content.size()

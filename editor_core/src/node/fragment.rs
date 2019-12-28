@@ -33,11 +33,14 @@ impl From<Vec<Rc<Node>>> for Fragment {
 }
 
 impl Fragment {
-    pub fn child(&self, index: usize) -> Result<Rc<Node>, String> {
+    pub fn get(&self, index: usize) -> Result<&Rc<Node>, String> {
         match self.content.get(index) {
-            Some(node) => Ok(Rc::clone(node)),
+            Some(node) => Ok(node),
             None => Err(format!("Index {} out range of fragment", index)),
         }
+    }
+    pub fn content(&self) -> &Vec<Rc<Node>> {
+        &self.content
     }
     pub fn find_index(&self, offset: usize, round: bool) -> Result<(usize, usize), String> {
         match offset {
@@ -65,21 +68,32 @@ impl Fragment {
             }
         }
     }
-    pub fn replace_child(mut self, index: usize, node: Rc<Node>) -> Self {
-        if Rc::ptr_eq(&self.content[index], &node) {
-            self
-        } else {
-            let size = self.size + node.size() - self.content[index].size();
+    pub fn replace_child(&self, index: usize, node: Rc<Node>) -> Self {
+        let size = self.size + node.size() - self.content[index].size();
+        let content: Vec<Rc<Node>> = self.content.iter()
+            .enumerate()
+            .map(|(i, n)| if i == index { Rc::clone(&node) } else { Rc::clone(n) })
+            .collect();
 
-            self.content.splice(index..index, [node].iter().cloned());
-
-            Fragment {
-                size,
-                content: self.content,
-            }
+        Self {
+            content,
+            size,
         }
     }
     pub fn size(&self) -> usize {
         self.size
+    }
+
+    pub fn concat(this: &Self, other: &Self) -> Self {
+        let size = this.size + other.size;
+        let content: Vec<Rc<Node>> = [&this.content, &other.content].iter()
+            .flat_map(|vec| vec.iter())
+            .map(|node| Rc::clone(node))
+            .collect();
+
+        Self {
+            content,
+            size,
+        }
     }
 }

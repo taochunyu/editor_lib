@@ -15,14 +15,20 @@ impl ResolvedPosition {
     pub fn depth(&self) -> usize {
         self.depth
     }
-    pub fn index(&self, depth: usize) -> usize {
-        self.path[depth].1
+    pub fn index(&self, depth: usize) -> Result<usize, String> {
+        match self.path.get(depth) {
+            Some(node) => Ok(node.1),
+            None => Err(format!("{}", depth)),
+        }
     }
-    pub fn node(&self, depth: usize) -> Rc<Node> {
-        Rc::clone(&self.path[depth].0)
+    pub fn node(&self, depth: usize) -> Result<Rc<Node>, String> {
+        match self.path.get(depth) {
+            Some(node) => Ok(Rc::clone(&node.0)),
+            None => Err(format!("{}", depth)),
+        }
     }
 
-    pub fn resolve(base: Rc<Node>, position: usize) -> Result<ResolvedPosition, String> {
+    pub fn resolve(base: &Rc<Node>, position: usize) -> Result<ResolvedPosition, String> {
         if position > base.content_size() {
             return Err(format!("Position {} out of range", position));
         }
@@ -30,7 +36,7 @@ impl ResolvedPosition {
         let mut path: Vec<(Rc<Node>, usize, usize)> = vec![];
         let mut start: usize = 0;
         let mut parent_offset: usize = position;
-        let mut cursor: Rc<Node> = base;
+        let mut cursor: &Rc<Node> = base;
 
         loop {
             let (index, offset) = cursor.node_content().find_index(parent_offset, false)?;
@@ -42,7 +48,7 @@ impl ResolvedPosition {
                 break;
             }
 
-            cursor = cursor.child(index)?;
+            cursor = cursor.get(index)?;
 
             if cursor.is_text() {
                 break;
@@ -110,7 +116,7 @@ mod tests {
     }
 
     fn check_resolve_result(base: &Rc<Node>, position: usize, depth: usize, parent_offset: usize) {
-        match ResolvedPosition::resolve(Rc::clone(base), position) {
+        match ResolvedPosition::resolve(&Rc::clone(base), position) {
             Ok(resolved) => {
                 assert_eq!(resolved.depth, depth);
                 assert_eq!(resolved.parent_offset, parent_offset)

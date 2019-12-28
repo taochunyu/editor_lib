@@ -24,16 +24,14 @@ fn replace_outer(
     slice: Slice,
     depth: usize,
 ) -> Result<Rc<Node>, String> {
-    let index = from.index(depth);
-    let node = from.node(depth);
+    let index = from.index(depth)?;
+    let node = from.node(depth)?;
 
     if index == to.index(depth) && depth < from.depth() - slice.open_start() {
         let inner = replace_outer(from, to, slice, depth + 1)?;
         let content = node.node_content().replace_child(index, inner)?;
 
         Ok(node.with_content(content))
-    } else if slice.content_size() == 0 {
-
     } else {
         Err(format!("123456"))
     }
@@ -50,9 +48,14 @@ fn close(node: Rc<Node>, content: Rc<Content>) -> Result<Rc<Node>, String> {
 fn add_node(node: Rc<Node>, target: &mut Vec<Rc<Node>>) {
     match target.last() {
         None => target.push(node),
-        Some(last_child) => {
-            if node.is_text() && node.same_markup(last_child) {
+        Some(last) => {
+            if node.is_text() && node.same_markup(last) {
+                let content = Content::concat(&last.content(), &node.content());
 
+                if let Ok(c) = content {
+                    target.split_last();
+                    target.push(node.with_content(Rc::new(c)));
+                }
             }
         }
     }
