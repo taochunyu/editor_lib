@@ -29,18 +29,34 @@ impl From<Vec<Rc<Node>>> for Content {
 }
 
 impl Content {
-    pub fn get(&self, index: usize) -> Result<&Rc<Node>, String> {
-        match self {
-            Elements(ref fragment) => fragment.get(index),
-            Text(_) => Err(format!("Cannot get child in content text")),
-            None => Err(format!("Cannot get child in content none")),
+    pub fn cut(self: Rc<Self>, from: usize, to: usize) -> Result<Rc<Self>, String> {
+        match self.as_ref() {
+            Elements(ref fragment) => {
+                let f = fragment.cut(from, to)?;
+
+                Ok(Rc::new(Elements(f)))
+            },
+            Text(ref text) => {
+                match text.get(from..to) {
+                    Some(slice) => Ok(Rc::new(Text(String::from(slice)))),
+                    Option::None => Err(format!("E29493677 {} {}", from, to)),
+                }
+            },
+            None => Err(format!("E55556133"))
         }
     }
     pub fn find_index(&self, offset: usize, round: bool) -> Result<(usize, usize), String> {
         match self {
             Elements(ref fragment) => fragment.find_index(offset, round),
-            Text(_) => Err(format!("Cannot find index in content text")),
-            None => Err(format!("Cannot find index in content none")),
+            Text(_) => Err(format!("E29380846")),
+            None => Err(format!("E65932723")),
+        }
+    }
+    pub fn get(&self, index: usize) -> Result<&Rc<Node>, String> {
+        match self {
+            Elements(ref fragment) => fragment.get(index),
+            Text(_) => Err(format!("E76740376")),
+            None => Err(format!("E39854043")),
         }
     }
     pub fn replace_child(self: Rc<Self>, index: usize, node: Rc<Node>) -> Result<Rc<Self>, String> {
@@ -54,8 +70,8 @@ impl Content {
                     Ok(Rc::new(Elements(fragment.replace_child(index, node))))
                 }
             },
-            Text(_) => Err(format!("Cannot replace child in content text")),
-            None => Err(format!("Cannot replace child in content none")),
+            Text(_) => Err(format!("E17488085")),
+            None => Err(format!("E96098641")),
         }
     }
     pub fn size(&self) -> usize {
@@ -77,7 +93,7 @@ impl Content {
             (None, None) => {
                 Ok(None)
             },
-            _ => Err(format!("Cannot concat different type node content")),
+            _ => Err(format!("E75019594")),
         }
     }
 }

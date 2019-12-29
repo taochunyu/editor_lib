@@ -33,14 +33,42 @@ impl From<Vec<Rc<Node>>> for Fragment {
 }
 
 impl Fragment {
-    pub fn get(&self, index: usize) -> Result<&Rc<Node>, String> {
-        match self.content.get(index) {
-            Some(node) => Ok(node),
-            None => Err(format!("Index {} out range of fragment", index)),
-        }
-    }
     pub fn content(&self) -> &Vec<Rc<Node>> {
         &self.content
+    }
+    pub fn cut(&self, from: usize, to: usize) -> Result<Self, String> {
+        if from > to {
+            Ok(Self {
+                content: vec![],
+                size: 0,
+            })
+        } else {
+            let mut content: Vec<Rc<Node>> = vec![];
+            let mut start: usize = 0;
+            let mut end: usize = 0;
+
+            for node in &self.content {
+                end += node.size();
+
+                let will_push= if end > from && (start < from || end > to) {
+                    let cut_from: usize = if from > start { from - start } else { 0 };
+                    let cut_to: usize = if to > node.size() + start { node.size() } else { to - start };
+                    let result = node.clone().cut(cut_from, cut_to)?;
+
+                    Rc::clone(&result)
+                } else {
+                    Rc::clone(node)
+                };
+
+                content.push(will_push);
+                start += node.size();
+            }
+
+            Ok(Self {
+                content,
+                size: start,
+            })
+        }
     }
     pub fn find_index(&self, offset: usize, round: bool) -> Result<(usize, usize), String> {
         match offset {
@@ -66,6 +94,12 @@ impl Fragment {
 
                 return Err(format!("Offset {} outside of fragment", offset));
             }
+        }
+    }
+    pub fn get(&self, index: usize) -> Result<&Rc<Node>, String> {
+        match self.content.get(index) {
+            Some(node) => Ok(node),
+            None => Err(format!("Index {} out range of fragment", index)),
         }
     }
     pub fn replace_child(&self, index: usize, node: Rc<Node>) -> Self {

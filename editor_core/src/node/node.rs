@@ -8,14 +8,23 @@ pub struct Node {
 }
 
 impl Node {
-    pub fn get(&self, index: usize) -> Result<&Rc<Node>, String> {
-        self.content.get(index)
-    }
-    pub fn content(&self) -> Rc<Content> {
-        Rc::clone(&self.content)
+    pub fn content(&self) -> &Rc<Content> {
+        &self.content
     }
     pub fn content_size(&self) -> usize {
         self.content.size()
+    }
+    pub fn get(&self, index: usize) -> Result<&Rc<Node>, String> {
+        self.content.get(index)
+    }
+    pub fn cut(self: Rc<Self>, from: usize, to: usize) -> Result<Rc<Self>, String> {
+        if from == 0 && to == self.content.size() {
+            Ok(Rc::clone(&self))
+        } else {
+            let content = self.content.clone().cut(from, to)?;
+
+            Ok(self.with_content(content))
+        }
     }
     pub fn is_text(&self) -> bool {
         self.node_type.is_text()

@@ -24,12 +24,13 @@ fn replace_outer(
     slice: Slice,
     depth: usize,
 ) -> Result<Rc<Node>, String> {
-    let index = from.index(depth)?;
+    let from_index = from.index(depth)?;
+    let to_index = to.index(depth)?;
     let node = from.node(depth)?;
 
-    if index == to.index(depth) && depth < from.depth() - slice.open_start() {
+    if from_index == to_index && depth < from.depth() - slice.open_start() {
         let inner = replace_outer(from, to, slice, depth + 1)?;
-        let content = node.node_content().replace_child(index, inner)?;
+        let content = node.node_content().replace_child(from_index, inner)?;
 
         Ok(node.with_content(content))
     } else {
@@ -62,10 +63,20 @@ fn add_node(node: Rc<Node>, target: &mut Vec<Rc<Node>>) {
 }
 
 fn add_range(
-    start: Option<&ResolvedPosition>,
-    end: Option<&ResolvedPosition>,
+    start: &ResolvedPosition,
+    end: &ResolvedPosition,
     depth: usize,
     target: &mut Vec<Rc<Node>>,
-) {
+) -> Result<(), String> {
+    let node = end.node(depth)?;
+    let start_index = start.index(depth)?;
+    let end_index = end.index(depth)?;
 
+    for index in start_index..end_index {
+        let n = node.get(index)?;
+
+        add_node(Rc::clone(n), target);
+    }
+
+    Ok(())
 }

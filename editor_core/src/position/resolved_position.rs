@@ -27,6 +27,12 @@ impl ResolvedPosition {
             None => Err(format!("{}", depth)),
         }
     }
+    pub fn text_offset(&self) -> Result<usize, String> {
+        match self.path.last() {
+            Some(n) => Ok(self.position - n.2),
+            None => Err(format!("ResolvedPosition: path is empty"))
+        }
+    }
 
     pub fn resolve(base: &Rc<Node>, position: usize) -> Result<ResolvedPosition, String> {
         if position > base.content_size() {
