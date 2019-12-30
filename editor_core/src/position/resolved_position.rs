@@ -46,6 +46,27 @@ impl ResolvedPosition {
             }
         }
     }
+    pub fn node_before(&self) -> Result<Option<Rc<Node>>, String> {
+        let index = self.index(self.depth)?;
+        let text_offset = self.text_offset()?;
+
+        match (text_offset, index) {
+            (0, 0) => Ok(None),
+            (0, _) => {
+                let parent = self.parent()?;
+                let node = parent.get(index - 1)?;
+
+                Ok(Some(Rc::clone(node)))
+            },
+            _ => {
+                let parent = self.parent()?;
+                let node = parent.get(index)?;
+                let cut = node.clone().cut(0, text_offset)?;
+
+                Ok(Some(cut))
+            }
+        }
+    }
     pub fn parent(&self) -> Result<Rc<Node>, String> {
         self.node(self.depth)
     }

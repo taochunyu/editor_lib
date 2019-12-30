@@ -11,7 +11,7 @@ impl Node {
     pub fn content(&self) -> &Rc<Content> {
         &self.content
     }
-    pub fn get(&self, index: usize) -> Result<&Rc<Node>, String> {
+    pub fn get(&self, index: usize) -> Result<&Rc<Self>, String> {
         self.content.get(index)
     }
     pub fn cut(self: Rc<Self>, from: usize, to: usize) -> Result<Rc<Self>, String> {
