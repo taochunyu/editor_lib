@@ -11,9 +11,6 @@ impl Node {
     pub fn content(&self) -> &Rc<Content> {
         &self.content
     }
-    pub fn content_size(&self) -> usize {
-        self.content.size()
-    }
     pub fn get(&self, index: usize) -> Result<&Rc<Node>, String> {
         self.content.get(index)
     }
@@ -31,9 +28,6 @@ impl Node {
     }
     pub fn node_type(&self) -> Rc<NodeType> {
         Rc::clone(&self.node_type)
-    }
-    pub fn node_content(&self) -> Rc<Content> {
-        Rc::clone(&self.content)
     }
     pub fn same_markup(&self, other: &Rc<Node>) -> bool {
         false

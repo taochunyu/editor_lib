@@ -29,6 +29,13 @@ impl From<Vec<Rc<Node>>> for Content {
 }
 
 impl Content {
+    pub fn count(&self) -> usize {
+        match self {
+            Elements(ref fragment) => fragment.content().len(),
+            Text(_) => 1,
+            None => 0,
+        }
+    }
     pub fn cut(self: Rc<Self>, from: usize, to: usize) -> Result<Rc<Self>, String> {
         match self.as_ref() {
             Elements(ref fragment) => {

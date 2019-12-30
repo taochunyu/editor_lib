@@ -14,7 +14,7 @@ pub fn replace(
     } else if slice.open_start() - from.depth() != slice.open_end() - to.depth() {
         Err(format!("Inconsistent open depths"))
     } else {
-        replace_outer(from, to, slice, 1)
+        replace_outer(from, to, slice, 0)
     }
 }
 
@@ -30,7 +30,7 @@ fn replace_outer(
 
     if from_index == to_index && depth < from.depth() - slice.open_start() {
         let inner = replace_outer(from, to, slice, depth + 1)?;
-        let content = node.node_content().replace_child(from_index, inner)?;
+        let content = node.content().clone().replace_child(from_index, inner)?;
 
         Ok(node.with_content(content))
     } else {

@@ -27,6 +27,28 @@ impl ResolvedPosition {
             None => Err(format!("{}", depth)),
         }
     }
+    pub fn node_after(&self) -> Result<Option<Rc<Node>>, String> {
+        let parent = self.parent()?;
+        let index = self.index(self.depth)?;
+
+        if index == parent.content().count() {
+            Ok(None)
+        } else {
+            let text_offset = self.text_offset()?;
+            let node = parent.get(index)?;
+
+            if text_offset == 0 {
+                Ok(Some(Rc::clone(node)))
+            } else {
+                let n = node.clone().cut(text_offset, node.size())?;
+
+                Ok(Some(n))
+            }
+        }
+    }
+    pub fn parent(&self) -> Result<Rc<Node>, String> {
+        self.node(self.depth)
+    }
     pub fn text_offset(&self) -> Result<usize, String> {
         match self.path.last() {
             Some(n) => Ok(self.position - n.2),
@@ -35,7 +57,7 @@ impl ResolvedPosition {
     }
 
     pub fn resolve(base: &Rc<Node>, position: usize) -> Result<ResolvedPosition, String> {
-        if position > base.content_size() {
+        if position > base.content().size() {
             return Err(format!("Position {} out of range", position));
         }
 
@@ -45,7 +67,7 @@ impl ResolvedPosition {
         let mut cursor: &Rc<Node> = base;
 
         loop {
-            let (index, offset) = cursor.node_content().find_index(parent_offset, false)?;
+            let (index, offset) = cursor.content().find_index(parent_offset, false)?;
             let rem = parent_offset - offset;
 
             path.push((Rc::clone(&cursor), index, start + offset));
@@ -65,7 +87,7 @@ impl ResolvedPosition {
         }
 
         Ok(ResolvedPosition {
-            depth: path.len(),
+            depth: path.len() - 1,
             position,
             path,
             parent_offset,
@@ -137,9 +159,9 @@ mod tests {
 
         assert_eq!(doc.size(), 22);
 
-        check_resolve_result(&doc, 0, 1, 0);
-        check_resolve_result(&doc, 3, 2, 2);
-        check_resolve_result(&doc, 7, 1, 7);
-        check_resolve_result(&doc, 8, 2, 0);
+        check_resolve_result(&doc, 0, 0, 0);
+        check_resolve_result(&doc, 3, 1, 2);
+        check_resolve_result(&doc, 7, 0, 7);
+        check_resolve_result(&doc, 8, 1, 0);
     }
 }
