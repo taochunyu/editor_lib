@@ -8,11 +8,11 @@ pub struct Node {
 }
 
 impl Node {
+    pub fn child(&self, index: usize) -> Result<&Rc<Self>, String> {
+        self.content.get(index)
+    }
     pub fn content(&self) -> &Rc<Content> {
         &self.content
-    }
-    pub fn get(&self, index: usize) -> Result<&Rc<Self>, String> {
-        self.content.get(index)
     }
     pub fn cut(self: Rc<Self>, from: usize, to: usize) -> Result<Rc<Self>, String> {
         if from == 0 && to == self.content.size() {
@@ -26,8 +26,8 @@ impl Node {
     pub fn is_text(&self) -> bool {
         self.node_type.is_text()
     }
-    pub fn node_type(&self) -> Rc<NodeType> {
-        Rc::clone(&self.node_type)
+    pub fn node_type(&self) -> &Rc<NodeType> {
+        &self.node_type
     }
     pub fn same_markup(&self, other: &Rc<Node>) -> bool {
         false

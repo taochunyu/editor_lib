@@ -46,6 +46,27 @@ fn close(node: Rc<Node>, content: Rc<Content>) -> Result<Rc<Node>, String> {
     }
 }
 
+fn check_join(main: &Rc<Node>, sub: &Rc<Node>) -> Result<(), String> {
+    if !sub.node_type().compatible_content(main.node_type()) {
+        Err(format!("E44654294 {} {}", sub.node_type().name(), main.node_type().name()))
+    } else {
+        Ok(())
+    }
+}
+
+fn joinable(
+    before: &ResolvedPosition,
+    after: &ResolvedPosition,
+    depth: usize
+) -> Result<Rc<Node>, String> {
+    let node_before = before.node(depth)?;
+    let node_after = after.node(depth)?;
+
+    check_join(&node_before, &node_after)?;
+
+    Ok(node_before)
+}
+
 fn add_node(node: Rc<Node>, target: &mut Vec<Rc<Node>>) {
     match target.last() {
         None => target.push(node),
@@ -63,20 +84,76 @@ fn add_node(node: Rc<Node>, target: &mut Vec<Rc<Node>>) {
 }
 
 fn add_range(
-    start: &ResolvedPosition,
-    end: &ResolvedPosition,
+    node: Rc<Node>,
+    start: Option<&ResolvedPosition>,
+    end: Option<&ResolvedPosition>,
     depth: usize,
     target: &mut Vec<Rc<Node>>,
 ) -> Result<(), String> {
-    let node = end.node(depth)?;
-    let start_index = start.index(depth)?;
-    let end_index = end.index(depth)?;
+    let mut start_index = match start {
+        None => 0,
+        Some(s) => s.index(depth)?,
+    };
+    let end_index = match end {
+        None => 0,
+        Some(e) => e.index(depth)?,
+    };
+
+    if let Some(s) = start {
+        if s.depth() > depth {
+            start_index += 1;
+        } else {
+            let text_offset = s.text_offset()?;
+
+            if text_offset != 0 {
+                let node_after = s.node_after()?;
+
+                if let Some(n) = node_after {
+                    add_node(n, target);
+                    start_index += 1;
+                }
+            }
+        }
+    }
 
     for index in start_index..end_index {
-        let n = node.get(index)?;
+        let child = node.child(index)?;
 
-        add_node(Rc::clone(n), target);
+        add_node(Rc::clone(child), target);
+    }
+
+    if let Some(e) = end {
+        let text_offset = e.text_offset()?;
+
+        if e.depth() == depth && text_offset != 0 {
+            let node_before = e.node_before()?;
+
+            if let Some(n) = node_before {
+                add_node(n, target);
+            }
+        }
     }
 
     Ok(())
+}
+
+fn replace_two_way(
+    from: &ResolvedPosition,
+    to: &ResolvedPosition,
+    depth: usize
+) -> Result<Rc<Content>, String> {
+    let mut content: Vec<Rc<Node>> = vec![];
+    let node = from.node(depth)?;
+
+    add_range(node, None, Some(from), depth, &mut content)?;
+
+    if from.depth() > depth {
+        let node = joinable(from, to, depth + 1)?;
+        let result = replace_two_way(from, to, depth + 1)?;
+        let closed = close(node, result)?;
+
+        add_node(closed, &mut content);
+    }
+
+    Ok(Rc::new(Content::from(content)))
 }

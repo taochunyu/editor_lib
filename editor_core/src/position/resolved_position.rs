@@ -35,7 +35,7 @@ impl ResolvedPosition {
             Ok(None)
         } else {
             let text_offset = self.text_offset()?;
-            let node = parent.get(index)?;
+            let node = parent.child(index)?;
 
             if text_offset == 0 {
                 Ok(Some(Rc::clone(node)))
@@ -54,13 +54,13 @@ impl ResolvedPosition {
             (0, 0) => Ok(None),
             (0, _) => {
                 let parent = self.parent()?;
-                let node = parent.get(index - 1)?;
+                let node = parent.child(index - 1)?;
 
                 Ok(Some(Rc::clone(node)))
             },
             _ => {
                 let parent = self.parent()?;
-                let node = parent.get(index)?;
+                let node = parent.child(index)?;
                 let cut = node.clone().cut(0, text_offset)?;
 
                 Ok(Some(cut))
@@ -97,7 +97,7 @@ impl ResolvedPosition {
                 break;
             }
 
-            cursor = cursor.get(index)?;
+            cursor = cursor.child(index)?;
 
             if cursor.is_text() {
                 break;
