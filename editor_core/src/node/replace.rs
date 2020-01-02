@@ -157,3 +157,65 @@ fn replace_two_way(
 
     Ok(Rc::new(Content::from(content)))
 }
+
+fn replace_three_way(
+    from: &ResolvedPosition,
+    start: &ResolvedPosition,
+    end: &ResolvedPosition,
+    to: &ResolvedPosition,
+    depth: usize,
+) -> Result<Rc<Content>, String> {
+    let open_start = if from.depth() > depth {
+        let node = joinable(from, start, depth + 1)?;
+
+        Some(node)
+    } else {
+        None
+    };
+
+    let open_end = if to.depth() > depth {
+        let node = joinable(end, to, depth + 1)?;
+
+        Some(node)
+    } else {
+        None
+    };
+
+    let mut contnet: Vec<Rc<Node>> = vec![];
+    let node = from.node(depth)?;
+
+    add_range(node, None, Some(from), depth, &mut contnet)?;
+
+    if open_start.is_some() && open_end.is_some() && start.index(depth) == end.index(depth) {
+        check_join(&open_start.unwrap(), &open_end.unwrap())?;
+
+        let res = replace_three_way(from, start, end, to, depth + 1)?;
+        let node = close(open_start.unwrap(), res)?;
+
+        add_node(node, &mut content);
+    } else {
+        if let Some(os) = open_start {
+            let res = replace_two_way(from, start, depth + 1)?;
+            let node = close(os, res)?;
+
+            add_node(node, &mut content);
+        }
+
+        let node = start.node(depth)?;
+
+        add_range(node, Some(start), Some(end), depth + 1, &mut contnet)?;
+
+        if let Some(oe) = open_end {
+            let res = replace_two_way(end, to, depth + 1)?;
+            let node = close(oe, res)?;
+
+            add_node(node, &mut contnet);
+        }
+    }
+
+    let node = to.node(depth)?;
+
+    add_range(node, Some(to), None, depth, &mut content)?;
+
+    Ok(Rc::new(Content::from(contnet)))
+}
