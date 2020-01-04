@@ -1,5 +1,8 @@
 use crate::node::content::Content;
+use crate::node::replace::replace;
+use crate::position::resolved_position::ResolvedPosition;
 use crate::schema::node_type::NodeType;
+use crate::slice::slice::Slice;
 use std::rc::Rc;
 
 pub struct Node {
@@ -28,6 +31,21 @@ impl Node {
     }
     pub fn node_type(&self) -> &Rc<NodeType> {
         &self.node_type
+    }
+    pub fn replace(
+        self: Rc<Self>,
+        from: usize,
+        to: usize,
+        slice: Slice,
+    ) -> Result<Rc<Self>, String> {
+        replace(
+            self.clone().resolve(from)?,
+            self.clone().resolve(to)?,
+            slice,
+        )
+    }
+    pub fn resolve(self: Rc<Self>, position: usize) -> Result<ResolvedPosition, String> {
+        ResolvedPosition::resolve(&self, position)
     }
     pub fn same_markup(&self, other: &Rc<Node>) -> bool {
         false

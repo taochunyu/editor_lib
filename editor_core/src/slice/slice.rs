@@ -8,13 +8,15 @@ pub struct Slice {
 }
 
 impl Slice {
-    pub fn content_size(&self) -> usize {
-        self.content.size()
+    pub fn content(&self) -> &Rc<Content> {
+        &self.content
     }
     pub fn open_start(&self) -> usize {
         self.open_start
     }
-    pub fn open_end(&self) -> usize { self.open_end }
+    pub fn open_end(&self) -> usize {
+        self.open_end
+    }
     pub fn size(&self) -> usize {
         self.content.size() - self.open_start - self.open_end
     }

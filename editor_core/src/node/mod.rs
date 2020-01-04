@@ -1,5 +1,5 @@
-pub mod node;
 pub mod content;
+pub mod node;
 
 mod fragment;
 mod replace;

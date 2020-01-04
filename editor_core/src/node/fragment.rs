@@ -25,10 +25,7 @@ impl From<Vec<Rc<Node>>> for Fragment {
             size += node.size();
         }
 
-        Fragment {
-            content,
-            size,
-        }
+        Fragment { content, size }
     }
 }
 
@@ -50,9 +47,13 @@ impl Fragment {
             for node in &self.content {
                 end += node.size();
 
-                let will_push= if end > from && (start < from || end > to) {
+                let will_push = if end > from && (start < from || end > to) {
                     let cut_from: usize = if from > start { from - start } else { 0 };
-                    let cut_to: usize = if to > node.size() + start { node.size() } else { to - start };
+                    let cut_to: usize = if to > node.size() + start {
+                        node.size()
+                    } else {
+                        to - start
+                    };
                     let result = node.clone().cut(cut_from, cut_to)?;
 
                     Rc::clone(&result)
@@ -83,9 +84,9 @@ impl Fragment {
 
                     if offset <= end {
                         if round || end == offset {
-                            return Ok((index + 1, end))
+                            return Ok((index + 1, end));
                         } else {
-                            return Ok((index, cursor))
+                            return Ok((index, cursor));
                         };
                     }
 
@@ -104,15 +105,20 @@ impl Fragment {
     }
     pub fn replace_child(&self, index: usize, node: Rc<Node>) -> Self {
         let size = self.size + node.size() - self.content[index].size();
-        let content: Vec<Rc<Node>> = self.content.iter()
+        let content: Vec<Rc<Node>> = self
+            .content
+            .iter()
             .enumerate()
-            .map(|(i, n)| if i == index { Rc::clone(&node) } else { Rc::clone(n) })
+            .map(|(i, n)| {
+                if i == index {
+                    Rc::clone(&node)
+                } else {
+                    Rc::clone(n)
+                }
+            })
             .collect();
 
-        Self {
-            content,
-            size,
-        }
+        Self { content, size }
     }
     pub fn size(&self) -> usize {
         self.size
@@ -120,14 +126,12 @@ impl Fragment {
 
     pub fn concat(this: &Self, other: &Self) -> Self {
         let size = this.size + other.size;
-        let content: Vec<Rc<Node>> = [&this.content, &other.content].iter()
+        let content: Vec<Rc<Node>> = [&this.content, &other.content]
+            .iter()
             .flat_map(|vec| vec.iter())
             .map(|node| Rc::clone(node))
             .collect();
 
-        Self {
-            content,
-            size,
-        }
+        Self { content, size }
     }
 }

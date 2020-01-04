@@ -1,8 +1,8 @@
-use std::rc::Rc;
+use crate::node::content::Content;
 use crate::node::node::Node;
 use crate::position::resolved_position::ResolvedPosition;
 use crate::slice::slice::Slice;
-use crate::node::content::Content;
+use std::rc::Rc;
 
 pub fn replace(
     from: ResolvedPosition,
@@ -33,14 +33,36 @@ fn replace_outer(
         let content = node.content().clone().replace_child(from_index, inner)?;
 
         Ok(node.with_content(content))
+    } else if slice.content().size() != 0 {
+        let content = replace_two_way(&from, &to, depth)?;
+
+        close(node, content)
+    } else if slice.open_start() != 0
+        && slice.open_end() != 0
+        && from.depth() == depth
+        && to.depth() == depth
+    {
+        let parent = from.parent()?;
+        let content = parent.content();
+        let from_side = content.clone().cut(0, from.parent_offset())?;
+        let to_side = content.clone().cut(to.parent_offset(), content.size())?;
+        let temp = Content::concat(&from_side, &slice.content())?;
+        let result = Content::concat(&Rc::new(temp), &to_side)?;
+
+        close(parent, Rc::new(result))
     } else {
-        Err(format!("123456"))
+        let (start, end) = prepare_slice_for_slice(slice, &from)?;
+
+        close(node, replace_three_way(&from, &start, &end, &to, depth)?)
     }
 }
 
 fn close(node: Rc<Node>, content: Rc<Content>) -> Result<Rc<Node>, String> {
     if !node.node_type().valid_content(&content) {
-        Err(format!("Invalid content for node {}", node.node_type().name()))
+        Err(format!(
+            "Invalid content for node {}",
+            node.node_type().name()
+        ))
     } else {
         Ok(node.with_content(content))
     }
@@ -48,7 +70,11 @@ fn close(node: Rc<Node>, content: Rc<Content>) -> Result<Rc<Node>, String> {
 
 fn check_join(main: &Rc<Node>, sub: &Rc<Node>) -> Result<(), String> {
     if !sub.node_type().compatible_content(main.node_type()) {
-        Err(format!("E44654294 {} {}", sub.node_type().name(), main.node_type().name()))
+        Err(format!(
+            "E44654294 {} {}",
+            sub.node_type().name(),
+            main.node_type().name()
+        ))
     } else {
         Ok(())
     }
@@ -57,7 +83,7 @@ fn check_join(main: &Rc<Node>, sub: &Rc<Node>) -> Result<(), String> {
 fn joinable(
     before: &ResolvedPosition,
     after: &ResolvedPosition,
-    depth: usize
+    depth: usize,
 ) -> Result<Rc<Node>, String> {
     let node_before = before.node(depth)?;
     let node_after = after.node(depth)?;
@@ -140,7 +166,7 @@ fn add_range(
 fn replace_two_way(
     from: &ResolvedPosition,
     to: &ResolvedPosition,
-    depth: usize
+    depth: usize,
 ) -> Result<Rc<Content>, String> {
     let mut content: Vec<Rc<Node>> = vec![];
     let node = from.node(depth)?;
@@ -181,16 +207,19 @@ fn replace_three_way(
         None
     };
 
-    let mut contnet: Vec<Rc<Node>> = vec![];
+    let mut content: Vec<Rc<Node>> = vec![];
     let node = from.node(depth)?;
 
-    add_range(node, None, Some(from), depth, &mut contnet)?;
+    add_range(node, None, Some(from), depth, &mut content)?;
 
     if open_start.is_some() && open_end.is_some() && start.index(depth) == end.index(depth) {
-        check_join(&open_start.unwrap(), &open_end.unwrap())?;
+        let os = open_start.unwrap();
+        let oe = open_end.unwrap();
+
+        check_join(&os, &oe)?;
 
         let res = replace_three_way(from, start, end, to, depth + 1)?;
-        let node = close(open_start.unwrap(), res)?;
+        let node = close(os, res)?;
 
         add_node(node, &mut content);
     } else {
@@ -203,13 +232,13 @@ fn replace_three_way(
 
         let node = start.node(depth)?;
 
-        add_range(node, Some(start), Some(end), depth + 1, &mut contnet)?;
+        add_range(node, Some(start), Some(end), depth + 1, &mut content)?;
 
         if let Some(oe) = open_end {
             let res = replace_two_way(end, to, depth + 1)?;
             let node = close(oe, res)?;
 
-            add_node(node, &mut contnet);
+            add_node(node, &mut content);
         }
     }
 
@@ -217,5 +246,26 @@ fn replace_three_way(
 
     add_range(node, Some(to), None, depth, &mut content)?;
 
-    Ok(Rc::new(Content::from(contnet)))
+    Ok(Rc::new(Content::from(content)))
+}
+
+fn prepare_slice_for_slice(
+    slice: Slice,
+    along: &ResolvedPosition,
+) -> Result<(ResolvedPosition, ResolvedPosition), String> {
+    let extra = along.depth() - slice.open_start();
+    let parent = along.node(extra)?;
+
+    let mut node = parent.with_content(slice.content().clone());
+
+    for depth in (extra - 1)..=0 {
+        node = along
+            .node(depth)?
+            .with_content(Rc::new(Content::from(node)));
+    }
+
+    Ok((
+        ResolvedPosition::resolve(&node, slice.open_start() + extra)?,
+        ResolvedPosition::resolve(&node, node.content().size() - slice.open_end() - extra)?,
+    ))
 }

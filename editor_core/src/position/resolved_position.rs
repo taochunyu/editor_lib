@@ -57,7 +57,7 @@ impl ResolvedPosition {
                 let node = parent.child(index - 1)?;
 
                 Ok(Some(Rc::clone(node)))
-            },
+            }
             _ => {
                 let parent = self.parent()?;
                 let node = parent.child(index)?;
@@ -70,10 +70,13 @@ impl ResolvedPosition {
     pub fn parent(&self) -> Result<Rc<Node>, String> {
         self.node(self.depth)
     }
+    pub fn parent_offset(&self) -> usize {
+        self.parent_offset
+    }
     pub fn text_offset(&self) -> Result<usize, String> {
         match self.path.last() {
             Some(n) => Ok(self.position - n.2),
-            None => Err(format!("ResolvedPosition: path is empty"))
+            None => Err(format!("ResolvedPosition: path is empty")),
         }
     }
 
@@ -118,11 +121,11 @@ impl ResolvedPosition {
 
 #[cfg(test)]
 mod tests {
-    use crate::node::node::Node;
-    use crate::schema::node_type::NodeType;
     use crate::node::content::Content;
-    use std::rc::Rc;
+    use crate::node::node::Node;
     use crate::position::resolved_position::ResolvedPosition;
+    use crate::schema::node_type::NodeType;
+    use std::rc::Rc;
 
     fn mock_text_node(content: &str) -> Node {
         let node_type = NodeType::new(String::from("text"), String::from(""));
@@ -154,14 +157,16 @@ mod tests {
         let paragraph_1 = mock_container_node("paragraph", Content::from(Rc::new(apple)));
         let paragraph_2 = mock_container_node(
             "paragraph",
-            Content::from(vec![Rc::new(hello), Rc::new(image), Rc::new(world)])
+            Content::from(vec![Rc::new(hello), Rc::new(image), Rc::new(world)]),
         );
 
         assert_eq!(paragraph_1.size(), 7);
         assert_eq!(paragraph_2.size(), 13);
 
-
-        mock_container_node("doc", Content::from(vec![Rc::new(paragraph_1), Rc::new(paragraph_2)]))
+        mock_container_node(
+            "doc",
+            Content::from(vec![Rc::new(paragraph_1), Rc::new(paragraph_2)]),
+        )
     }
 
     fn check_resolve_result(base: &Rc<Node>, position: usize, depth: usize, parent_offset: usize) {
@@ -169,7 +174,7 @@ mod tests {
             Ok(resolved) => {
                 assert_eq!(resolved.depth, depth);
                 assert_eq!(resolved.parent_offset, parent_offset)
-            },
+            }
             Err(err) => panic!(err),
         }
     }
