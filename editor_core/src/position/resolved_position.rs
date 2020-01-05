@@ -18,13 +18,13 @@ impl ResolvedPosition {
     pub fn index(&self, depth: usize) -> Result<usize, String> {
         match self.path.get(depth) {
             Some(node) => Ok(node.1),
-            None => Err(format!("{}", depth)),
+            None => Err(format!("E32856441 {}", depth)),
         }
     }
     pub fn node(&self, depth: usize) -> Result<Rc<Node>, String> {
         match self.path.get(depth) {
             Some(node) => Ok(Rc::clone(&node.0)),
-            None => Err(format!("{}", depth)),
+            None => Err(format!("E21889323 {}", depth)),
         }
     }
     pub fn node_after(&self) -> Result<Option<Rc<Node>>, String> {
@@ -121,47 +121,22 @@ impl ResolvedPosition {
 
 #[cfg(test)]
 mod tests {
-    use crate::node::content::Content;
+    use std::rc::Rc;
     use crate::node::node::Node;
     use crate::position::resolved_position::ResolvedPosition;
-    use crate::schema::node_type::NodeType;
-    use std::rc::Rc;
-
-    fn mock_text_node(content: &str) -> Node {
-        let node_type = NodeType::new(String::from("text"), String::from(""));
-        let node_content = Content::Text(String::from(content));
-
-        node_type.create_node(Rc::new(node_content))
-    }
-
-    fn mock_leaf_node(name: &str) -> Node {
-        let node_type = NodeType::new(String::from(name), String::from(""));
-
-        node_type.create_node(Rc::new(Content::None))
-    }
-
-    fn mock_container_node(name: &str, content: Content) -> Node {
-        let node_type = NodeType::new(String::from(name), String::from("123131"));
-
-        node_type.create_node(Rc::new(content))
-    }
+    use crate::node::node::tests::{mock_text_node, mock_leaf_node, mock_container_node};
+    use crate::node::content::Content;
 
     fn mock_data() -> Node {
         let apple = mock_text_node("apple");
         let hello = mock_text_node("hello");
         let world = mock_text_node("world");
         let image = mock_leaf_node("image");
-        assert_eq!(hello.size(), 5);
-        assert_eq!(image.size(), 1);
-
         let paragraph_1 = mock_container_node("paragraph", Content::from(Rc::new(apple)));
         let paragraph_2 = mock_container_node(
             "paragraph",
             Content::from(vec![Rc::new(hello), Rc::new(image), Rc::new(world)]),
         );
-
-        assert_eq!(paragraph_1.size(), 7);
-        assert_eq!(paragraph_2.size(), 13);
 
         mock_container_node(
             "doc",
@@ -182,6 +157,9 @@ mod tests {
     #[test]
     fn it_works() {
         let doc = Rc::new(mock_data());
+        let leaf = Rc::new(mock_leaf_node("image"));
+
+        assert_eq!(ResolvedPosition::resolve(&leaf, 0).is_ok(), true);
 
         assert_eq!(doc.size(), 22);
 

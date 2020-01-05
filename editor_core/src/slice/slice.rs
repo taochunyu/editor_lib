@@ -20,4 +20,12 @@ impl Slice {
     pub fn size(&self) -> usize {
         self.content.size() - self.open_start - self.open_end
     }
+
+    pub fn new() -> Self {
+        Self {
+            open_start: 0,
+            open_end: 0,
+            content: Rc::new(Content::None),
+        }
+    }
 }

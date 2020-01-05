@@ -73,9 +73,63 @@ impl Node {
 }
 
 #[cfg(test)]
-mod tests {
+pub mod tests {
+    use crate::node::node::Node;
+    use crate::schema::node_type::NodeType;
+    use crate::node::content::Content;
+    use std::rc::Rc;
+    use crate::slice::slice::Slice;
+
+    pub fn mock_text_node(content: &str) -> Node {
+        let node_type = NodeType::new(String::from("text"), String::from(""));
+        let node_content = Content::Text(String::from(content));
+
+        node_type.create_node(Rc::new(node_content))
+    }
+
+    pub fn mock_leaf_node(name: &str) -> Node {
+        let node_type = NodeType::new(String::from(name), String::from(""));
+
+        node_type.create_node(Rc::new(Content::None))
+    }
+
+    pub fn mock_container_node(name: &str, content: Content) -> Node {
+        let node_type = NodeType::new(String::from(name), String::from("123131"));
+
+        node_type.create_node(Rc::new(content))
+    }
+
+    fn mock_replace_data_1() -> Node {
+        let hi = mock_text_node("hi");
+        let hello = mock_text_node("hello");
+        let paragraph_1 = mock_container_node("paragraph", Content::from(Rc::new(hi)));
+        let paragraph_2 = mock_container_node(
+            "paragraph",
+            Content::from(Rc::new(hello)),
+        );
+
+        mock_container_node(
+            "doc",
+            Content::from(vec![Rc::new(paragraph_1), Rc::new(paragraph_2)]),
+        )
+    }
+
     #[test]
-    fn it_works() {
+    fn test_replace() {
+        let node = Rc::new(mock_replace_data_1());
+
+        match node.clone().resolve(8) {
+            Err(e) => panic!(e),
+            Ok(rp) => {}
+        };
+
+        match node.replace(6, 8, Slice::new()) {
+            Err(e) => {
+                e;
+            },
+            Ok(n) => {},
+        };
+
         assert_eq!(2 + 2, 4);
     }
 }

@@ -53,15 +53,17 @@ impl Content {
     pub fn find_index(&self, offset: usize, round: bool) -> Result<(usize, usize), String> {
         match self {
             Elements(ref fragment) => fragment.find_index(offset, round),
-            Text(_) => Err(format!("E29380846")),
-            None => Err(format!("E65932723")),
+            _ => match offset {
+                0 => Ok((0, 0)),
+                _ => Err(format!("E29380846 {}", offset)),
+            }
         }
     }
     pub fn get(&self, index: usize) -> Result<&Rc<Node>, String> {
         match self {
             Elements(ref fragment) => fragment.get(index),
-            Text(_) => Err(format!("E76740376")),
-            None => Err(format!("E39854043")),
+            Text(_) => Err(format!("E76740376 {}", index)),
+            None => Err(format!("E39854043 {}", index)),
         }
     }
     pub fn replace_child(self: Rc<Self>, index: usize, node: Rc<Node>) -> Result<Rc<Self>, String> {
