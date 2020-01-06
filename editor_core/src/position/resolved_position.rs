@@ -40,7 +40,7 @@ impl ResolvedPosition {
             if text_offset == 0 {
                 Ok(Some(Rc::clone(node)))
             } else {
-                let n = node.clone().cut(text_offset, node.size())?;
+                let n = Node::cut(node, text_offset, node.size())?;
 
                 Ok(Some(n))
             }
@@ -61,7 +61,7 @@ impl ResolvedPosition {
             _ => {
                 let parent = self.parent()?;
                 let node = parent.child(index)?;
-                let cut = node.clone().cut(0, text_offset)?;
+                let cut = Node::cut(node, 0, text_offset)?;
 
                 Ok(Some(cut))
             }
@@ -82,7 +82,10 @@ impl ResolvedPosition {
 
     pub fn resolve(base: &Rc<Node>, position: usize) -> Result<ResolvedPosition, String> {
         if position > base.content().size() {
-            return Err(format!("Position {} out of range", position));
+            return Err(format!("E63887706 {}", position));
+        }
+        if base.is_text() {
+            return Err(format!("E33093981"))
         }
 
         let mut path: Vec<(Rc<Node>, usize, usize)> = vec![];

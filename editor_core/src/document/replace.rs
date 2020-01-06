@@ -30,9 +30,9 @@ fn replace_outer(
 
     if from_index == to_index && depth < from.depth() - slice.open_start() {
         let inner = replace_outer(from, to, slice, depth + 1)?;
-        let content = node.content().clone().replace_child(from_index, inner)?;
+        let content = Content::replace_child(node.content(), from_index, inner)?;
 
-        Ok(node.with_content(content))
+        Ok(Node::with_content(&node, content))
     } else if slice.content().size() != 0 {
         let content = replace_two_way(&from, &to, depth)?;
 
@@ -44,8 +44,8 @@ fn replace_outer(
     {
         let parent = from.parent()?;
         let content = parent.content();
-        let from_side = content.clone().cut(0, from.parent_offset())?;
-        let to_side = content.clone().cut(to.parent_offset(), content.size())?;
+        let from_side = Content::cut(content, 0, from.parent_offset())?;
+        let to_side = Content::cut(content, to.parent_offset(), content.size())?;
         let temp = Content::concat(&from_side, &slice.content())?;
         let result = Content::concat(&Rc::new(temp), &to_side)?;
 
@@ -64,7 +64,7 @@ fn close(node: Rc<Node>, content: Rc<Content>) -> Result<Rc<Node>, String> {
             node.node_type().name()
         ))
     } else {
-        Ok(node.with_content(content))
+        Ok(Node::with_content(&node, content))
     }
 }
 
@@ -102,7 +102,7 @@ fn add_node(node: Rc<Node>, target: &mut Vec<Rc<Node>>) {
 
                 if let Ok(c) = content {
                     target.split_last();
-                    target.push(node.with_content(Rc::new(c)));
+                    target.push(Node::with_content(&node, Rc::new(c)));
                 }
             }
         }
@@ -232,7 +232,7 @@ fn replace_three_way(
 
         let node = start.node(depth)?;
 
-        add_range(node, Some(start), Some(end), depth + 1, &mut content)?;
+        add_range(node, Some(start), Some(end), depth, &mut content)?;
 
         if let Some(oe) = open_end {
             let res = replace_two_way(end, to, depth + 1)?;
@@ -256,12 +256,10 @@ fn prepare_slice_for_slice(
     let extra = along.depth() - slice.open_start();
     let parent = along.node(extra)?;
 
-    let mut node = parent.with_content(slice.content().clone());
+    let mut node = Node::with_content(&parent, slice.content().clone());
 
     for depth in (extra - 1)..=0 {
-        node = along
-            .node(depth)?
-            .with_content(Rc::new(Content::from(node)));
+        node = Node::with_content(&along.node(depth)?, Rc::new(Content::from(node)));
     }
 
     Ok((

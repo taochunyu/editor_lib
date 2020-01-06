@@ -54,7 +54,7 @@ impl Fragment {
                     } else {
                         to - start
                     };
-                    let result = node.clone().cut(cut_from, cut_to)?;
+                    let result = Node::cut(node, cut_from, cut_to)?;
 
                     Rc::clone(&result)
                 } else {
@@ -122,6 +122,14 @@ impl Fragment {
     }
     pub fn size(&self) -> usize {
         self.size
+    }
+    pub fn to_string(&self) -> String {
+        let content = self.content.iter()
+            .map(|node| node.to_string())
+            .collect::<Vec<String>>()
+            .join(", ");
+
+        format!("[{}]", content)
     }
 
     pub fn concat(this: &Self, other: &Self) -> Self {
