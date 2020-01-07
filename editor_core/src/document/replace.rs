@@ -101,9 +101,11 @@ fn add_node(node: Rc<Node>, target: &mut Vec<Rc<Node>>) {
                 let content = Content::concat(&last.content(), &node.content());
 
                 if let Ok(c) = content {
-                    target.split_last();
+                    target.pop();
                     target.push(Node::with_content(&node, Rc::new(c)));
                 }
+            } else {
+                target.push(node);
             }
         }
     }
@@ -121,7 +123,7 @@ fn add_range(
         Some(s) => s.index(depth)?,
     };
     let end_index = match end {
-        None => 0,
+        None => node.content().count(),
         Some(e) => e.index(depth)?,
     };
 
