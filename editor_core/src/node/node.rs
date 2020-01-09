@@ -65,28 +65,4 @@ impl Node {
 
 #[cfg(test)]
 pub mod tests {
-    use std::rc::Rc;
-    use crate::node::node::Node;
-    use crate::schema::node_type::NodeType;
-    use crate::node::content::Content;
-    use crate::slice::slice::Slice;
-
-    pub fn mock_text_node(content: &str) -> Node {
-        let node_type = NodeType::new(String::from("text"), String::from(""));
-        let node_content = Content::Text(String::from(content));
-
-        node_type.create_node(Rc::new(node_content))
-    }
-
-    pub fn mock_leaf_node(name: &str) -> Node {
-        let node_type = NodeType::new(String::from(name), String::from(""));
-
-        node_type.create_node(Rc::new(Content::None))
-    }
-
-    pub fn mock_container_node(name: &str, content: Content) -> Node {
-        let node_type = NodeType::new(String::from(name), String::from("123131"));
-
-        node_type.create_node(Rc::new(content))
-    }
 }
