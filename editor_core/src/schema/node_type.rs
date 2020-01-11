@@ -20,7 +20,7 @@ impl NodeType {
     pub fn compatible_content(&self, node_type: &Rc<NodeType>) -> bool {
         true
     }
-    pub fn create_node(self: Rc<Self>, content: Rc<Content>) -> Node {
+    pub fn create(self: Rc<Self>, content: Rc<Content>) -> Node {
         Node::new(Rc::clone(&self), Rc::clone(&content))
     }
     pub fn is_text(&self) -> bool {

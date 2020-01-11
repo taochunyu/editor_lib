@@ -7,6 +7,7 @@ mod schema;
 mod selection;
 mod slice;
 mod state;
+mod template;
 mod view;
 
 #[cfg(test)]
