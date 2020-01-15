@@ -1,4 +1,6 @@
 [workspace]
 members=[
-    "editor_core",
+    "editor_bootstrap",
+    "editor_model",
+    "editor_view",
 ]

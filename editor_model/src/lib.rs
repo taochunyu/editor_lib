@@ -6,8 +6,6 @@ mod position;
 mod schema;
 mod selection;
 mod slice;
-mod state;
-mod view;
 
 #[cfg(test)]
 mod tests {
