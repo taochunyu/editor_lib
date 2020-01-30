@@ -1,10 +1,8 @@
-mod document;
-mod input;
+pub mod document;
 mod mark;
-mod node;
+pub mod node;
 mod position;
 mod schema;
-mod selection;
 mod slice;
 
 #[cfg(test)]

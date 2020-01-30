@@ -29,31 +29,75 @@
       <sourceFolder url="file://$MODULE_DIR$/editor_core_1/tests" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/editor_core_1/benches" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/editor_core/src" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/editor_bootstrap/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/app/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/editor_bootstrap/examples" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/editor_bootstrap/tests" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/editor_bootstrap/benches" isTestSource="true" />
-      <sourceFolder url="file://$MODULE_DIR$/editor_model/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/model/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/editor_model/examples" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/editor_model/tests" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/editor_model/benches" isTestSource="true" />
-      <sourceFolder url="file://$MODULE_DIR$/editor_view/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/view/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/editor_view/examples" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/editor_view/tests" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/editor_view/benches" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/editor_render/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/editor_render/examples" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/editor_render/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/editor_render/benches" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/nodes/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/editor_nodes/examples" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/editor_nodes/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/editor_nodes/benches" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/ipc/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/editor_ipc/examples" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/editor_ipc/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/editor_ipc/benches" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/bootstrap/examples" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/bootstrap/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/bootstrap/benches" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/yew_base/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/yew_base/examples" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/yew_base/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/yew_base/benches" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/model/examples" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/model/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/model/benches" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/view/examples" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/view/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/view/benches" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/nodes/examples" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/nodes/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/nodes/benches" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/ipc/examples" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/ipc/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/ipc/benches" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/app/examples" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/app/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/app/benches" isTestSource="true" />
       <excludeFolder url="file://$MODULE_DIR$/../editor/.tmp" />
       <excludeFolder url="file://$MODULE_DIR$/../editor/editor_core/target" />
       <excludeFolder url="file://$MODULE_DIR$/../editor/editor_wasm/target" />
       <excludeFolder url="file://$MODULE_DIR$/../editor/editor_web/target" />
       <excludeFolder url="file://$MODULE_DIR$/../editor/temp" />
       <excludeFolder url="file://$MODULE_DIR$/../editor/tmp" />
+      <excludeFolder url="file://$MODULE_DIR$/app/target" />
+      <excludeFolder url="file://$MODULE_DIR$/bootstrap/target" />
       <excludeFolder url="file://$MODULE_DIR$/editor_bootstrap/target" />
       <excludeFolder url="file://$MODULE_DIR$/editor_core/target" />
       <excludeFolder url="file://$MODULE_DIR$/editor_core_1/target" />
+      <excludeFolder url="file://$MODULE_DIR$/editor_ipc/target" />
       <excludeFolder url="file://$MODULE_DIR$/editor_model/target" />
+      <excludeFolder url="file://$MODULE_DIR$/editor_nodes/target" />
+      <excludeFolder url="file://$MODULE_DIR$/editor_render/target" />
       <excludeFolder url="file://$MODULE_DIR$/editor_view/target" />
       <excludeFolder url="file://$MODULE_DIR$/editor_wasm/target" />
+      <excludeFolder url="file://$MODULE_DIR$/ipc/target" />
+      <excludeFolder url="file://$MODULE_DIR$/model/target" />
+      <excludeFolder url="file://$MODULE_DIR$/nodes/target" />
       <excludeFolder url="file://$MODULE_DIR$/target" />
+      <excludeFolder url="file://$MODULE_DIR$/view/target" />
+      <excludeFolder url="file://$MODULE_DIR$/yew_base/target" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />

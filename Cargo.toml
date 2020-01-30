@@ -1,6 +1,7 @@
 [workspace]
 members=[
-    "editor_bootstrap",
-    "editor_model",
-    "editor_view",
+    "app",
+    "model",
+    "nodes",
+    "view",
 ]

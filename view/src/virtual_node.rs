@@ -1,7 +1,6 @@
 use std::collections::HashMap;
 use std::rc::Rc;
 
-
 pub struct VirtualNode {
     pub key: String,
     pub tag: String,
@@ -17,13 +16,13 @@ pub enum Patch {
 }
 
 impl VirtualNode {
-    pub fn create(key: String, tag: String, props: String, children: Vec<Rc<VirtualNode>>) -> Self {
+    pub fn create(key: &str, tag: &str, props: &str, children: Vec<Rc<VirtualNode>>) -> Self {
         let count = children.iter().fold(0, |acc, x| acc + x.count);
 
         Self {
-            key,
-            tag,
-            props,
+            key: String::from(key),
+            tag: String::from(tag),
+            props: String::from(props),
             children,
             count,
         }
@@ -154,8 +153,8 @@ fn list_diff(old_list: &Vec<Rc<VirtualNode>>, new_list: &Vec<Rc<VirtualNode>>) -
 
 #[cfg(test)]
 mod tests {
-    use crate::view::virtual_node::{list_diff, VirtualNode};
     use std::rc::Rc;
+    use crate::virtual_node::{VirtualNode, list_diff};
 
     fn create_10_virtual_nodes() -> Vec<Rc<VirtualNode>> {
         let iter: Vec<usize> = (0..9).collect();
@@ -163,9 +162,9 @@ mod tests {
         iter.iter()
             .map(|&x| {
                 Rc::new(VirtualNode::create(
-                    format!("{}", x),
-                    String::from("p"),
-                    format!("{}", x),
+                    format!("{}", x).as_str(),
+                    String::from("p").as_str(),
+                    format!("{}", x).as_str(),
                     vec![],
                 ))
             })

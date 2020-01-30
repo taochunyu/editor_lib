@@ -25,7 +25,7 @@ impl Slice {
         Self {
             open_start: 0,
             open_end: 0,
-            content: Rc::new(Content::None),
+            content: Rc::new(Content::Nothing),
         }
     }
 }

@@ -1,5 +1,5 @@
 [package]
-name = "editor_model"
+name = "nodes"
 version = "0.1.0"
 authors = ["taochunyu <tao_chunyu@foxmail.com>"]
 edition = "2018"

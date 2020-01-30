@@ -1,4 +1,5 @@
-mod instructions;
+mod input;
+mod component;
 mod view;
 mod virtual_node;
 

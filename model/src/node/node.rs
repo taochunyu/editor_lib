@@ -31,7 +31,7 @@ impl Node {
     }
     pub fn to_string(&self) -> String {
         match self.content.deref() {
-            Content::None => format!("({}, ,)", self.node_type.name()),
+            Content::Nothing => format!("({}, ,)", self.node_type.name()),
             _ => format!("({}, ,{})", self.node_type.name(), self.content.to_string()),
         }
     }

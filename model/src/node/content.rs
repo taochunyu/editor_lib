@@ -5,7 +5,7 @@ use std::rc::Rc;
 pub enum Content {
     Elements(Fragment),
     Text(String),
-    None,
+    Nothing,
 }
 
 use Content::*;
@@ -34,7 +34,7 @@ impl Content {
         match self {
             Elements(ref fragment) => fragment.content().len(),
             Text(_) => 1,
-            None => 0,
+            Nothing => 0,
         }
     }
     pub fn find_index(&self, offset: usize, round: bool) -> Result<(usize, usize), String> {
@@ -50,21 +50,21 @@ impl Content {
         match self {
             Elements(ref fragment) => fragment.get(index),
             Text(_) => Err(format!("E76740376 {}", index)),
-            None => Err(format!("E39854043 {}", index)),
+            Nothing => Err(format!("E39854043 {}", index)),
         }
     }
     pub fn size(&self) -> usize {
         match self {
             Elements(ref fragment) => fragment.size(),
             Text(ref text) => text.len(),
-            None => 0,
+            Nothing => 0,
         }
     }
     pub fn to_string(&self) -> String {
         match self {
             Elements(ref fragment) => fragment.to_string(),
             Text(ref text) => format!("\"{}\"", text),
-            None => String::new(),
+            Nothing => String::new(),
         }
     }
 
@@ -79,14 +79,14 @@ impl Content {
                 Some(slice) => Ok(Rc::new(Text(String::from(slice)))),
                 Option::None => Err(format!("E29493677 {} {}", from, to)),
             },
-            None => Err(format!("E55556133")),
+            Nothing => Err(format!("E55556133")),
         }
     }
     pub fn concat(this: &Rc<Self>, other: &Rc<Self>) -> Result<Self, String> {
         match (this.as_ref(), other.as_ref()) {
             (Elements(ref a), Elements(ref b)) => Ok(Elements(Fragment::concat(a, b))),
             (Text(ref a), Text(ref b)) => Ok(Text(format!("{}{}", a, b))),
-            (None, None) => Ok(None),
+            (Nothing, Nothing) => Ok(Nothing),
             _ => Err(format!("E75019594")),
         }
     }
@@ -102,7 +102,7 @@ impl Content {
                 }
             }
             Text(_) => Err(format!("E17488085")),
-            None => Err(format!("E96098641")),
+            Nothing => Err(format!("E96098641")),
         }
     }
 }
