@@ -28,4 +28,12 @@ impl Slice {
             content: Rc::new(Content::Nothing),
         }
     }
+
+    pub fn text(text: &str) -> Self {
+        Self {
+            open_start: 0,
+            open_end: 0,
+            content: Rc::new(Content::Text(String::from(text))),
+        }
+    }
 }

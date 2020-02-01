@@ -3,7 +3,7 @@ mod mark;
 pub mod node;
 mod position;
 mod schema;
-mod slice;
+pub mod slice;
 
 #[cfg(test)]
 mod tests {

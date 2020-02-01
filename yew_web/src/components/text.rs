@@ -1,6 +1,4 @@
 use yew::prelude::*;
-use yew::virtual_dom::vnode::VNode;
-use yew::virtual_dom::VText;
 
 #[derive(Clone, Properties)]
 pub struct Props {
@@ -25,7 +23,15 @@ impl Component for Text {
         true
     }
 
+    fn change(&mut self, props: Self::Properties) -> ShouldRender {
+        self.props = props;
+
+        true
+    }
+
     fn view(&self) -> Html {
-        VNode::VText(VText::new(self.props.value.clone() ))
+        html! {
+            { self.props.value.as_str() }
+        }
     }
 }

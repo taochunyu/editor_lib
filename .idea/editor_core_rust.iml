@@ -29,7 +29,7 @@
       <sourceFolder url="file://$MODULE_DIR$/editor_core_1/tests" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/editor_core_1/benches" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/editor_core/src" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/app/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/yew_web/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/editor_bootstrap/examples" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/editor_bootstrap/tests" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/editor_bootstrap/benches" isTestSource="true" />
@@ -75,6 +75,9 @@
       <sourceFolder url="file://$MODULE_DIR$/app/examples" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/app/tests" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/app/benches" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/yew_web/examples" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/yew_web/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/yew_web/benches" isTestSource="true" />
       <excludeFolder url="file://$MODULE_DIR$/../editor/.tmp" />
       <excludeFolder url="file://$MODULE_DIR$/../editor/editor_core/target" />
       <excludeFolder url="file://$MODULE_DIR$/../editor/editor_wasm/target" />
@@ -98,6 +101,7 @@
       <excludeFolder url="file://$MODULE_DIR$/target" />
       <excludeFolder url="file://$MODULE_DIR$/view/target" />
       <excludeFolder url="file://$MODULE_DIR$/yew_base/target" />
+      <excludeFolder url="file://$MODULE_DIR$/yew_web/target" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />

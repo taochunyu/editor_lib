@@ -1,5 +1,5 @@
 [package]
-name = "app"
+name = "yew_web"
 version = "0.1.0"
 authors = ["taochunyu <tao_chunyu@foxmail.com>"]
 edition = "2018"
@@ -9,3 +9,4 @@ edition = "2018"
 [dependencies]
 yew = "0.11.0"
 model = { path = "../model" }
+stdweb = "0.4.20"

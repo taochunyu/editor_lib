@@ -11,14 +11,6 @@ version = "0.12.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
-name = "app"
-version = "0.1.0"
-dependencies = [
- "model 0.1.0",
- "yew 0.11.0 (registry+https://github.com/rust-lang/crates.io-index)",
-]
-
-[[package]]
 name = "autocfg"
 version = "0.1.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -526,6 +518,15 @@ dependencies = [
  "proc-macro2 1.0.8 (registry+https://github.com/rust-lang/crates.io-index)",
  "quote 1.0.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "syn 1.0.14 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
+name = "yew_web"
+version = "0.1.0"
+dependencies = [
+ "model 0.1.0",
+ "stdweb 0.4.20 (registry+https://github.com/rust-lang/crates.io-index)",
+ "yew 0.11.0 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [metadata]

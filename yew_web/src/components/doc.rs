@@ -1,5 +1,4 @@
 use yew::prelude::*;
-use yew::html;
 use crate::components::text::Text;
 
 #[derive(Clone, Properties)]
@@ -7,18 +6,18 @@ pub struct Props {
     children: Children,
 }
 
-pub struct Paragraph {
-   props: Props,
+pub struct Doc {
+    props: Props,
 }
 
 pub enum Msg {}
 
-impl Component for Paragraph {
+impl Component for Doc {
     type Message = Msg;
     type Properties = Props;
 
     fn create(props: Self::Properties, _: ComponentLink<Self>) -> Self {
-        Paragraph {
+        Doc {
             props
         }
     }
@@ -27,11 +26,17 @@ impl Component for Paragraph {
         true
     }
 
+    fn change(&mut self, props: Self::Properties) -> ShouldRender {
+        self.props = props;
+
+        true
+    }
+
     fn view(&self) -> Html {
         html! {
-            <p class="vf-paragraph">
+            <>
                 { self.props.children.render() }
-            </p>
+            </>
         }
     }
 }

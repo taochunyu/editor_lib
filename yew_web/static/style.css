@@ -13,3 +13,8 @@ body {
     box-shadow: 0 1px 3px rgba(26,26,26,.1);
     padding: 30px;
 }
+
+.vf-input {
+    position: fixed;
+    z-index: -1;
+}

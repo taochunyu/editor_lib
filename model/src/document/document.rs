@@ -24,8 +24,8 @@ impl Document {
     }
 
     pub fn new() -> Rc<Self> {
-        let doc_type = NodeType::new(String::from("doc"), String::from(""));
-        let paragraph_type = NodeType::new(String::from("paragraph"), String::from(""));
+        let doc_type = NodeType::new(String::from("doc"), String::from("1"));
+        let paragraph_type = NodeType::new(String::from("paragraph"), String::from("1"));
         let text_type = NodeType::new(String::from("text"), String::from(""));
 
         let text_1 = Rc::new(text_type.clone().create(Rc::new(Content::from(String::from("hello")))));
