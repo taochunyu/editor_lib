@@ -1,5 +1,7 @@
 use crate::node::node::Node;
 use std::rc::Rc;
+use crate::node::content::Content;
+use std::ops::Deref;
 
 pub struct Fragment {
     content: Vec<Rc<Node>>,
@@ -26,6 +28,15 @@ impl From<Vec<Rc<Node>>> for Fragment {
         }
 
         Fragment { content, size }
+    }
+}
+
+impl Clone for Fragment {
+    fn clone(&self) -> Self {
+        Self {
+            content: self.content.iter().map(|n| n.clone()).collect(),
+            size: self.size,
+        }
     }
 }
 
@@ -132,14 +143,36 @@ impl Fragment {
         format!("[{}]", content)
     }
 
-    pub fn concat(this: &Self, other: &Self) -> Self {
-        let size = this.size + other.size;
-        let content: Vec<Rc<Node>> = [&this.content, &other.content]
-            .iter()
-            .flat_map(|vec| vec.iter())
-            .map(|node| Rc::clone(node))
+    fn append(this: &Self, node: Rc<Node>) -> Self {
+        let size = this.size + node.size();
+        let mut content: Vec<Rc<Node>> = this.content.iter()
+            .map(|n| n.clone())
             .collect();
 
-        Self { content, size }
+        if let Some(last) = content.last() {
+            if last.is_text() && last.same_markup(&node) {
+                let text = Content::concat(&last.content(), &node.content());
+
+                if let Ok(value) = text {
+                    content.pop();
+                    content.push(Node::with_content(&node, Rc::new(value)));
+                }
+            }
+        } else {
+            content.push(node.clone());
+        }
+
+        Self {
+            content,
+            size,
+        }
+    }
+
+    pub fn concat(this: &Self, other: &Self) -> Self {
+        other.content.iter()
+            .fold(
+                this.clone(),
+                |acc, n| Self::append(&acc, n.clone())
+            )
     }
 }

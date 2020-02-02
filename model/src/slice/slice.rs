@@ -1,5 +1,6 @@
 use crate::node::content::Content;
 use std::rc::Rc;
+use crate::schema::node_type::NodeType;
 
 pub struct Slice {
     open_start: usize,
@@ -30,10 +31,13 @@ impl Slice {
     }
 
     pub fn text(text: &str) -> Self {
+        let text_type = NodeType::new(String::from("text"), String::from(""));
+        let text = Rc::new(text_type.clone().create(Rc::new(Content::from(String::from(text)))));
+
         Self {
             open_start: 0,
             open_end: 0,
-            content: Rc::new(Content::Text(String::from(text))),
+            content: Rc::new(Content::from(text)),
         }
     }
 }

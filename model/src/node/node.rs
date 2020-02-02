@@ -24,7 +24,7 @@ impl Node {
         &self.node_type
     }
     pub fn same_markup(&self, other: &Rc<Node>) -> bool {
-        Rc::ptr_eq(self.node_type(), other.node_type())
+        self.node_type().name() == other.node_type().name()
     }
     pub fn size(&self) -> usize {
         self.content.size() + self.node_type.border_size()

@@ -3,6 +3,7 @@ use crate::node::node::Node;
 use crate::position::resolved_position::ResolvedPosition;
 use crate::slice::slice::Slice;
 use std::rc::Rc;
+use std::ops::Deref;
 
 pub fn replace(
     from: ResolvedPosition,
@@ -33,12 +34,12 @@ fn replace_outer(
         let content = Content::replace_child(node.content(), from_index, inner)?;
 
         Ok(Node::with_content(&node, content))
-    } else if slice.content().size() != 0 {
+    } else if slice.content().size() == 0 {
         let content = replace_two_way(&from, &to, depth)?;
 
         close(node, content)
-    } else if slice.open_start() != 0
-        && slice.open_end() != 0
+    } else if slice.open_start() == 0
+        && slice.open_end() == 0
         && from.depth() == depth
         && to.depth() == depth
     {

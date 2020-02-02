@@ -9,7 +9,7 @@ body {
 .vf-editor {
     background: #fff;
     width: 900px;
-    height: calc(100vh - 100px);
+    min-height: calc(100vh - 100px);
     box-shadow: 0 1px 3px rgba(26,26,26,.1);
     padding: 30px;
 }

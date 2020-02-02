@@ -14,6 +14,7 @@ use model::slice::slice::Slice;
 use stdweb::web::html_element::InputElement;
 use stdweb::traits::IHtmlElement;
 use yew::services::ConsoleService;
+use std::time::SystemTime;
 
 pub struct Editor {
     doc: Rc<Document>,
@@ -51,9 +52,11 @@ impl Component for Editor {
 
         match msg {
             Msg::Keydown => {
+                console.time();
+
                 self.doc = Rc::new(self.doc.replace(3, 3, Slice::text("2")).unwrap());
 
-                console.log(self.doc.root().to_string().as_str());
+                console.time_end();
             },
             Msg::Click => {
                 if let Some(input) = self.input_ref.try_into::<InputElement>() {
