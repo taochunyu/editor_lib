@@ -81,8 +81,17 @@
       <sourceFolder url="file://$MODULE_DIR$/editor/examples" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/editor/tests" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/editor/benches" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/server/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/server/examples" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/server/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/server/benches" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/client/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/client/examples" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/client/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/client/benches" isTestSource="true" />
       <excludeFolder url="file://$MODULE_DIR$/app/target" />
       <excludeFolder url="file://$MODULE_DIR$/bootstrap/target" />
+      <excludeFolder url="file://$MODULE_DIR$/client/target" />
       <excludeFolder url="file://$MODULE_DIR$/editor/target" />
       <excludeFolder url="file://$MODULE_DIR$/editor_bootstrap/target" />
       <excludeFolder url="file://$MODULE_DIR$/editor_core/target" />
@@ -96,6 +105,7 @@
       <excludeFolder url="file://$MODULE_DIR$/ipc/target" />
       <excludeFolder url="file://$MODULE_DIR$/model/target" />
       <excludeFolder url="file://$MODULE_DIR$/nodes/target" />
+      <excludeFolder url="file://$MODULE_DIR$/server/target" />
       <excludeFolder url="file://$MODULE_DIR$/target" />
       <excludeFolder url="file://$MODULE_DIR$/view/target" />
       <excludeFolder url="file://$MODULE_DIR$/yew_base/target" />
