@@ -3,4 +3,5 @@ members=[
     "client",
     "editor",
     "server",
+    "yew_web"
 ]
