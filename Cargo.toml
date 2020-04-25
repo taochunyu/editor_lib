@@ -1,7 +1,5 @@
 [workspace]
 members=[
-    "client",
-    "editor",
-    "server",
-    "yew_web"
+    "editor_core",
+    "platform/web"
 ]

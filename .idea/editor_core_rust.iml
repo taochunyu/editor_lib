@@ -33,7 +33,6 @@
       <sourceFolder url="file://$MODULE_DIR$/editor_bootstrap/examples" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/editor_bootstrap/tests" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/editor_bootstrap/benches" isTestSource="true" />
-      <sourceFolder url="file://$MODULE_DIR$/editor/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/editor_model/examples" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/editor_model/tests" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/editor_model/benches" isTestSource="true" />
@@ -89,6 +88,13 @@
       <sourceFolder url="file://$MODULE_DIR$/client/examples" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/client/tests" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/client/benches" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/platform/web/src" isTestSource="false" />
+      <excludeFolder url="file://$MODULE_DIR$/../editor/.tmp" />
+      <excludeFolder url="file://$MODULE_DIR$/../editor/editor_core/target" />
+      <excludeFolder url="file://$MODULE_DIR$/../editor/editor_wasm/target" />
+      <excludeFolder url="file://$MODULE_DIR$/../editor/editor_web/target" />
+      <excludeFolder url="file://$MODULE_DIR$/../editor/temp" />
+      <excludeFolder url="file://$MODULE_DIR$/../editor/tmp" />
       <excludeFolder url="file://$MODULE_DIR$/app/target" />
       <excludeFolder url="file://$MODULE_DIR$/bootstrap/target" />
       <excludeFolder url="file://$MODULE_DIR$/client/target" />
@@ -110,12 +116,6 @@
       <excludeFolder url="file://$MODULE_DIR$/view/target" />
       <excludeFolder url="file://$MODULE_DIR$/yew_base/target" />
       <excludeFolder url="file://$MODULE_DIR$/yew_web/target" />
-      <excludeFolder url="file://$MODULE_DIR$/../editor/.tmp" />
-      <excludeFolder url="file://$MODULE_DIR$/../editor/editor_core/target" />
-      <excludeFolder url="file://$MODULE_DIR$/../editor/editor_wasm/target" />
-      <excludeFolder url="file://$MODULE_DIR$/../editor/editor_web/target" />
-      <excludeFolder url="file://$MODULE_DIR$/../editor/temp" />
-      <excludeFolder url="file://$MODULE_DIR$/../editor/tmp" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />

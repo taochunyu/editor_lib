@@ -1,5 +1,4 @@
 pub mod document;
-mod mark;
 pub mod node;
 mod position;
 mod schema;

@@ -6,15 +6,25 @@ body {
     background: rgb(246, 246, 246);
 }
 
-.vf-editor {
+.editor {
+    position: relative;
     background: #fff;
     width: 900px;
     min-height: calc(100vh - 100px);
-    box-shadow: 0 1px 3px rgba(26,26,26,.1);
-    padding: 30px;
+    box-shadow: 0 1px 3px rgba(26, 26, 26, .1);
+    padding: 10px 30px;
+    letter-spacing: 1px;
 }
 
-.vf-input {
+.cursor {
+    position: absolute;
+    top: -9999px;
+    width: 2px;
+    height: 15px;
+    background: red;
+}
+
+.input {
     position: fixed;
     z-index: -1;
 }
