@@ -16,6 +16,10 @@ body {
     letter-spacing: 1px;
 }
 
+.editor p {
+    word-break: break-word;
+}
+
 .cursor {
     position: absolute;
     top: -9999px;

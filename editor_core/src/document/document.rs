@@ -37,7 +37,7 @@ impl Document {
         let mut content: Vec<Rc<Node>> = vec![paragraph_1, paragraph_2];
 
         for index in 0..10000 {
-            let text = Rc::new(text_type.clone().create(Rc::new(Content::from(String::from("1234567890")))));
+            let text = Rc::new(text_type.clone().create(Rc::new(Content::from(String::from("1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890")))));
             let paragraph = Rc::new(paragraph_type.clone().create(Rc::new(Content::from(text))));
 
             content.push(paragraph);
