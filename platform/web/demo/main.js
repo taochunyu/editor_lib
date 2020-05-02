@@ -20,6 +20,8 @@ async function run() {
     const render_cursor = render_selection($editor, $cursor);
     const doc = new Doc();
 
+    window.doc = doc;
+
     let selection = 1;
 
     // first render
@@ -49,7 +51,7 @@ async function run() {
 
         update_editor($editor);
         render_editor($editor, root_node);
-        selection += 1;
+        selection = 1;
         render_cursor(selection);
     }
 
