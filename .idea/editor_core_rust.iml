@@ -91,6 +91,7 @@
       <sourceFolder url="file://$MODULE_DIR$/platform/web/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/editor/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/ui/examples" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/ui/examples/web/src" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/../editor/.tmp" />
       <excludeFolder url="file://$MODULE_DIR$/../editor/editor_core/target" />
       <excludeFolder url="file://$MODULE_DIR$/../editor/editor_wasm/target" />
