@@ -9,5 +9,5 @@ crate-type = ["cdylib"]
 
 [dependencies]
 wasm-bindgen = "0.2.60"
-editor_core = { path = "../../editor_core" }
+editor = { path = "../../editor" }
 js-sys = "0.3.37"

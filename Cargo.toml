@@ -1,5 +1,6 @@
 [workspace]
 members=[
-    "editor_core",
-    "platform/web"
+    "editor",
+    "platform/web",
+    "ui",
 ]

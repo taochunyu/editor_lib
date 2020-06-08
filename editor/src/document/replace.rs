@@ -61,7 +61,7 @@ fn replace_outer(
 fn close(node: Rc<Node>, content: Rc<Content>) -> Result<Rc<Node>, String> {
     if !node.node_type().valid_content(&content) {
         Err(format!(
-            "Invalid content for node {}",
+            "Invalid content for element {}",
             node.node_type().name()
         ))
     } else {
