@@ -4,12 +4,14 @@ use ui::ui::UI;
 use ui::element::rectangular::{RectangularProps, Rectangular};
 use std::rc::Rc;
 
-#[wasm_bindgen(module = "../demo/greet")]
+#[wasm_bindgen]
 extern "C" {
-    fn greet(instructions: Array);
+    #[wasm_bindgen(js_namespace = stream)]
+    fn write(s: Array);
 }
 
-#[wasm_bindgen]
+
+    #[wasm_bindgen]
 pub struct InstructionStream {
     ui: UI,
 }
@@ -30,7 +32,7 @@ impl InstructionStream {
         let rect_props_2 = RectangularProps { width: 200, height: 100 };
         let rect_2 = self.ui.create_element::<Rectangular>(rect_props_2)?;
 
-        self.ui.root_element.borrow_mut().append_child(Rc::clone(&rect_1));
+        self.ui.root_element.borrow_mut().append_child(Rc::clone(&rect_1))?;
 
         rect_1.borrow_mut().append_child(rect_2)?;
 
@@ -38,8 +40,9 @@ impl InstructionStream {
     }
 
     pub fn trigger(&mut self) {
-        let ins = self.t().unwrap().iter().map(JsValue::from).collect();
+        let ins: Array = self.t().unwrap().iter().map(JsValue::from).collect();
 
-        greet(ins);
+        write(ins);
     }
 }
+

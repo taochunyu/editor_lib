@@ -1,15 +1,17 @@
-pub mod append;
-
-use crate::instruction::append::Append;
+type Description = Vec<String>;
 
 pub enum Instruction {
-    Append(Append),
+    // [id, parent id, type, ...props]
+    Append(Description),
+    // [id, type, index, props, ...]
+    Update(Description),
 }
 
 impl Instruction {
     pub fn serialize(&self) -> String {
         match self {
-            Instruction::Append(append) => format!("[\"append\", {}]", append.serialize()),
+            Instruction::Append(desc) => format!("[\"append\", {:?}]", desc),
+            Instruction::Update(desc) => format!("[\"update\", {:?}]", desc),
         }
     }
 }

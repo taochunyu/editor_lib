@@ -5,7 +5,7 @@ use editor::node::content::Content;
 use js_sys::Array;
 use std::rc::Rc;
 use std::ops::Deref;
-use editor_core::slice::slice::Slice;
+use editor::slice::slice::Slice;
 
 #[wasm_bindgen]
 #[derive(Clone)]

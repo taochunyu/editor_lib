@@ -3,7 +3,6 @@ use crate::element::text::Text;
 use std::rc::{Weak, Rc};
 use std::cell::RefCell;
 use crate::instruction::Instruction;
-use crate::instruction::append::Append;
 use crate::element::root::Root;
 
 pub mod rectangular;
@@ -105,7 +104,7 @@ impl Element {
         if let Some(will_send) = self.will_send_instructions.upgrade() {
             let mut instructions: Vec<Instruction> = Self::elements(&element).iter()
                 .map(|elm| elm.borrow().to_instruction())
-                .map(|description| Instruction::Append(Append { description }))
+                .map(|description| Instruction::Append(description))
                 .collect();
 
             will_send.borrow_mut().append(&mut instructions);
