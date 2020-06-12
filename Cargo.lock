@@ -13,6 +13,9 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 [[package]]
 name = "editor"
 version = "0.1.0"
+dependencies = [
+ "ui 0.1.0",
+]
 
 [[package]]
 name = "js-sys"

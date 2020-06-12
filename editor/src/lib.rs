@@ -1,8 +1,10 @@
-pub mod document;
-pub mod node;
+pub mod doc;
+pub mod n;
+mod node;
 mod position;
 mod schema;
 pub mod slice;
+pub mod view;
 
 #[cfg(test)]
 mod tests {

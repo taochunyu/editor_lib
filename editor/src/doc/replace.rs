@@ -1,5 +1,5 @@
-use crate::node::content::Content;
-use crate::node::node::Node;
+use crate::n::content::Content;
+use crate::n::node::Node;
 use crate::position::resolved_position::ResolvedPosition;
 use crate::slice::slice::Slice;
 use std::rc::Rc;

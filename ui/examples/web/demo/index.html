@@ -20,31 +20,13 @@
     <div id="root"></div>
     <script type="module">
         import init, { InstructionStream } from "../pkg/ui_web.js";
+        import { handleInstruction } from "./rm.js";
 
-        const $root = document.querySelector("#root");
-        const map = {
-            "0": $root,
-        };
-
-        const handle = instruction => {
-            const parsed = JSON.parse(instruction);
-            const [type, payload] = parsed;
-
-            if (type === "append") {
-                const [id, parentId, _, width, height] = payload;
-                const $element = document.createElement("div");
-                const $parent = map[parentId];
-
-                $element.id = id;
-                map[id] = $element;
-                $parent.appendChild($element);
-            }
-        }
 
         window.stream = {
             write: (ins) => {
                 console.log(ins);
-                ins.forEach(handle)
+                ins.forEach(handleInstruction)
             }
         }
 

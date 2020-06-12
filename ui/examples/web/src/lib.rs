@@ -3,6 +3,7 @@ use js_sys::*;
 use ui::ui::UI;
 use ui::element::rectangular::{RectangularProps, Rectangular};
 use std::rc::Rc;
+use ui::element::text::{TextProps, Text};
 
 #[wasm_bindgen]
 extern "C" {
@@ -26,15 +27,15 @@ impl InstructionStream {
     }
 
     fn t(&mut self) -> Result<Vec<String>, String>{
-        let rect_props_1 = RectangularProps { width: 200, height: 100 };
-        let rect_1 = self.ui.create_element::<Rectangular>(rect_props_1)?;
+        let rect_props = RectangularProps { width: 200, height: 100 };
+        let rect = self.ui.create_element::<Rectangular>(rect_props)?;
 
-        let rect_props_2 = RectangularProps { width: 200, height: 100 };
-        let rect_2 = self.ui.create_element::<Rectangular>(rect_props_2)?;
+        let text_props = TextProps { text: String::from("hello world") };
+        let text = self.ui.create_element::<Text>(text_props)?;
 
-        self.ui.root_element.borrow_mut().append_child(Rc::clone(&rect_1))?;
+        self.ui.root_element.borrow_mut().append_child(Rc::clone(&rect))?;
 
-        rect_1.borrow_mut().append_child(rect_2)?;
+        rect.borrow_mut().append_child(text)?;
 
         Ok(self.ui.flush())
     }

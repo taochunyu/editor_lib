@@ -1,4 +1,4 @@
-use crate::node::content::Content;
+use crate::n::content::Content;
 use crate::position::resolved_position::ResolvedPosition;
 use crate::schema::node_type::NodeType;
 use crate::slice::slice::Slice;
@@ -61,8 +61,4 @@ impl Node {
             })
         }
     }
-}
-
-#[cfg(test)]
-pub mod tests {
 }

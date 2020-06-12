@@ -1,7 +1,7 @@
 use wasm_bindgen::prelude::*;
-use editor::document::document::Document;
-use editor::node::node::Node;
-use editor::node::content::Content;
+use editor::doc::document::Document;
+use editor::n::node::Node;
+use editor::n::content::Content;
 use js_sys::Array;
 use std::rc::Rc;
 use std::ops::Deref;

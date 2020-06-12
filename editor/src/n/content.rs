@@ -1,5 +1,5 @@
-use crate::node::fragment::Fragment;
-use crate::node::node::Node;
+use crate::n::fragment::Fragment;
+use crate::n::node::Node;
 use std::rc::Rc;
 
 pub enum Content {

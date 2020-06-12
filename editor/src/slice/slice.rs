@@ -1,4 +1,4 @@
-use crate::node::content::Content;
+use crate::n::content::Content;
 use std::rc::Rc;
 use crate::schema::node_type::NodeType;
 

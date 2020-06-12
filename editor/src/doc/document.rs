@@ -1,10 +1,10 @@
 use std::rc::Rc;
-use crate::node::node::Node;
+use crate::n::node::Node;
 use crate::slice::slice::Slice;
-use crate::document::replace::replace;
+use crate::doc::replace::replace;
 use crate::position::resolved_position::ResolvedPosition;
 use crate::schema::node_type::NodeType;
-use crate::node::content::Content;
+use crate::n::content::Content;
 use std::env::var;
 
 pub struct Document {
@@ -51,7 +51,7 @@ impl Document {
 
 #[cfg(test)]
 mod test {
-    use crate::document::document::Document;
+    use crate::doc::document::Document;
     use crate::slice::slice::Slice;
 
     #[test]

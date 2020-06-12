@@ -1,4 +1,4 @@
-use crate::node::node::Node;
+use crate::n::node::Node;
 use std::rc::Rc;
 
 pub struct ResolvedPosition {

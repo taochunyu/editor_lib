@@ -1,5 +1,5 @@
-use crate::node::content::Content;
-use crate::node::node::Node;
+use crate::n::content::Content;
+use crate::n::node::Node;
 use std::rc::Rc;
 
 pub struct NodeType {

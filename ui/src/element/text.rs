@@ -1,7 +1,7 @@
 use crate::element::{ElementType, ElementDescription, ElementResult};
 
 pub struct TextProps {
-    text: String,
+    pub text: String,
 }
 
 pub struct Text {

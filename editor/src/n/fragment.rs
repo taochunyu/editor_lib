@@ -1,6 +1,6 @@
-use crate::node::node::Node;
+use crate::n::node::Node;
 use std::rc::Rc;
-use crate::node::content::Content;
+use crate::n::content::Content;
 use std::ops::Deref;
 
 pub struct Fragment {
