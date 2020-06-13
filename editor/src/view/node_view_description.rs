@@ -4,7 +4,7 @@ use std::rc::Rc;
 use ui::element::Element;
 
 pub struct NodeViewDescription {
-    parent: Option<Shared<NodeView>>,
+    parent: Option<Shared<NodeViewDescription>>,
     node: Rc<Node>,
     element: Shared<Element>,
 }

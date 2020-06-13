@@ -94,10 +94,10 @@ impl Fragment {
                     let end = cursor + item.size();
 
                     if offset <= end {
-                        if round || end == offset {
-                            return Ok((index + 1, end));
+                        return if round || end == offset {
+                            Ok((index + 1, end))
                         } else {
-                            return Ok((index, cursor));
+                            Ok((index, cursor))
                         };
                     }
 
