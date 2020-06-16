@@ -1,14 +1,14 @@
 use std::rc::Rc;
-use crate::node::{TypedNode, Node, cut};
+use crate::node::Node;
 use crate::node::node_type::NodeType;
 
 pub struct Fragment {
-    content: Vec<Rc<dyn TypedNode>>,
+    content: Vec<Rc<dyn Node>>,
     size: usize,
 }
 
-impl From<Rc<dyn TypedNode>> for Fragment {
-    fn from(node: Rc<dyn TypedNode>) -> Self {
+impl From<Rc<dyn Node>> for Fragment {
+    fn from(node: Rc<dyn Node>) -> Self {
         Fragment {
             content: vec![Rc::clone(&node)],
             size: node.size(),
@@ -16,22 +16,20 @@ impl From<Rc<dyn TypedNode>> for Fragment {
     }
 }
 
+impl From<Vec<Rc<dyn Node>>> for Fragment {
+    fn from(nodes: Vec<Rc<dyn Node>>) -> Self {
+        let size = nodes.iter().fold(0, |acc, x| acc + x.size());
+
+        Fragment { content: nodes, size }
+    }
+}
+
 impl Fragment {
-    fn new(content: Vec<Rc<dyn TypedNode>>) -> Self {
-        let size = content.iter().fold(0, |acc, x| acc + x.size());
-
-        Fragment { content, size }
-    }
-
-    fn content(&self) -> &Vec<Rc<dyn TypedNode>> {
-        &self.content
-    }
-
     pub(crate) fn size(&self) -> usize {
         self.size
     }
 
-    fn get(&self, index: usize) -> Result<&Rc<dyn TypedNode>, String> {
+    fn get(&self, index: usize) -> Result<&Rc<dyn Node>, String> {
         match self.content.get(index) {
             Some(node) => Ok(node),
             None => Err(format!("Index {} out range of fragment", index)),
@@ -61,11 +59,11 @@ impl Fragment {
         }
     }
 
-    pub(crate) fn cut(&self, from: usize, to: usize) -> Result<Self, String> {
+    pub(crate) fn cut(&self, from: usize, to: usize) -> Result<Rc<Self>, String> {
         if from >= to {
-            Ok(Self { content: vec![], size: 0 })
+            Ok(Rc::new(Self { content: vec![], size: 0 }))
         } else {
-            let mut content: Vec<Rc<dyn TypedNode>> = vec![];
+            let mut content: Vec<Rc<dyn Node>> = vec![];
             let mut size: usize = 0;
             let mut start: usize = 0;
             let mut end: usize = 0;
@@ -81,7 +79,7 @@ impl Fragment {
                     let cut_from: usize = if from > start { from - start } else { 0 };
                     let cut_to: usize = if end > to { to - start } else { node.size() };
 
-                    cut(node, cut_from, cut_to)?
+                    Node::cut_node(&node, cut_from, cut_to)?
                 } else {
                     Rc::clone(node)
                 };
@@ -90,30 +88,21 @@ impl Fragment {
                 start = end;
             }
 
-            Ok(Fragment { content, size })
+            Ok(Rc::new(Fragment { content, size }))
         }
     }
 
-    fn replace_child(&self, index: usize, node: Rc<dyn TypedNode>) -> Result<Self, String> {
+    fn replace_child(&self, index: usize, node: Rc<dyn Node>) -> Result<Self, String> {
         match self.content.get(index) {
             None => Err(format!("Index {} outside of fragment", index)),
             Some(child) => {
                 let size = self.size + node.size() - child.size();
                 let content = self.content.iter().enumerate()
                     .map(|(i, n)| if i == index { node.clone() } else { n.clone() })
-                    .collect::<Vec<Rc<dyn TypedNode>>>();
+                    .collect::<Vec<Rc<dyn Node>>>();
 
-                Ok(Self { content, size })
+                Ok(Self { content: content, size })
             }
-        }
-    }
-
-    fn append(&self, node: Rc<dyn TypedNode>) -> Self {
-        let size = self.size + node.size();
-        let mut content: Vec<Rc<dyn TypedNode>> = this.content.iter().map(|n| n.clone()).collect();
-
-        if let Some(last) = content.last() {
-            if last.
         }
     }
 }

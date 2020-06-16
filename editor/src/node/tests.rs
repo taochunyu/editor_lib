@@ -1,7 +1,6 @@
 use crate::node::node_type::NodeType;
 use std::rc::Rc;
 use crate::node::Node;
-use crate::node::content::Content;
 
 struct TextNodeType;
 
