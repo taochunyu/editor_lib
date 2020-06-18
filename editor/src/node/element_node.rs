@@ -1,7 +1,9 @@
 use std::rc::Rc;
+use std::any::Any;
 use crate::node::node_type::NodeType;
 use crate::node::Node;
 use crate::node::fragment::Fragment;
+use crate::node::text_node::TextNode;
 
 pub struct ElementNode<T: NodeType> {
     node_type: Rc<T>,
@@ -24,7 +26,18 @@ impl<T: NodeType> Node for ElementNode<T> {
         }
     }
 
-    fn cut(&self, from: usize, to: usize) -> Result<Rc<dyn Node>, String> {
+    fn child_count(&self) -> usize {
+        match &self.children {
+            Some(fragment) => fragment.count(),
+            None => 0,
+        }
+    }
+
+    fn as_any(&self) -> &dyn Any {
+        self
+    }
+
+    fn cut_node(&self, from: usize, to: usize) -> Result<Rc<dyn Node>, String> {
         match &self.children {
             Some(fragment) => {
                 let result = fragment.cut(from, to)?;
@@ -36,6 +49,24 @@ impl<T: NodeType> Node for ElementNode<T> {
                 }))
             },
             None => Err(format!("cannot cut node without children")),
+        }
+    }
+
+    fn find_index(&self, offset: usize) -> Result<usize, String> {
+        if offset == 0 {
+            Ok(0)
+        } else {
+            match &self.children {
+                Some(fragment) => fragment.find_index(offset),
+                None => Err(format!("Cannot find offset index on element node without children."))
+            }
+        }
+    }
+
+    fn get_child(&self, index: usize) -> Result<Rc<dyn Node>, String> {
+        match &self.children {
+            Some(children) => children.get(index),
+            None => Err(format!("Cannot get child on element node without children.")),
         }
     }
 }

@@ -1,6 +1,7 @@
 use std::rc::Rc;
 use crate::node::Node;
 use crate::node::node_type::NodeType;
+use std::slice::SliceIndex;
 
 pub struct Fragment {
     content: Vec<Rc<dyn Node>>,
@@ -29,14 +30,18 @@ impl Fragment {
         self.size
     }
 
-    fn get(&self, index: usize) -> Result<&Rc<dyn Node>, String> {
+    pub(crate) fn count(&self) -> usize {
+        self.content.len()
+    }
+
+    pub(crate) fn get(&self, index: usize) -> Result<Rc<dyn Node>, String> {
         match self.content.get(index) {
-            Some(node) => Ok(node),
-            None => Err(format!("Index {} out range of fragment", index)),
+            Some(node) => Ok(node.clone()),
+            None => Err(format!("Index {} outside of fragment.", index)),
         }
     }
 
-    fn find_index(&self, offset: usize) -> Result<usize, String> {
+    pub(crate) fn find_index(&self, offset: usize) -> Result<usize, String> {
         match offset {
             0 => Ok(0),
             o if o == self.size => Ok(self.content.len()),
@@ -79,7 +84,7 @@ impl Fragment {
                     let cut_from: usize = if from > start { from - start } else { 0 };
                     let cut_to: usize = if end > to { to - start } else { node.size() };
 
-                    Node::cut_node(&node, cut_from, cut_to)?
+                    node.clone().cut(cut_from, cut_to)?
                 } else {
                     Rc::clone(node)
                 };
@@ -92,7 +97,7 @@ impl Fragment {
         }
     }
 
-    fn replace_child(&self, index: usize, node: Rc<dyn Node>) -> Result<Self, String> {
+    fn replace_child(&self, index: usize, node: Rc<dyn Node>) -> Result<Rc<Self>, String> {
         match self.content.get(index) {
             None => Err(format!("Index {} outside of fragment", index)),
             Some(child) => {
@@ -101,8 +106,54 @@ impl Fragment {
                     .map(|(i, n)| if i == index { node.clone() } else { n.clone() })
                     .collect::<Vec<Rc<dyn Node>>>();
 
-                Ok(Self { content: content, size })
+                Ok(Rc::new(Self { content, size }))
             }
+        }
+    }
+
+    fn append(&self, node: Rc<dyn Node>) -> Result<Rc<Self>, String> {
+        let size = self.size + node.size();
+        let mut content = self.content.iter()
+            .map(|node| node.clone())
+            .collect::<Vec<Rc<dyn Node>>>();
+
+        if let Some(last) = content.last() {
+            if let Some(joined) = last.join(node.clone()) {
+                content.pop();
+                content.push(joined);
+
+                return Ok(Rc::new(Self { content, size }))
+            }
+        }
+
+        content.push(node);
+
+        Ok(Rc::new(Self { content, size }))
+    }
+
+    fn concat(self: Rc<Self>, fragment: Rc<Fragment>) -> Result<Rc<Self>, String> {
+        if let Some((first, rest)) = fragment.content.split_first() {
+            if let Some((last, nodes)) = self.content.split_last() {
+                let size = self.size + fragment.size;
+                let mut content = nodes.iter()
+                    .map(|node| node.clone())
+                    .collect::<Vec<Rc<dyn Node>>>();
+
+                if let Some(joined) = last.join(first.clone()) {
+                    content.push(joined);
+                } else {
+                    content.push(last.clone());
+                    content.push(first.clone());
+                }
+
+                rest.iter().for_each(|node| content.push(node.clone()));
+
+                Ok(Rc::new(Self { content, size }))
+            } else {
+                Ok(fragment.clone())
+            }
+        } else {
+            Ok(self.clone())
         }
     }
 }
