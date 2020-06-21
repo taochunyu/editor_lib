@@ -1,7 +1,7 @@
 use std::rc::Rc;
+use std::cmp::Ordering;
 use crate::node::Node;
 use crate::node::node_type::NodeType;
-use std::slice::SliceIndex;
 
 pub struct Fragment {
     content: Vec<Rc<dyn Node>>,
@@ -41,22 +41,22 @@ impl Fragment {
         }
     }
 
-    pub(crate) fn find_index(&self, offset: usize) -> Result<usize, String> {
+    pub(crate) fn index(&self, offset: usize) -> Result<usize, String> {
         match offset {
             0 => Ok(0),
             o if o == self.size => Ok(self.content.len()),
             o if o > self.size => Err(format!("Offset {} outside of fragment.", o)),
             _ => {
-                let mut cursor: usize = 0;
+                let mut window_start: usize = 0;
 
                 for (index, node) in self.content.iter().enumerate() {
-                    let end = cursor + node.size();
+                    let window_end = window_start + node.size();
 
-                    if offset < end {
-                        return Ok(index)
+                    if offset <= window_end {
+                        return Ok(index);
                     }
 
-                    cursor = end;
+                    window_start = window_end;
                 }
 
                 Err(format!("Unknown error occurred while finding index in fragment."))

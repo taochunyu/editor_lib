@@ -11,9 +11,9 @@ pub fn replace(
     slice: Slice,
 ) -> Result<Rc<Node>, String> {
     if slice.open_start() > from.depth() {
-        Err(format!("Inserted content deeper than insertion position"))
+        Err(format!("Inserted content deeper than insertion position."))
     } else if slice.open_start() + to.depth() != slice.open_end() + from.depth() {
-        Err(format!("Inconsistent open depths"))
+        Err(format!("Inconsistent open depths."))
     } else {
         replace_outer(from, to, slice, 0)
     }

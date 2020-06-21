@@ -2,15 +2,18 @@ use std::any::Any;
 use std::rc::Rc;
 use std::ops::Range;
 use crate::node::node_type::NodeType;
-use crate::node::element_node::ElementNode;
-use crate::node::text_node::TextNode;
+use crate::node::text_node_type::TextNodeType;
+use crate::node::base::Base;
+use crate::node::text::Text;
+use crate::node::path::ResolvedOffset;
 
 mod node_type;
 mod fragment;
 mod slice;
-mod element_node;
-mod text_node;
-mod resolved_offset;
+mod base;
+mod text;
+mod path;
+mod replace;
 
 #[cfg(test)]
 mod tests;
@@ -21,13 +24,13 @@ pub trait Node {
     fn child_count(&self) -> usize;
     fn as_any(&self) -> &dyn Any;
     fn cut_node(&self, from: usize, to: usize) -> Result<Rc<dyn Node>, String>;
-    fn find_index(&self, offset: usize) -> Result<usize, String>;
+    fn index(&self, offset: usize) -> Result<usize, String>;
     fn get_child(&self, index: usize) -> Result<Rc<dyn Node>, String>;
 }
 
 impl dyn Node {
-    fn as_text(&self) -> Option<&TextNode> {
-        self.as_any().downcast_ref::<TextNode>()
+    fn as_text(&self) -> Option<&Text> {
+        self.as_any().downcast_ref::<Text>()
     }
 
     fn join(&self, node: Rc<dyn Node>) -> Option<Rc<dyn Node>> {
@@ -56,5 +59,9 @@ impl dyn Node {
         } else {
             Ok(self.cut_node(from, to)?)
         }
+    }
+
+    pub fn resolve_offset(self: Rc<Self>, offset: usize) -> Result<Rc<ResolvedOffset>, String> {
+        ResolvedOffset::new(self.clone(), offset)
     }
 }
