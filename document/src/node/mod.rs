@@ -3,14 +3,14 @@ use std::rc::Rc;
 use std::ops::Range;
 use crate::node::node_type::NodeType;
 use crate::node::text_node_type::TextNodeType;
-use crate::node::base::Base;
+use crate::node::element::Element;
 use crate::node::text::Text;
 use crate::node::path::ResolvedOffset;
 
 mod node_type;
 mod fragment;
 mod slice;
-mod base;
+mod element;
 mod text;
 mod path;
 mod replace;

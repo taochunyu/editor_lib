@@ -5,13 +5,13 @@ use crate::node::Node;
 use crate::node::fragment::Fragment;
 use crate::node::text::Text;
 
-pub struct Base<T: NodeType> {
+pub struct Element<T: NodeType> {
     node_type: Rc<T>,
     attributes: Rc<T::Attributes>,
     children: Option<Rc<Fragment>>,
 }
 
-impl<T: NodeType> Node for Base<T> {
+impl<T: NodeType> Node for Element<T> {
     fn size(&self) -> usize {
         match &self.children {
             Some(fragment) => fragment.size() + 2,
@@ -67,7 +67,7 @@ impl<T: NodeType> Node for Base<T> {
     }
 }
 
-impl<T: NodeType> Base<T> {
+impl<T: NodeType> Element<T> {
     pub(crate) fn new(node_type: Rc<T>, attributes: Rc<T::Attributes>, children: Option<Rc<Fragment>>) -> Rc<Self> {
         Rc::new(Self { node_type, attributes, children })
     }

@@ -3,7 +3,7 @@ use std::rc::Rc;
 use std::any::Any;
 
 pub struct Text {
-    base: Rc<dyn Node>,
+    marks: Vec<u64>,
     content: String,
 }
 
@@ -28,7 +28,7 @@ impl Node for Text {
         match self.content.get(from..to) {
             Some(sub) => {
                 Ok(Rc::new(Self {
-                    base: self.base.clone(),
+                    marks: vec![],
                     content: String::from(sub),
                 }))
             },
@@ -46,19 +46,19 @@ impl Node for Text {
 }
 
 impl Text {
-    pub(crate) fn new(base: Rc<dyn Node>, content: String) -> Rc<dyn Node> {
+    pub(crate) fn new(content: String) -> Rc<dyn Node> {
         Rc::new(Self {
-            base,
+            marks: vec![],
             content,
         })
     }
 
     pub(crate) fn try_concat(&self, node: &Text) -> Option<Rc<dyn Node>> {
-        if true {
+        if self.marks.len() == node.marks.len() {
             let text = format!("{}{}", self.content, node.content);
 
             Some(Rc::new(Self {
-                base: self.base.clone(),
+                marks: vec![],
                 content: text,
             }))
         } else {

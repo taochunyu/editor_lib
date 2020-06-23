@@ -36,7 +36,7 @@
       <sourceFolder url="file://$MODULE_DIR$/editor_model/examples" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/editor_model/tests" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/editor_model/benches" isTestSource="true" />
-      <sourceFolder url="file://$MODULE_DIR$/ui/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/view_vm/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/editor_view/examples" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/editor_view/tests" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/editor_view/benches" isTestSource="true" />
@@ -89,9 +89,10 @@
       <sourceFolder url="file://$MODULE_DIR$/client/tests" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/client/benches" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/platform/web/src" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/editor/src" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/ui/examples" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/ui/examples/web/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/document/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/web_vm/examples" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/view_vm/examples/browser/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/view_vm/examples" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/../editor/.tmp" />
       <excludeFolder url="file://$MODULE_DIR$/../editor/editor_core/target" />
       <excludeFolder url="file://$MODULE_DIR$/../editor/editor_wasm/target" />

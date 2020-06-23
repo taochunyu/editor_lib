@@ -2,7 +2,7 @@ use std::rc::Rc;
 use std::any::Any;
 use crate::node::Node;
 use crate::node::fragment::Fragment;
-use crate::node::base::Base;
+use crate::node::element::Element;
 use crate::node::text::Text;
 
 pub trait NodeType: Sized + 'static {
@@ -20,7 +20,7 @@ pub trait NodeType: Sized + 'static {
             None => None,
         };
 
-        Base::new(self.clone(), attrs, element_node_children)
+        Element::new(self.clone(), attrs, element_node_children)
     }
 
     fn create_text_node(
@@ -28,7 +28,7 @@ pub trait NodeType: Sized + 'static {
         attrs: Rc<Self::Attributes>,
         content: &str,
     ) -> Rc<dyn Node> {
-        let base = Base::new(self.clone(), attrs, None);
+        let base = Element::new(self.clone(), attrs, None);
 
         Text::new(base, String::from(content))
     }

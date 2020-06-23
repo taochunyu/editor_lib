@@ -1,9 +1,9 @@
+use std::rc::Rc;
 use wasm_bindgen::prelude::*;
 use js_sys::*;
-use ui::ui::UI;
-use ui::element::rectangular::{RectangularProps, Rectangular};
-use std::rc::Rc;
-use ui::element::text::{TextProps, Text};
+use render_vm::ui::UI;
+use render_vm::element::rectangular::{RectangularProps, Rectangular};
+use render_vm::element::text::{TextProps, Text};
 
 #[wasm_bindgen]
 extern "C" {

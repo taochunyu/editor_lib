@@ -1,5 +1,5 @@
 [package]
-name = "ui"
+name = "render_vm"
 version = "0.1.0"
 authors = ["taochunyu <tao_chunyu@icloud.com>"]
 edition = "2018"

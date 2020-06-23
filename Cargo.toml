@@ -1,7 +1,6 @@
 [workspace]
 members=[
-    "editor",
-    "platform/web",
-    "ui",
-    "ui/examples/web"
+    "document",
+    "render_vm",
+    "render_vm/examples/browser"
 ]
