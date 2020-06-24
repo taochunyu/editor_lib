@@ -1,2 +1,2 @@
-mod text;
-mod root;
+pub mod paragraph;
+pub mod root;

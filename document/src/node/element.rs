@@ -6,7 +6,6 @@ use crate::node::fragment::Fragment;
 use crate::node::text::Text;
 
 pub struct Element<T: ElementType> {
-    node_type: Rc<T>,
     attributes: Rc<T::Attributes>,
     children: Option<Rc<Fragment>>,
 }
@@ -43,7 +42,6 @@ impl<T: ElementType> Node for Element<T> {
                 let result = fragment.cut(from, to)?;
 
                 Ok(Rc::new(Self {
-                    node_type: self.node_type.clone(),
                     attributes: self.attributes.clone(),
                     children: Some(result),
                 }))
@@ -68,7 +66,7 @@ impl<T: ElementType> Node for Element<T> {
 }
 
 impl<T: ElementType> Element<T> {
-    pub(crate) fn new(node_type: Rc<T>, attributes: Rc<T::Attributes>, children: Option<Rc<Fragment>>) -> Rc<Self> {
-        Rc::new(Self { node_type, attributes, children })
+    pub(crate) fn new(attributes: Rc<T::Attributes>, children: Option<Rc<Fragment>>) -> Rc<Self> {
+        Rc::new(Self { attributes, children })
     }
 }

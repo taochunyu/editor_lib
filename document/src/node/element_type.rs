@@ -6,10 +6,9 @@ use crate::node::element::Element;
 pub trait ElementType: Sized + 'static {
     type Attributes;
 
-    fn new() -> Rc<Self>;
+    fn name() -> &'static str;
 
     fn create_element(
-        self: Rc<Self>,
         attrs: Rc<Self::Attributes>,
         children: Option<Vec<Rc<dyn Node>>>
     ) -> Rc<dyn Node> {
@@ -18,6 +17,6 @@ pub trait ElementType: Sized + 'static {
             None => None,
         };
 
-        Element::new(self.clone(), attrs, element_children)
+        Element::<Self>::new(attrs, element_children)
     }
 }

@@ -2,22 +2,17 @@ use std::any::Any;
 use std::rc::Rc;
 use std::ops::Range;
 use crate::node::element_type::ElementType;
-use crate::node::text_node_type::TextNodeType;
 use crate::node::element::Element;
 use crate::node::text::Text;
 use crate::node::path::ResolvedOffset;
 
-pub mod text_type;
 pub mod element_type;
 mod fragment;
 mod slice;
-mod element;
+pub mod element;
 pub mod text;
 mod path;
 mod replace;
-
-#[cfg(test)]
-mod tests;
 
 pub trait Node {
     fn size(&self) -> usize;
