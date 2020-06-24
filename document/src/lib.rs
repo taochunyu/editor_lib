@@ -1,3 +1,5 @@
+mod node_types;
+mod document;
 pub mod doc;
 pub mod n;
 mod node;

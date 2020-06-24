@@ -1,10 +1,10 @@
 use std::rc::Rc;
 use crate::node::Node;
-use crate::node::node_type::NodeType;
+use crate::node::element_type::ElementType;
 
 struct TextType;
 
-impl NodeType for TextType {
+impl ElementType for TextType {
     type Attributes = ();
 
     fn new() -> Rc<Self> {
@@ -16,7 +16,7 @@ impl TextNodeType for TextType {}
 
 struct MentionType;
 
-impl NodeType for MentionType {
+impl ElementType for MentionType {
     type Attributes = ();
 
     fn new() -> Rc<Self> {
@@ -26,7 +26,7 @@ impl NodeType for MentionType {
 
 struct ParagraphType;
 
-impl NodeType for ParagraphType {
+impl ElementType for ParagraphType {
     type Attributes = ();
 
     fn new() -> Rc<Self> {
@@ -36,7 +36,7 @@ impl NodeType for ParagraphType {
 
 struct RootType;
 
-impl NodeType for RootType {
+impl ElementType for RootType {
     type Attributes = ();
 
     fn new() -> Rc<Self> {
@@ -51,7 +51,7 @@ fn it_works() {
     let paragraph_type = ParagraphType::new();
     let root_type = RootType::new();
 
-    let hello = text_type.create_node(Rc::new(()), "hello");
+    let hello = text_type.create_element(Rc::new(()), "hello");
     // let world = Node::create_text_node("world");
     // let mention = mention_type.clone().create_node(Rc::new(()), None);
     // let paragraph = paragraph_type.clone().create_node(

@@ -1,17 +1,18 @@
 use std::any::Any;
 use std::rc::Rc;
 use std::ops::Range;
-use crate::node::node_type::NodeType;
+use crate::node::element_type::ElementType;
 use crate::node::text_node_type::TextNodeType;
 use crate::node::element::Element;
 use crate::node::text::Text;
 use crate::node::path::ResolvedOffset;
 
-mod node_type;
+pub mod text_type;
+pub mod element_type;
 mod fragment;
 mod slice;
 mod element;
-mod text;
+pub mod text;
 mod path;
 mod replace;
 

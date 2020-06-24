@@ -1,7 +1,7 @@
 use std::rc::Rc;
 use std::cmp::Ordering;
 use crate::node::Node;
-use crate::node::node_type::NodeType;
+use crate::node::element_type::ElementType;
 
 pub struct Fragment {
     content: Vec<Rc<dyn Node>>,
