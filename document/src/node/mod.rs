@@ -4,7 +4,8 @@ use std::ops::Range;
 use crate::node::element_type::ElementType;
 use crate::node::element::Element;
 use crate::node::text::Text;
-use crate::node::path::ResolvedOffset;
+use crate::node::path::Path;
+use crate::node::fragment::Fragment;
 
 pub mod element_type;
 mod fragment;
@@ -22,6 +23,8 @@ pub trait Node {
     fn cut_node(&self, from: usize, to: usize) -> Result<Rc<dyn Node>, String>;
     fn index(&self, offset: usize) -> Result<usize, String>;
     fn get_child(&self, index: usize) -> Result<Rc<dyn Node>, String>;
+    fn children(&self) -> Option<Rc<Fragment>>;
+    fn replace_children(&self, new_children: Option<Rc<Fragment>>) -> Result<Rc<dyn Node>, String>;
 }
 
 impl dyn Node {
@@ -57,7 +60,7 @@ impl dyn Node {
         }
     }
 
-    pub fn resolve_offset(self: Rc<Self>, offset: usize) -> Result<Rc<ResolvedOffset>, String> {
-        ResolvedOffset::new(self.clone(), offset)
+    pub fn find_path(self: Rc<Self>, offset: usize) -> Result<Rc<Path>, String> {
+        Path::new(self.clone(), offset)
     }
 }

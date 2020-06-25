@@ -3,5 +3,11 @@ use crate::node_types::paragraph::Paragraph;
 
 #[test]
 fn it_works() {
-    Document::create_element::<Paragraph>((), None);
+    let hello = Document::create_text("hello");
+    let paragraph = Document::create_element::<Paragraph>(
+        (),
+        Some(vec![hello]),
+    );
+
+    println!("{}", paragraph.size());
 }

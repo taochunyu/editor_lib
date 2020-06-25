@@ -1,6 +1,7 @@
 use crate::node::Node;
 use std::rc::Rc;
 use std::any::Any;
+use crate::node::fragment::Fragment;
 
 pub struct Text {
     marks: Vec<u64>,
@@ -42,6 +43,14 @@ impl Node for Text {
 
     fn get_child(&self, _: usize) -> Result<Rc<dyn Node>, String> {
         Err(format!("Cannot get child on text node."))
+    }
+
+    fn children(&self) -> Option<Rc<Fragment>> {
+        None
+    }
+
+    fn replace_children(&self, _: Option<Rc<Fragment>>) -> Result<Rc<dyn Node>, String> {
+        Err(format!("Text node cannot replace children."))
     }
 }
 

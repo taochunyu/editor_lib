@@ -63,6 +63,17 @@ impl<T: ElementType> Node for Element<T> {
             None => Err(format!("Cannot get child on element node without children.")),
         }
     }
+
+    fn children(&self) -> Option<Rc<Fragment>> {
+        self.children.clone()
+    }
+
+    fn replace_children(&self, new_children: Option<Rc<Fragment>>) -> Result<Rc<dyn Node>, String> {
+        Ok(Rc::new(Self {
+            attributes: self.attributes.clone(),
+            children: new_children,
+        }))
+    }
 }
 
 impl<T: ElementType> Element<T> {

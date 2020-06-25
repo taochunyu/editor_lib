@@ -3,19 +3,19 @@ use std::cmp::Ordering;
 use crate::node::Node;
 
 #[derive(Clone)]
-struct PathNode {
-    node: Rc<dyn Node>,
-    index: usize,
-    offset: usize,
+pub struct Step {
+    pub node: Rc<dyn Node>,
+    pub index: usize,
+    pub offset: usize,
 }
 
-pub struct ResolvedOffset {
+pub struct Path {
     offset: usize,
-    path: Vec<PathNode>,
+    path: Vec<Step>,
 }
 
 fn build_path(
-    previous: &mut Vec<PathNode>,
+    previous: &mut Vec<Step>,
     current_node: Rc<dyn Node>,
     offset: usize
 ) -> Result<(), String> {
@@ -27,7 +27,7 @@ fn build_path(
                     return Err(format!("Offset {} outside of base node.", offset));
                 },
                 Ordering::Equal => {
-                    previous.push(PathNode {
+                    previous.push(Step {
                         node: current_node.clone(),
                         index: current_node.child_count(),
                         offset,
@@ -36,12 +36,11 @@ fn build_path(
                 Ordering::Less => {
                     let index = current_node.index(offset)?;
 
-                    previous.push(PathNode {
+                    previous.push(Step {
                         node: current_node.clone(),
                         index,
                         offset,
                     });
-
 
                     let next_node = current_node.get_child(index)?;
                     let size = current_node.get_child_range(0..index)?.iter()
@@ -57,9 +56,9 @@ fn build_path(
     Ok(())
 }
 
-impl ResolvedOffset {
+impl Path {
     pub(crate) fn new(base: Rc<dyn Node>, offset: usize) -> Result<Rc<Self>, String> {
-        let mut path: Vec<PathNode> = vec![];
+        let mut path: Vec<Step> = vec![];
 
         build_path(&mut path, base, offset)?;
 
@@ -81,12 +80,14 @@ impl ResolvedOffset {
     }
 
     pub fn parent(&self) -> Option<Rc<dyn Node>> {
-        let path_node = self.path.last()?;
-
-        Some(path_node.node.clone())
+        Some(self.path.last()?.node.clone())
     }
 
-    pub fn before(&self) -> Option<Rc<dyn Node>> {
+    pub fn parent_offset(&self) -> Option<usize> {
+        Some(self.path.last()?.offset)
+    }
+
+    pub fn node_before(&self) -> Option<Rc<dyn Node>> {
         let path_node = self.path.last()?;
 
         if path_node.index < 1 {
@@ -99,7 +100,7 @@ impl ResolvedOffset {
         }
     }
 
-    pub fn after(&self) -> Option<Rc<dyn Node>> {
+    pub fn node_after(&self) -> Option<Rc<dyn Node>> {
         let path_node = self.path.last()?;
 
         match path_node.node.get_child(path_node.index.clone() + 1) {
@@ -108,7 +109,7 @@ impl ResolvedOffset {
         }
     }
 
-    fn path_node(&self, depth: usize) -> Result<PathNode, String> {
+    pub fn step(&self, depth: usize) -> Result<Step, String> {
         match self.path.get(depth) {
             Some(path_node) => Ok(path_node.clone()),
             None => Err(format!("Depth {} out range of offset path", depth)),

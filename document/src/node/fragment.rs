@@ -89,6 +89,7 @@ impl Fragment {
                     Rc::clone(node)
                 };
 
+                size += will_push.size();
                 content.push(will_push);
                 start = end;
             }
@@ -97,7 +98,7 @@ impl Fragment {
         }
     }
 
-    fn replace_child(&self, index: usize, node: Rc<dyn Node>) -> Result<Rc<Self>, String> {
+    pub(crate) fn replace_child(&self, index: usize, node: Rc<dyn Node>) -> Result<Rc<Self>, String> {
         match self.content.get(index) {
             None => Err(format!("Index {} outside of fragment", index)),
             Some(child) => {
@@ -111,7 +112,7 @@ impl Fragment {
         }
     }
 
-    fn append(&self, node: Rc<dyn Node>) -> Result<Rc<Self>, String> {
+    pub(crate) fn append(&self, node: Rc<dyn Node>) -> Rc<Self> {
         let size = self.size + node.size();
         let mut content = self.content.iter()
             .map(|node| node.clone())
@@ -122,16 +123,16 @@ impl Fragment {
                 content.pop();
                 content.push(joined);
 
-                return Ok(Rc::new(Self { content, size }))
+                return Rc::new(Self { content, size })
             }
         }
 
         content.push(node);
 
-        Ok(Rc::new(Self { content, size }))
+        Rc::new(Self { content, size })
     }
 
-    fn concat(self: Rc<Self>, fragment: Rc<Fragment>) -> Result<Rc<Self>, String> {
+    pub(crate) fn concat(self: Rc<Self>, fragment: Rc<Fragment>) -> Rc<Self> {
         if let Some((first, rest)) = fragment.content.split_first() {
             if let Some((last, nodes)) = self.content.split_last() {
                 let size = self.size + fragment.size;
@@ -148,12 +149,12 @@ impl Fragment {
 
                 rest.iter().for_each(|node| content.push(node.clone()));
 
-                Ok(Rc::new(Self { content, size }))
+                Rc::new(Self { content, size })
             } else {
-                Ok(fragment.clone())
+                fragment.clone()
             }
         } else {
-            Ok(self.clone())
+            self.clone()
         }
     }
 }
