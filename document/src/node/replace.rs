@@ -15,14 +15,14 @@ pub fn replace(
 
     if slice.open_start() > resolved_from.depth() {
         Err(format!("Inserted content deeper than insertion position."))
-    } else if slice.open_start() - resolved_from.depth() != slice.open_end() - resolved_to.depth() {
+    } else if slice.open_start() + resolved_to.depth() != slice.open_end() + resolved_from.depth()  {
         Err(format!("Inconsistent open depths."))
     } else {
         replace_outer(resolved_from, resolved_to, slice, 0)
     }
 }
 
-pub fn replace_outer(
+fn replace_outer(
     from: Rc<Path>,
     to: Rc<Path>,
     slice: Slice,

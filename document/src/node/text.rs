@@ -52,6 +52,13 @@ impl Node for Text {
     fn replace_children(&self, _: Option<Rc<Fragment>>) -> Result<Rc<dyn Node>, String> {
         Err(format!("Text node cannot replace children."))
     }
+
+    fn to_html_string(&self) -> String {
+        match self.marks.len() {
+            0 => self.content.clone(),
+            _ => format!("<span>{}</span>", self.content)
+        }
+    }
 }
 
 impl Text {

@@ -74,6 +74,19 @@ impl<T: ElementType> Node for Element<T> {
             children: new_children,
         }))
     }
+
+    fn to_html_string(&self) -> String {
+        match &self.children {
+            Some(children) => {
+                let open = format!("<{}>", T::name());
+                let close = format!("</{}>", T::name());
+                let content = children.to_string();
+
+                format!("{}{}{}", open, content, close)
+            },
+            None => format!("<{} />", T::name()),
+        }
+    }
 }
 
 impl<T: ElementType> Element<T> {

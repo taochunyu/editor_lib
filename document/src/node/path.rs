@@ -1,6 +1,7 @@
 use std::rc::Rc;
 use std::cmp::Ordering;
 use crate::node::Node;
+use std::fmt::{Debug, Formatter};
 
 #[derive(Clone)]
 pub struct Step {
@@ -114,5 +115,12 @@ impl Path {
             Some(path_node) => Ok(path_node.clone()),
             None => Err(format!("Depth {} out range of offset path", depth)),
         }
+    }
+
+    pub fn to_string(&self) -> String {
+        self.path.iter()
+            .map(|x| format!("({}, {}, {}),", x.node.to_html_string(), x.index, x.offset))
+            .collect::<Vec<String>>()
+            .join("\n")
     }
 }

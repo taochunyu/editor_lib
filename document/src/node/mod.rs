@@ -6,10 +6,12 @@ use crate::node::element::Element;
 use crate::node::text::Text;
 use crate::node::path::Path;
 use crate::node::fragment::Fragment;
+use crate::node::slice::Slice;
+use crate::node::replace::replace;
 
 pub mod element_type;
 mod fragment;
-mod slice;
+pub mod slice;
 pub mod element;
 pub mod text;
 mod path;
@@ -25,6 +27,7 @@ pub trait Node {
     fn get_child(&self, index: usize) -> Result<Rc<dyn Node>, String>;
     fn children(&self) -> Option<Rc<Fragment>>;
     fn replace_children(&self, new_children: Option<Rc<Fragment>>) -> Result<Rc<dyn Node>, String>;
+    fn to_html_string(&self) -> String;
 }
 
 impl dyn Node {
@@ -62,5 +65,9 @@ impl dyn Node {
 
     pub fn find_path(self: Rc<Self>, offset: usize) -> Result<Rc<Path>, String> {
         Path::new(self.clone(), offset)
+    }
+
+    pub fn replace(self: Rc<Self>, from: usize, to: usize, slice: Slice) -> Result<Rc<dyn Node>, String> {
+        replace(self, from, to, slice)
     }
 }

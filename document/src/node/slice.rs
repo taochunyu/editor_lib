@@ -9,6 +9,14 @@ pub struct Slice {
 }
 
 impl Slice {
+    pub fn new(open_start: usize, open_end: usize, content: Vec<Rc<dyn Node>>) -> Self {
+        Self {
+            open_start,
+            open_end,
+            content: Rc::new(Fragment::from(content)),
+        }
+    }
+
     pub fn open_start(&self) -> usize {
         self.open_start
     }
