@@ -1,22 +1,17 @@
 use std::rc::Rc;
 use render_vm::ui::UI;
-use render_vm::element::rectangular::{RectangularProps, Rectangular};
+use render_vm::html::div::Div;
+use render_vm::html::paragraph::Paragraph;
+use render_vm::html::text::Text;
+use render_vm::html::operation::append_child;
 
 fn main() -> Result<(), String> {
     let mut ui = UI::new()?;
-    let rect_props_1 = RectangularProps { width: 200, height: 100 };
-    let rect_1 = ui.create_element::<Rectangular>(rect_props_1)?;
 
-    let rect_props_2 = RectangularProps { width: 200, height: 100 };
-    let rect_2 = ui.create_element::<Rectangular>(rect_props_2)?;
+    let p1 = ui.create_element::<Paragraph>(())?;
+    let t1 = ui.create_element::<Text>("1234")?;
 
-    ui.root_element.borrow_mut().append_child(Rc::clone(&rect_1))?;
-
-    rect_1.borrow_mut().append_child(rect_2)?;
-
-    for instruction_str in ui.flush().iter() {
-        println!("{}", instruction_str);
-    }
+    append_child(p1, t1);
 
     Ok(())
 }

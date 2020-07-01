@@ -4,8 +4,12 @@ use crate::node::fragment::Fragment;
 use crate::node::element::Element;
 use render_vm::DOM;
 
+type OuterDOM = Rc<DOM>;
+type ContentDOM = Option<Rc<DOM>>;
+
 pub trait ElementType: Sized + 'static {
     type Attributes;
+    type State;
 
     fn name() -> &'static str;
 
@@ -21,9 +25,5 @@ pub trait ElementType: Sized + 'static {
         Element::<Self>::new(attrs, element_children)
     }
 
-    fn update(_dom: DOM, _old_node: Rc<dyn Node>, _new_node: Rc<dyn Node>) -> bool {
-        true
-    }
-
-    fn render(dom: DOM, node: Rc<dyn Node>);
+    fn render(state: Self::State, node: Rc<dyn Node>) -> (OuterDOM, ContentDOM);
 }
