@@ -210,7 +210,7 @@ fn replace_three_way(
 }
 
 fn prepare_slice(slice: Slice, along: Rc<Path>) -> Result<(Rc<Path>, Rc<Path>), String> {
-    let extra = along.depth() - slice.open_start();
+    let extra = along.depth() - slice.open_start() - 1;
     let parent = along.step(extra)?.node;
 
     let mut node = parent.replace_children(Some(slice.content()))?;

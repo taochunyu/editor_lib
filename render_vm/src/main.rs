@@ -1,6 +1,6 @@
-use ui::element::rectangular::{Rectangular, RectangularProps};
-use ui::ui::UI;
 use std::rc::Rc;
+use render_vm::ui::UI;
+use render_vm::element::rectangular::{RectangularProps, Rectangular};
 
 fn main() -> Result<(), String> {
     let mut ui = UI::new()?;

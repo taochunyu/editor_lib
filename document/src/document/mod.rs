@@ -24,7 +24,7 @@ impl Document {
         attrs: T::Attributes,
         children: Option<Vec<Rc<dyn Node>>>,
     ) -> Rc<dyn Node> {
-        T::create_element(Rc::new(attrs), children)
+        T::create(Rc::new(attrs), children)
     }
 
     pub fn create_text(content: &str) -> Rc<dyn Node> {
