@@ -14,7 +14,7 @@ impl UI {
     pub fn new() -> UI {
         let instructions = Rc::new(RefCell::new(vec![]));
         let description = Div::new(());
-        let root_element = TypedNode::new(0, None, description);
+        let root_element = TypedNode::new(0, None, description, Rc::downgrade(&instructions));
 
         UI {
             id_counter: 0,
@@ -45,7 +45,8 @@ impl UI {
     ) -> Rc<RefCell<dyn Node>> {
         let id = self.generate_element_id();
         let description = T::new(attrs);
+        let instructions = Rc::downgrade(&self.instructions);
 
-        TypedNode::new(id, None, description)
+        TypedNode::new(id, None, description, instructions)
     }
 }

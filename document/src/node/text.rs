@@ -1,7 +1,11 @@
-use crate::node::Node;
 use std::rc::Rc;
 use std::any::Any;
+use render_vm::html::text;
 use crate::node::fragment::Fragment;
+use crate::node::element_type::{OuterDOM, ContentDOM};
+use crate::view::View;
+use crate::node::Node;
+
 
 pub struct Text {
     marks: Vec<u64>,
@@ -58,6 +62,12 @@ impl Node for Text {
             0 => self.content.clone(),
             _ => format!("<span>{}</span>", self.content)
         }
+    }
+
+    fn render(self: Rc<Self>, view: Rc<View>) -> (OuterDOM, ContentDOM) {
+        let text = view.clone().ui().create_element::<text::Text>(self.content.clone());
+
+        (text, None)
     }
 }
 

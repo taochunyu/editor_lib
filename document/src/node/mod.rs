@@ -1,13 +1,15 @@
 use std::any::Any;
 use std::rc::Rc;
 use std::ops::Range;
-use crate::node::element_type::ElementType;
+use crate::node::element_type::{ElementType, OuterDOM, ContentDOM};
 use crate::node::element::Element;
 use crate::node::text::Text;
 use crate::node::path::Path;
 use crate::node::fragment::Fragment;
 use crate::node::slice::Slice;
 use crate::node::replace::replace;
+use crate::view::View;
+use std::cell::RefCell;
 
 pub mod element_type;
 mod fragment;
@@ -28,6 +30,7 @@ pub trait Node {
     fn children(&self) -> Option<Rc<Fragment>>;
     fn replace_children(&self, new_children: Option<Rc<Fragment>>) -> Result<Rc<dyn Node>, String>;
     fn to_html_string(&self) -> String;
+    fn render(self: Rc<Self>, view: Rc<View>) -> (OuterDOM, ContentDOM);
 }
 
 impl dyn Node {

@@ -26,6 +26,10 @@ impl From<Vec<Rc<dyn Node>>> for Fragment {
 }
 
 impl Fragment {
+    pub(crate) fn content(&self) -> Vec<Rc<dyn Node>> {
+        self.content.clone()
+    }
+
     pub(crate) fn size(&self) -> usize {
         self.size
     }

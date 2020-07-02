@@ -1,16 +1,16 @@
 use std::rc::Rc;
-use render_vm::DOM;
+use render_vm::html;
+use std::cell::RefCell;
 use crate::node::Node;
 use crate::node::fragment::Fragment;
 use crate::node::element::Element;
 use crate::view::View;
 
-type OuterDOM = Rc<DOM>;
-type ContentDOM = Option<Rc<DOM>>;
+pub type OuterDOM = Rc<RefCell<dyn html::Node>>;
+pub type ContentDOM = Option<Rc<RefCell<dyn html::Node>>>;
 
 pub trait ElementType: Sized + 'static {
     type Attributes;
-    type State;
 
     fn name() -> &'static str;
 
@@ -26,5 +26,5 @@ pub trait ElementType: Sized + 'static {
         Element::<Self>::new(attrs, element_children)
     }
 
-    fn render(view: Rc<View>, node: Rc<dyn Node>, state: Self::State) -> (OuterDOM, ContentDOM);
+    fn render(view: Rc<View>, node: Rc<dyn Node>, attrs: Rc<Self::Attributes>) -> (OuterDOM, ContentDOM);
 }

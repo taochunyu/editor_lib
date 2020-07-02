@@ -3,15 +3,16 @@ pub mod text;
 pub mod div;
 pub mod paragraph;
 
-use std::rc::Rc;
+use std::rc::{Rc, Weak};
 use std::cell::RefCell;
+use crate::instruction::Instruction;
 
 pub trait Node {
     fn id(&self) -> NodeId;
-    fn to_instruction(&self) -> Vec<String>;
+    fn description(&self) -> Vec<String>;
     fn children(&self) -> Vec<Rc<RefCell<dyn Node>>>;
     fn set_parent_id(&mut self, parent_id: Option<NodeId>);
-    fn append_child(&mut self, child: Rc<RefCell<dyn Node>>) -> Result<(), String>;
+    fn append_child(&mut self, child: Rc<RefCell<dyn Node>>);
 }
 
 pub trait NodeDescription: Sized + 'static {
@@ -40,6 +41,7 @@ pub struct TypedNode<T: NodeDescription> {
     id: NodeId,
     parent_id: Option<NodeId>,
     description: T,
+    instructions: Weak<RefCell<Vec<Instruction>>>,
 }
 
 impl<T: NodeDescription> Node for TypedNode<T> {
@@ -47,7 +49,7 @@ impl<T: NodeDescription> Node for TypedNode<T> {
         self.id
     }
 
-    fn to_instruction(&self) -> Vec<String> {
+    fn description(&self) -> Vec<String> {
         let parent_id = match self.parent_id {
             Some(id) => format!("{}", id),
             None => String::new(),
@@ -65,16 +67,29 @@ impl<T: NodeDescription> Node for TypedNode<T> {
     }
 
     fn append_child(&mut self, child: Rc<RefCell<dyn Node>>) {
+        child.borrow_mut().set_parent_id(self.parent_id);
+
         self.description.append_child(child);
+
+        if let Some(instructions) = self.instructions.upgrade() {
+            let mut children = self.children().iter()
+                .map(|node| node.borrow().description())
+                .map(|description| Instruction::Append(description))
+                .collect::<Vec<Instruction>>();
+
+            instructions.borrow_mut().push(Instruction::Append(self.description()));
+            instructions.borrow_mut().append(&mut children);
+        };
     }
 }
 
 impl<T: NodeDescription> TypedNode<T> {
-    pub(crate) fn new(id: NodeId, parent_id: Option<NodeId>, description: T) -> Rc<RefCell<dyn Node>> {
+    pub(crate) fn new(id: NodeId, parent_id: Option<NodeId>, description: T, instructions: Weak<RefCell<Vec<Instruction>>>) -> Rc<RefCell<dyn Node>> {
         Rc::new(RefCell::new(Self {
             id,
             parent_id,
             description,
+            instructions,
         }))
     }
 }

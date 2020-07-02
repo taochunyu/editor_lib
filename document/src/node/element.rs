@@ -1,9 +1,10 @@
 use std::rc::Rc;
 use std::any::Any;
-use crate::node::element_type::ElementType;
+use crate::node::element_type::{ElementType, OuterDOM, ContentDOM};
 use crate::node::Node;
 use crate::node::fragment::Fragment;
 use crate::node::text::Text;
+use crate::view::View;
 
 pub struct Element<T: ElementType> {
     attributes: Rc<T::Attributes>,
@@ -86,6 +87,12 @@ impl<T: ElementType> Node for Element<T> {
             },
             None => format!("<{} />", T::name()),
         }
+    }
+
+    fn render(self: Rc<Self<>>, view: Rc<View>) -> (OuterDOM, ContentDOM) {
+        let attrs = self.clone().attributes.clone();
+
+        T::render(view, self, attrs)
     }
 }
 

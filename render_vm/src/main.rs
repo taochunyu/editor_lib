@@ -5,13 +5,13 @@ use render_vm::html::paragraph::Paragraph;
 use render_vm::html::text::Text;
 use render_vm::html::operation::append_child;
 
-fn main() -> Result<(), String> {
-    let mut ui = UI::new()?;
+fn main() {
+    let mut ui = UI::new();
 
-    let p1 = ui.create_element::<Paragraph>(())?;
-    let t1 = ui.create_element::<Text>("1234")?;
+    let p1 = ui.create_element::<Paragraph>(());
+    let t1 = ui.create_element::<Text>(String::from("1234"));
 
     append_child(p1, t1);
 
-    Ok(())
+    println!("{}", ui.flush().join(" "));
 }
