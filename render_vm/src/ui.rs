@@ -11,16 +11,16 @@ pub struct UI {
 }
 
 impl UI {
-    pub fn new() -> Result<UI, String> {
+    pub fn new() -> UI {
         let instructions = Rc::new(RefCell::new(vec![]));
-        let description = Div::new(())?;
+        let description = Div::new(());
         let root_element = TypedNode::new(0, None, description);
 
-        Ok(UI {
+        UI {
             id_counter: 0,
             root_element,
             instructions,
-        })
+        }
     }
 
     fn generate_element_id(&mut self) -> NodeId {
@@ -41,11 +41,11 @@ impl UI {
 
     pub fn create_element<T: NodeDescription>(
         &mut self,
-        attrs: <T as NodeDescription>::Attributes,
-    ) -> Result<Rc<RefCell<dyn Node>>, String> {
+        attrs: <T as NodeDescription>::Attributes
+    ) -> Rc<RefCell<dyn Node>> {
         let id = self.generate_element_id();
-        let description = T::new(attrs)?;
+        let description = T::new(attrs);
 
-        Ok(TypedNode::new(id, None, description))
+        TypedNode::new(id, None, description)
     }
 }

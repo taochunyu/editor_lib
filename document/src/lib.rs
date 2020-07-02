@@ -1,11 +1,7 @@
 mod node_types;
 mod document;
-// pub mod doc;
-// pub mod n;
 mod node;
-// mod position;
-// pub mod slice;
-// pub mod view;
+mod view;
 
 #[cfg(test)]
 mod tests {

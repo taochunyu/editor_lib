@@ -1,7 +1,22 @@
-use std::cell::RefCell;
 use std::rc::Rc;
+use std::cell::{RefCell, RefMut};
+use render_vm::ui::UI;
 
-mod node_view_description;
-mod updater;
+pub struct View {
+    ui: RefCell<UI>,
+}
 
-type Shared<T> = Rc<RefCell<T>>;
+impl View {
+    fn new() -> Rc<Self> {
+        match UI::new() {
+            Ok(ui) => {
+                Rc::new(Self { ui: RefCell::new(ui) })
+            },
+            Err(msg) => panic!(msg),
+        }
+    }
+
+    pub fn ui(&self) -> RefMut<UI>{
+        self.ui.borrow_mut()
+    }
+}

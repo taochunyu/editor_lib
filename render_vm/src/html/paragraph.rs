@@ -13,8 +13,8 @@ impl NodeDescription for Paragraph {
         "paragraph"
     }
 
-    fn new(attrs: Self::Attributes) -> Result<Self, String> {
-        Ok(Paragraph { children: vec![] })
+    fn new(_attrs: Self::Attributes) -> Self {
+        Paragraph { children: vec![] }
     }
 
     fn to_instruction(&self) -> Vec<String> {
@@ -25,9 +25,7 @@ impl NodeDescription for Paragraph {
         self.children.clone()
     }
 
-    fn append_child(&mut self, child: Rc<RefCell<dyn Node>>) -> Result<(), String> {
+    fn append_child(&mut self, child: Rc<RefCell<dyn Node>>) {
         self.children.push(child);
-
-        Ok(())
     }
 }

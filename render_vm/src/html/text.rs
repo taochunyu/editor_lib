@@ -11,8 +11,8 @@ impl NodeDescription for Text {
         "text"
     }
 
-    fn new(attrs: Self::Attributes) -> Result<Self, String> {
-        Ok(Text { content: String::from(attrs) })
+    fn new(attrs: Self::Attributes) -> Self {
+        Text { content: String::from(attrs) }
     }
 
     fn to_instruction(&self) -> Vec<String> {

@@ -18,12 +18,12 @@ pub trait NodeDescription: Sized + 'static {
     type Attributes;
 
     fn name() -> &'static str;
-    fn new(attrs: Self::Attributes) -> Result<Self, String>;
+    fn new(attrs: Self::Attributes) -> Self;
     fn to_instruction(&self) -> Vec<String>;
     fn children(&self) -> Vec<Rc<RefCell<dyn Node>>> {
         vec![]
     }
-    fn append_child(&mut self, _child: Rc<RefCell<dyn Node>>) -> Result<(), String> {
+    fn append_child(&mut self, _child: Rc<RefCell<dyn Node>>) {
         unimplemented!()
     }
     fn insert_before(self, _base: NodeId, _node: Rc<RefCell<dyn Node>>) -> Result<(), String> {
@@ -64,10 +64,8 @@ impl<T: NodeDescription> Node for TypedNode<T> {
         self.parent_id = parent_id;
     }
 
-    fn append_child(&mut self, child: Rc<RefCell<dyn Node>>) -> Result<(), String> {
-        self.description.append_child(child)?;
-
-        Ok(())
+    fn append_child(&mut self, child: Rc<RefCell<dyn Node>>) {
+        self.description.append_child(child);
     }
 }
 
