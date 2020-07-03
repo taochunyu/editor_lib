@@ -24,10 +24,12 @@ pub struct View {
 impl View {
     pub fn new(root_node: Rc<dyn Node>) -> Rc<Self> {
         let ui = RefCell::new(UI::new());
+        let ui_root = ui.borrow().root();
         let dom = ui.borrow_mut().create_element::<Div>(());
+
         let view = Rc::new(View {
             ui,
-            dom,
+            dom: dom.clone(),
             root_node: RefCell::new(root_node.clone()),
             node_view_tree: RefCell::new(NodeViewTree { root: None }),
         });
@@ -42,7 +44,7 @@ impl View {
 
         view.clone().node_view_tree.borrow_mut().root = Some(root_node_view.clone());
 
-        // append_child(view.dom.clone(), root_node_view.borrow().dom());
+        append_child(ui_root, dom.clone());
 
         view
     }

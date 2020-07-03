@@ -12,18 +12,23 @@ const map = {
     "0": $root,
 };
 
+window.map = map;
+
 export const handleInstruction = instruction => {
     const parsed = JSON.parse(instruction);
     const [type, payload] = parsed;
 
     if (type === "append") {
         const [id, parentId, name, ...props] = payload;
-        const $element = createTag(name, props);
-
-
+        const $element = map[id];
         const $parent = map[parentId];
 
-        map[id] = $element;
         $parent.appendChild($element);
+    }
+
+    if (type === "create") {
+        const [id, _, name, ...props] = payload;
+
+        map[id] = createTag(name, props);
     }
 }

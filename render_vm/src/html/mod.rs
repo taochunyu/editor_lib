@@ -67,19 +67,14 @@ impl<T: NodeDescription> Node for TypedNode<T> {
     }
 
     fn append_child(&mut self, child: Rc<RefCell<dyn Node>>) {
-        child.borrow_mut().set_parent_id(Some(self.id));
+        self.description.append_child(child.clone());
 
-        self.description.append_child(child);
+        let mut child_mut = child.borrow_mut();
+
+        child_mut.set_parent_id(Some(self.id));
 
         if let Some(instructions) = self.instructions.upgrade() {
-            let mut children = self.children().iter()
-                .map(|node| node.borrow().description())
-                .map(|description| Instruction::Append(description))
-                .collect::<Vec<Instruction>>();
-            let mut mut_instructions = instructions.borrow_mut();
-
-            mut_instructions.push(Instruction::Append(self.description()));
-            mut_instructions.append(&mut children);
+            instructions.borrow_mut().push(Instruction::Append(child_mut.description()));
         };
     }
 }

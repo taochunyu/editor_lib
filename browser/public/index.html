@@ -3,18 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
-    <style>
-        #root > div {
-            height: 10px;
-            width: 100px;
-            margin: 10px;
-            background: red;
-        }
-        #root > div > div {
-            height: 8px;
-            background: gray;
-        }
-    </style>
 </head>
 <body>
     <div id="root"></div>
@@ -30,7 +18,13 @@
             }
         }
 
-        document.addEventListener("keydown", () => window.trigger());
+        document.addEventListener("keydown", () => {
+            let t = performance.now();
+
+            window.trigger()
+
+            console.log(performance.now() - t);
+        });
 
         const main = async () => {
             await init();

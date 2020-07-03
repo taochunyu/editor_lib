@@ -46,7 +46,14 @@ impl UI {
         let id = self.generate_element_id();
         let description = T::new(attrs);
         let instructions = Rc::downgrade(&self.instructions);
+        let element = TypedNode::new(id, None, description, instructions);
 
-        TypedNode::new(id, None, description, instructions)
+        self.instructions.borrow_mut().push(Instruction::Create(element.borrow().description()));
+
+        element
+    }
+
+    pub fn root(&self) -> Rc<RefCell<dyn Node>> {
+        self.root_element.clone()
     }
 }

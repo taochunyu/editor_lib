@@ -22,12 +22,19 @@ pub struct InstructionStream {
 impl InstructionStream {
     #[wasm_bindgen(constructor)]
     pub fn new() -> InstructionStream {
-        let hello = Document::create_text("hello");
-        let paragraph = Document::create_element::<Paragraph>(
-            (),
-            Some(vec![hello]),
-        );
-        let doc = Document::create_element::<Root>((), Some(vec![paragraph]));
+        let mut children = vec![];
+
+        for _ in 0..10000 {
+            let hello = Document::create_text("hello");
+            let paragraph = Document::create_element::<Paragraph>(
+                (),
+                Some(vec![hello]),
+            );
+
+            children.push(paragraph);
+        }
+
+        let doc = Document::create_element::<Root>((), Some(children));
 
         let view = View::new(doc);
 
