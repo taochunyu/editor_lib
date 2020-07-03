@@ -8,6 +8,7 @@ use render_vm::html;
 use render_vm::html::div::Div;
 use crate::view::node_view::NodeView;
 use crate::node::Node;
+use render_vm::html::operation::append_child;
 
 struct NodeViewTree {
     root: Option<Rc<RefCell<NodeView>>>,
@@ -21,7 +22,7 @@ pub struct View {
 }
 
 impl View {
-    pub(crate) fn new(root_node: Rc<dyn Node>) -> Rc<Self> {
+    pub fn new(root_node: Rc<dyn Node>) -> Rc<Self> {
         let ui = RefCell::new(UI::new());
         let dom = ui.borrow_mut().create_element::<Div>(());
         let view = Rc::new(View {
@@ -39,7 +40,9 @@ impl View {
             0,
         );
 
-        view.clone().node_view_tree.borrow_mut().root = Some(root_node_view);
+        view.clone().node_view_tree.borrow_mut().root = Some(root_node_view.clone());
+
+        append_child(view.dom.clone(), root_node_view.borrow().dom());
 
         view
     }

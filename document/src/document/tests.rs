@@ -22,5 +22,5 @@ fn it_works() {
 
     let view = View::new(doc);
 
-    println!("{:?}", view.ui().flush());
+    println!("{}", view.ui().flush().join(""));
 }

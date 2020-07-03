@@ -7,7 +7,7 @@ use crate::node_types::root::Root;
 #[cfg(test)]
 mod tests;
 
-struct Document {
+pub struct Document {
     root: Rc<dyn Node>,
 }
 

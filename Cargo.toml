@@ -2,5 +2,5 @@
 members=[
     "document",
     "render_vm",
-    "render_vm/examples/browser"
+    "browser",
 ]

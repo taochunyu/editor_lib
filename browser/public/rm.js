@@ -1,15 +1,8 @@
-const handleRectangular = props => {
-    return document.createElement("p");
-}
-
-const handleText = props => {
-    return new Text(props[0]);
-}
-
 const createTag = (name, props) => {
     switch (name) {
-        case "rectangular": return handleRectangular(props);
-        case "text": return handleText(props);
+        case "div": return document.createElement("div");
+        case "paragraph": return document.createElement("p");
+        case "text": return document.createTextNode(props);
     }
 }
 

@@ -1,12 +1,4 @@
-mod node_types;
-mod document;
-mod node;
-mod view;
-
-#[cfg(test)]
-mod tests {
-    #[test]
-    fn it_works() {
-        assert_eq!(2 + 2, 4);
-    }
-}
+pub mod node_types;
+pub mod document;
+pub mod node;
+pub mod view;
