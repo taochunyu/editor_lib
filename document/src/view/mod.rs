@@ -42,7 +42,7 @@ impl View {
 
         view.clone().node_view_tree.borrow_mut().root = Some(root_node_view.clone());
 
-        append_child(view.dom.clone(), root_node_view.borrow().dom());
+        // append_child(view.dom.clone(), root_node_view.borrow().dom());
 
         view
     }
