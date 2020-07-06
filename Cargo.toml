@@ -1,6 +1,6 @@
 [workspace]
 members=[
-    "document",
-    "render_vm",
     "browser",
+    "document",
+    "renderer",
 ]

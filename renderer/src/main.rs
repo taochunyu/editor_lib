@@ -1,9 +1,9 @@
 use std::rc::Rc;
-use render_vm::ui::UI;
-use render_vm::html::div::Div;
-use render_vm::html::paragraph::Paragraph;
-use render_vm::html::text::Text;
-use render_vm::html::operation::append_child;
+use renderer::ui::UI;
+use renderer::html::div::Div;
+use renderer::html::paragraph::Paragraph;
+use renderer::html::text::Text;
+use renderer::html::operation::append_child;
 
 fn main() {
     let mut ui = UI::new();

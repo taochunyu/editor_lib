@@ -1,6 +1,6 @@
 use std::rc::Rc;
 use std::any::Any;
-use render_vm::html::text;
+use renderer::html::text;
 use crate::node::fragment::Fragment;
 use crate::node::element_type::{OuterDOM, ContentDOM};
 use crate::view::View;

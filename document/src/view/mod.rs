@@ -3,12 +3,12 @@ mod node_view;
 
 use std::rc::Rc;
 use std::cell::{RefCell, RefMut};
-use render_vm::ui::UI;
-use render_vm::html;
-use render_vm::html::div::Div;
+use renderer::ui::UI;
+use renderer::html;
+use renderer::html::div::Div;
 use crate::view::node_view::NodeView;
 use crate::node::Node;
-use render_vm::html::operation::append_child;
+use renderer::html::operation::append_child;
 
 struct NodeViewTree {
     root: Option<Rc<RefCell<NodeView>>>,

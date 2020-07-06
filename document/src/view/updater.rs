@@ -3,7 +3,7 @@ use std::cell::{RefCell, RefMut};
 use crate::view::node_view::NodeView;
 use crate::node::Node;
 use crate::view::View;
-use render_vm::html::operation::append_child;
+use renderer::html::operation::append_child;
 
 pub struct Updater {
     top: Rc<RefCell<NodeView>>,

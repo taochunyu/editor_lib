@@ -1,6 +1,6 @@
 use std::rc::Rc;
 use std::cell::RefCell;
-use render_vm::html;
+use renderer::html;
 use crate::node::Node;
 use crate::view::View;
 use crate::view::updater::Updater;

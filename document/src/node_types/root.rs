@@ -1,5 +1,5 @@
 use std::rc::Rc;
-use render_vm::html::div::Div;
+use renderer::html::div::Div;
 use crate::node::element_type::{ElementType, OuterDOM, ContentDOM};
 use crate::node::Node;
 use crate::view::View;

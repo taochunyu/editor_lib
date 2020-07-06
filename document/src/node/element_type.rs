@@ -1,5 +1,5 @@
 use std::rc::Rc;
-use render_vm::html;
+use renderer::html;
 use std::cell::RefCell;
 use crate::node::Node;
 use crate::node::fragment::Fragment;

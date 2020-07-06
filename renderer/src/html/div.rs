@@ -1,24 +1,22 @@
 use std::rc::Rc;
 use std::cell::RefCell;
-use crate::html::{Node, NodeDescription};
+use crate::html::{HtmlNode, HtmlNodeType};
+use crate::host::Host;
 
-pub struct Div {
-    children: Vec<Rc<RefCell<dyn Node>>>,
+pub struct Div<H: Host> {
+    render_host: H,
+    instance:
 }
 
-impl NodeDescription for Div {
+impl<H: Host> HtmlNodeType for Div<H> {
     type Attributes = ();
 
     fn name() -> &'static str {
         "div"
     }
 
-    fn new(_attrs: Self::Attributes) -> Self {
-        Div { children: vec![] }
-    }
-
-    fn to_instruction(&self) -> Vec<String> {
-        vec![String::from(Self::name())]
+    fn new(host: H,_attrs: Self::Attributes) -> Self {
+        Self
     }
 
     fn children(&self) -> Vec<Rc<RefCell<dyn Node>>> {

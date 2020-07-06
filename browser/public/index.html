@@ -7,38 +7,9 @@
 <body>
     <div id="root"></div>
     <script type="module">
-        import init, { InstructionStream } from "../pkg/browser.js";
-        import { handleInstruction } from "./rm.js";
+        import init from "../pkg/browser.js";
 
-
-        window.stream = {
-            write: (ins) => {
-                console.log(ins);
-                ins.forEach(handleInstruction)
-            }
-        }
-
-        document.addEventListener("keydown", () => {
-            let t = performance.now();
-
-            window.trigger()
-
-            console.log(performance.now() - t);
-        });
-
-        const main = async () => {
-            await init();
-
-            const stream = new InstructionStream();
-
-            const t1 = performance.now();
-
-            window.trigger = () => stream.trigger_wasm();
-
-            console.log(performance.now() - t1);
-        }
-
-        main();
+        init();
     </script>
 </body>
 </html>

@@ -6,7 +6,7 @@ use document::view::View;
 use document::node_types::paragraph::Paragraph;
 use document::node_types::root::Root;
 use document::document::Document;
-use render_vm::instruction::Instruction;
+use renderer::instruction::Instruction;
 use std::collections::HashMap;
 
 enum Node {
@@ -102,6 +102,17 @@ impl InstructionStream {
                 }
             }
         }
+    }
+
+    pub fn trigger_test(&self) {
+        let root = self.document.query_selector("#root").unwrap().unwrap();
+        let mut html = String::new();
+
+        for _ in 0..10000 {
+            html.push_str("<p>hello</p>");
+        }
+
+        root.set_inner_html(html.as_str());
     }
 }
 
