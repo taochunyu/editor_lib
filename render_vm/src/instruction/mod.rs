@@ -5,7 +5,7 @@ pub enum Instruction {
     // [id, parent id, type, ...props]
     Append(Description),
     // [id, type, index, props, ...]
-    Update(Description),
+    // Update(Description),
 }
 
 impl Instruction {
@@ -13,7 +13,7 @@ impl Instruction {
         match self {
             Instruction::Create(desc) => format!("[\"create\", {:?}]", desc),
             Instruction::Append(desc) => format!("[\"append\", {:?}]", desc),
-            Instruction::Update(desc) => format!("[\"update\", {:?}]", desc),
+            // Instruction::Update(desc) => format!("[\"update\", {:?}]", desc),
         }
     }
 }

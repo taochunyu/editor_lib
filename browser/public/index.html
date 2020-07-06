@@ -33,7 +33,7 @@
 
             const t1 = performance.now();
 
-            window.trigger = () => stream.trigger();
+            window.trigger = () => stream.trigger_wasm();
 
             console.log(performance.now() - t1);
         }

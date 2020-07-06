@@ -39,6 +39,10 @@ impl UI {
         result
     }
 
+    pub fn instructions(&self) -> Rc<RefCell<Vec<Instruction>>> {
+        self.instructions.clone()
+    }
+
     pub fn create_element<T: NodeDescription>(
         &mut self,
         attrs: <T as NodeDescription>::Attributes
