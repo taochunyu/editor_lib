@@ -1,50 +1,24 @@
-pub mod text;
+pub mod p;
 pub mod div;
-pub mod paragraph;
 
-use std::rc::{Rc, Weak};
-use std::cell::RefCell;
-use crate::instruction::Instruction;
 use crate::host::Host;
 
-pub trait HtmlNode {
-    fn children(&self) -> Vec<Rc<RefCell<dyn HtmlNode>>>;
-    fn append_child(&mut self, child: Rc<RefCell<dyn HtmlNode>>);
+pub trait Tag<H: Host> {
+    fn create(host: &H) -> HtmlNode<H>;
 }
 
-pub trait HtmlNodeType: Sized + 'static {
-    type Host: Host;
-    type Attributes;
-
-    fn name() -> &'static str;
-    fn new(host: Self::Host, attrs: Self::Attributes) -> Self;
-    fn children(&self) -> Vec<Rc<RefCell<dyn HtmlNode>>> {
-        vec![]
-    }
-    fn append_child(&mut self, _child: Rc<RefCell<dyn HtmlNode>>) {
-        unimplemented!()
-    }
+pub struct HtmlNode<H: Host> {
+    instance: H::Instance,
 }
 
-pub struct HtmlNodeState<T: HtmlNodeType> {
-    state: T,
-}
-
-impl<T: HtmlNodeType> HtmlNode for HtmlNodeState<T> {
-
-    fn children(&self) -> Vec<Rc<RefCell<dyn HtmlNode>>> {
-        self.state.children()
+impl<H: Host> HtmlNode<H> {
+    pub(crate) fn new(instance: H::Instance) -> Self {
+        Self { instance }
     }
 
-    fn append_child(&mut self, child: Rc<RefCell<dyn HtmlNode>>) {
-        self.state.append_child(child.clone());
-    }
-}
+    pub fn append_child(&self, child: HtmlNode<H>) -> &Self {
+        H::append_child(&self.instance, child.instance);
 
-impl<T: HtmlNodeType> HtmlNodeState<T> {
-    pub(crate) fn new(attrs: T::Attributes) -> Rc<RefCell<dyn HtmlNode>> {
-        Rc::new(RefCell::new(Self {
-            state: T::new(attrs),
-        }))
+        self
     }
 }

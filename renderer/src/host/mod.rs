@@ -1,17 +1,11 @@
-enum Union<I, TI> {
-    Instance(I),
-    TextInstance(TI),
-}
-
 pub trait Host {
     type Instance;
-    type TextInstance;
 
-    fn create_instance() -> Self::Instance;
+    fn root_instance(&self) -> Self::Instance;
 
-    fn create_text_instance() -> Self::TextInstance;
+    fn create_instance(&self, name: &str) -> Self::Instance;
 
-    fn create_root_instance() -> Self::Instance;
+    fn create_text_instance(&self, content: &str) -> Self::Instance;
 
-    fn append_child(parent: &Self::Instance, child: Union<&Self::Instance, &Self::TextInstance>);
+    fn append_child(parent: &Self::Instance, child: Self::Instance);
 }

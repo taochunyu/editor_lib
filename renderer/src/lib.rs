@@ -1,30 +1,32 @@
 pub mod host;
 pub mod html;
 
-use std::rc::Rc;
-use std::cell::RefCell;
 use crate::host::Host;
-use crate::html::HtmlNodeType;
+use crate::html::{Tag, HtmlNode};
 
 pub struct Renderer<H: Host> {
     host: H,
-    root: H::Instance,
+    root: HtmlNode<H>,
 }
 
 impl<H: Host> Renderer<H> {
     pub fn new(host: H) -> Self {
-        let root = H::create_root_instance();
+        let root = HtmlNode::new(host.root_instance());
 
         Self { host, root }
     }
 
-    pub fn create_element<T: HtmlNodeType>(
-        &mut self,
-        attrs: <T as HtmlNodeType>::Attributes
-    ) -> {
+    pub fn create_element<T: Tag<H>>(&self) -> HtmlNode<H> {
+        T::create(&self.host)
     }
 
-    pub fn root(&self) -> Rc<RefCell<dyn Node>> {
-        self.root_element.clone()
+    pub fn create_text_node(&self, content: &str) -> HtmlNode<H> {
+        let instance = self.host.create_text_instance(content);
+
+        HtmlNode::new(instance)
+    }
+
+    pub fn root(&self) -> &HtmlNode<H> {
+        &self.root
     }
 }
