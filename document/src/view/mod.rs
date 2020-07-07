@@ -3,22 +3,18 @@ mod node_view;
 
 use std::rc::Rc;
 use std::cell::{RefCell, RefMut};
-use renderer::ui::UI;
-use renderer::html;
+use renderer::{html, Renderer};
 use renderer::html::div::Div;
+use renderer::html::operation::append_child;
+use renderer::host::Host;
+use renderer::html::HtmlNode;
 use crate::view::node_view::NodeView;
 use crate::node::Node;
-use renderer::html::operation::append_child;
 
-struct NodeViewTree {
-    root: Option<Rc<RefCell<NodeView>>>,
-}
-
-pub struct View {
-    ui: RefCell<UI>,
-    dom: Rc<RefCell<dyn html::Node>>,
+pub struct View<H: Host> {
+    renderer: Renderer<H>,
     root_node: RefCell<Rc<dyn Node>>,
-    node_view_tree: RefCell<NodeViewTree>,
+    root_html_node: HtmlNode<H>,
 }
 
 impl View {

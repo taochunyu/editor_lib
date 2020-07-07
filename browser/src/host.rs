@@ -3,14 +3,16 @@ use renderer::host::Host;
 
 pub struct Browser {
     document: Document,
-    root_instance: Node,
+    root_id: &'static str,
 }
 
 impl Host for Browser {
     type Instance = Node;
 
     fn root_instance(&self) -> Self::Instance {
-        self.root_instance
+        let document = window().unwrap().document().unwrap();
+
+        document.query_selector(self.root_id).unwrap().unwrap().into()
     }
 
     fn create_instance(&self, name: &str) -> Self::Instance {
@@ -22,15 +24,15 @@ impl Host for Browser {
     }
 
     fn append_child(parent: &Self::Instance, child: Self::Instance) {
+        web_sys::console::log_1(&"1234".into());
         parent.append_child(&child);
     }
 }
 
 impl Browser {
-    pub fn new(root_id: &str) -> Self {
+    pub fn new(root_id: &'static str) -> Self {
         let document = window().unwrap().document().unwrap();
-        let root_instance: Node = document.query_selector(root_id).unwrap().unwrap().into();
 
-        Self { document, root_instance }
+        Self { document, root_id }
     }
 }

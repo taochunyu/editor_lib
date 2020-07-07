@@ -3,25 +3,16 @@ mod host;
 use web_sys::{window, Node};
 use wasm_bindgen::prelude::*;
 use renderer::Renderer;
-use crate::host::Browser;
 use renderer::html::div::Div;
-
-#[wasm_bindgen]
-extern "C" {
-    #[wasm_bindgen(js_namespace = stream)]
-    fn write(s: &str);
-}
+use crate::host::Browser;
 
 
-#[wasm_bindgen]
 pub struct App {
     renderer: Renderer<Browser>,
     root: Node,
 }
 
-#[wasm_bindgen]
 impl App {
-    #[wasm_bindgen(constructor)]
     pub fn new() -> Self {
         let host = Browser::new("#root");
         let document = web_sys::window().unwrap().document().unwrap();
@@ -40,11 +31,19 @@ impl App {
     }
 }
 
+#[wasm_bindgen(start)]
+pub fn start() {
+    let app = App::new();
+
+    app.trigger_test();
+}
+
 #[cfg(test)]
 mod tests {
+    use crate::start;
+
     #[test]
     fn it_works() {
-
     }
 }
 

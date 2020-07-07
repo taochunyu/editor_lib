@@ -74,3 +74,14 @@ impl dyn Node {
         replace(self, from, to, slice)
     }
 }
+
+pub fn create_node<T: ElementType>(
+    attrs: T::Attributes,
+    children: Option<Vec<Rc<dyn Node>>>,
+) -> Rc<dyn Node> {
+    T::create(Rc::new(attrs), children)
+}
+
+pub fn create_text_node(content: &str) -> Rc<dyn Node> {
+    Text::new(String::from(content))
+}
