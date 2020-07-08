@@ -23,9 +23,8 @@ impl Host for Browser {
         self.document.create_text_node(content).into()
     }
 
-    fn append_child(parent: &Self::Instance, child: Self::Instance) {
-        web_sys::console::log_1(&"1234".into());
-        parent.append_child(&child);
+    fn append_child(parent: &Self::Instance, child: &Self::Instance) {
+        parent.append_child(child);
     }
 }
 

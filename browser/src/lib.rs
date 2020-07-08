@@ -1,7 +1,8 @@
 mod host;
 
-use web_sys::{window, Node};
+use web_sys::{window, Node, EventTarget};
 use wasm_bindgen::prelude::*;
+use wasm_bindgen::JsCast;
 use renderer::Renderer;
 use renderer::html::div::Div;
 use crate::host::Browser;
@@ -25,25 +26,24 @@ impl App {
     }
 
     pub fn trigger_test(&self) {
+        let text = self.renderer.create_text_node("hello");
         let div = self.renderer.create_element::<Div>();
 
-        self.renderer.root().append_child(div);
+        div.append_child(text.into());
+
+        self.renderer.root().append_child(div.into());
     }
 }
 
 #[wasm_bindgen(start)]
 pub fn start() {
     let app = App::new();
+    let document = web_sys::window().unwrap().document().unwrap();
+    let event_target: EventTarget = document.into();
+    let handle_keydown = Closure::wrap(Box::new(move || {
+        app.trigger_test();
+    }) as Box<dyn FnMut()>);
 
-    app.trigger_test();
+    event_target.add_event_listener_with_callback("keydown", handle_keydown.as_ref().unchecked_ref());
+    handle_keydown.forget();
 }
-
-#[cfg(test)]
-mod tests {
-    use crate::start;
-
-    #[test]
-    fn it_works() {
-    }
-}
-

@@ -5,6 +5,7 @@ use crate::node::Node;
 use crate::node::fragment::Fragment;
 use crate::node::text::Text;
 use crate::view::View;
+use renderer::host::Host;
 
 pub struct Element<T: ElementType> {
     attributes: Rc<T::Attributes>,
@@ -89,7 +90,7 @@ impl<T: ElementType> Node for Element<T> {
         }
     }
 
-    fn render(self: Rc<Self<>>, view: Rc<View>) -> (OuterDOM, ContentDOM) {
+    fn render<H: Host>(self: Rc<Self<>>, view: Rc<View<H>>) -> (OuterDOM<H>, ContentDOM<H>) {
         let attrs = self.clone().attributes.clone();
 
         T::render(view, self, attrs)

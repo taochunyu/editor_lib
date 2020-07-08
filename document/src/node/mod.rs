@@ -10,6 +10,7 @@ use crate::node::slice::Slice;
 use crate::node::replace::replace;
 use crate::view::View;
 use std::cell::RefCell;
+use renderer::host::Host;
 
 pub mod element_type;
 mod fragment;
@@ -30,7 +31,7 @@ pub trait Node {
     fn children(&self) -> Option<Rc<Fragment>>;
     fn replace_children(&self, new_children: Option<Rc<Fragment>>) -> Result<Rc<dyn Node>, String>;
     fn to_html_string(&self) -> String;
-    fn render(self: Rc<Self>, view: Rc<View>) -> (OuterDOM, ContentDOM);
+    fn render<H: Host>(self: Rc<Self>, view: Rc<View<H>>) -> (OuterDOM<H>, ContentDOM<H>);
 }
 
 impl dyn Node {

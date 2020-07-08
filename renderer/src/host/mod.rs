@@ -7,5 +7,5 @@ pub trait Host {
 
     fn create_text_instance(&self, content: &str) -> Self::Instance;
 
-    fn append_child(parent: &Self::Instance, child: Self::Instance);
+    fn append_child(parent: &Self::Instance, child: &Self::Instance);
 }

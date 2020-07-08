@@ -1,10 +1,11 @@
 use std::rc::Rc;
 use std::any::Any;
-use renderer::html::text;
 use crate::node::fragment::Fragment;
 use crate::node::element_type::{OuterDOM, ContentDOM};
 use crate::view::View;
 use crate::node::Node;
+use renderer::host::Host;
+use renderer::html::HtmlNode;
 
 
 pub struct Text {
@@ -64,10 +65,10 @@ impl Node for Text {
         }
     }
 
-    fn render(self: Rc<Self>, view: Rc<View>) -> (OuterDOM, ContentDOM) {
-        let text = view.clone().ui().create_element::<text::Text>(self.content.clone());
+    fn render<H: Host>(self: Rc<Self>, view: Rc<View<H>>) -> (OuterDOM<H>, ContentDOM<H>) {
+        let text = view.renderer().create_text_node(self.content.clone().as_str());
 
-        (text, None)
+        (Rc::new(HtmlNode::from(text)), None)
     }
 }
 

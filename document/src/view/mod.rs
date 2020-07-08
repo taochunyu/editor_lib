@@ -2,50 +2,45 @@ mod updater;
 mod node_view;
 
 use std::rc::Rc;
-use std::cell::{RefCell, RefMut};
-use renderer::{html, Renderer};
-use renderer::html::div::Div;
-use renderer::html::operation::append_child;
+use std::cell::RefCell;
+use renderer::Renderer;
 use renderer::host::Host;
-use renderer::html::HtmlNode;
-use crate::view::node_view::NodeView;
+use renderer::html::HtmlElement;
 use crate::node::Node;
+use crate::state::State;
+use crate::view::node_view::NodeView;
 
-pub struct View<H: Host> {
-    renderer: Renderer<H>,
-    root_node: RefCell<Rc<dyn Node>>,
-    root_html_node: HtmlNode<H>,
+struct StateCell {
+    state: State,
+    test_count: u64,
 }
 
-impl View {
-    pub fn new(root_node: Rc<dyn Node>) -> Rc<Self> {
-        let ui = RefCell::new(UI::new());
-        let ui_root = ui.borrow().root();
-        let dom = ui.borrow_mut().create_element::<Div>(());
+pub struct View<H: Host> {
+    renderer: Rc<Renderer<H>>,
+    root_html_element: Rc<HtmlElement<H>>,
+    // root_node_view: Rc<RefCell<NodeView>>,
+    state_cell: RefCell<StateCell>,
+}
 
-        let view = Rc::new(View {
-            ui,
-            dom: dom.clone(),
-            root_node: RefCell::new(root_node.clone()),
-            node_view_tree: RefCell::new(NodeViewTree { root: None }),
-        });
-        let root_node_view = NodeView::new(
-            root_node,
-            None,
-            view.dom.clone(),
-            Some(view.dom.clone()),
-            view.clone(),
-            0,
-        );
-
-        view.clone().node_view_tree.borrow_mut().root = Some(root_node_view.clone());
-
-        append_child(ui_root, dom.clone());
-
-        view
+impl<H: Host> View<H> {
+    pub fn new(renderer: Rc<Renderer<H>>, root_html_element: Rc<HtmlElement<H>>, state: State) -> Rc<Self> {
+        Rc::new(Self {
+            renderer,
+            root_html_element,
+            state_cell: RefCell::new(StateCell {
+                state,
+                test_count: 0,
+            }),
+        })
     }
 
-    pub fn ui(&self) -> RefMut<UI>{
-        self.ui.borrow_mut()
+    pub(crate) fn renderer(&self) -> Rc<Renderer<H>> {
+        self.renderer.clone()
+    }
+
+    pub fn dispatch(&self) {
+        let state_cell = self.state_cell.borrow_mut();
+
+        state_cell.test_count += 1;
     }
 }
