@@ -1,13 +1,14 @@
-use crate::html::HtmlVoidElement;
+use std::rc::Rc;
 use crate::host::Host;
+use crate::html::HtmlVoidElement;
 use crate::html::tag::HtmlVoidElementTag;
 
-pub struct Div;
+pub struct Img;
 
-impl<H: Host> HtmlVoidElementTag<H> for Div {
-    fn create(host: &H) -> HtmlVoidElement<H> {
+impl HtmlVoidElementTag for Img {
+    fn create(host: Rc<dyn Host>) -> HtmlVoidElement {
         let instance = host.create_instance("div");
 
-        HtmlVoidElement::new(instance)
+        HtmlVoidElement::new(host, instance)
     }
 }

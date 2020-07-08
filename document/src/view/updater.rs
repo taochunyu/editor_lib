@@ -3,28 +3,27 @@ use std::cell::{RefCell, RefMut};
 use crate::view::node_view::NodeView;
 use crate::node::Node;
 use crate::view::View;
-use renderer::host::Host;
 
-pub struct Updater<H: Host> {
-    top: Rc<RefCell<NodeView<H>>>,
+pub struct Updater {
+    top: Rc<RefCell<NodeView>>,
     index: usize,
     changed: bool,
 }
 
-impl<H: Host> Updater<H> {
-    pub(crate) fn new(top: Rc<RefCell<NodeView<H>>>) -> Updater<H> {
+impl Updater {
+    pub(crate) fn new(top: Rc<RefCell<NodeView>>) -> Updater {
         Self { top, index: 0, changed: false }
     }
 
-    pub(crate) fn add_node(&mut self, node: Rc<dyn Node>, view: Rc<View<H>>, offset: usize, parent: &mut NodeView<H>) {
+    pub(crate) fn add_node(&mut self, node: Rc<dyn Node>, view: Rc<View>, offset: usize, parent: &mut RefMut<NodeView>) {
         let node_view = NodeView::create(node, self.top.clone(), view.clone());
 
-        node_view.borrow_mut().update_children(view.clone(), offset);
+        NodeView::update_children(node_view.clone(), view.clone(), offset);
 
         parent.insert_child(self.index, node_view.clone());
 
         if let Some(content_dom) = parent.content_dom() {
-            content_dom.append_child(node_view.borrow().dom().as_ref());
+            content_dom.append_child(&node_view.borrow().dom());
         }
 
         self.index += 1;

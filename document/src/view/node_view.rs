@@ -1,27 +1,25 @@
 use std::rc::Rc;
 use std::cell::RefCell;
-use renderer::html;
-use renderer::host::Host;
 use crate::node::Node;
 use crate::view::View;
 use crate::view::updater::Updater;
 use renderer::html::{HtmlNode, HtmlElement};
 
-pub struct NodeView<H: Host> {
+pub struct NodeView {
     node: Rc<dyn Node>,
-    parent: Option<Rc<RefCell<NodeView<H>>>>,
-    children: Vec<Rc<RefCell<NodeView<H>>>>,
-    dom: Rc<HtmlNode<H>>,
-    content_dom: Option<Rc<HtmlElement<H>>>,
+    parent: Option<Rc<RefCell<NodeView>>>,
+    children: Vec<Rc<RefCell<NodeView>>>,
+    dom: HtmlNode,
+    content_dom: Option<HtmlElement>,
 }
 
-impl<H: Host> NodeView<H> {
+impl NodeView {
     pub(crate) fn new(
         node: Rc<dyn Node>,
-        parent: Option<Rc<RefCell<NodeView<H>>>>,
-        dom: Rc<HtmlNode<H>>,
-        content_dom: Option<Rc<HtmlElement<H>>>,
-    ) -> Rc<RefCell<NodeView<H>>> {
+        parent: Option<Rc<RefCell<NodeView>>>,
+        dom: HtmlNode,
+        content_dom: Option<HtmlElement>,
+    ) -> Rc<RefCell<NodeView>> {
         Rc::new(RefCell::new(Self {
             node,
             parent,
@@ -33,34 +31,34 @@ impl<H: Host> NodeView<H> {
 
     pub(crate) fn create(
         node: Rc<dyn Node>,
-        parent: Rc<RefCell<NodeView<H>>>,
-        view: Rc<View<H>>,
-    ) -> Rc<RefCell<NodeView<H>>> {
+        parent: Rc<RefCell<NodeView>>,
+        view: Rc<View>,
+    ) -> Rc<RefCell<NodeView>> {
         let (dom, content_dom) = node.clone().render(view.clone());
 
         Self::new(node, Some(parent), dom, content_dom)
     }
 
-    pub(crate) fn insert_child(&mut self, index: usize, child: Rc<RefCell<NodeView<H>>>) {
+    pub(crate) fn insert_child(&mut self, index: usize, child: Rc<RefCell<NodeView>>) {
         self.children.insert(index, child);
     }
 
-    pub(crate) fn update_children(&mut self, view: Rc<View<H>>, offset: usize) {
-        let mut updater = Updater::new(self.node.clone());
-        let mut top = self;
+    pub(crate) fn dom(&self) -> HtmlNode {
+        self.dom.clone()
+    }
+
+    pub(crate) fn content_dom(&self) -> Option<HtmlElement> {
+        self.content_dom.clone()
+    }
+
+    pub(crate) fn update_children(node_view: Rc<RefCell<NodeView>>, view: Rc<View>, offset: usize) {
+        let mut updater = Updater::new(node_view.clone());
+        let mut top = node_view.borrow_mut();
 
         if let Some(children) = top.node.children() {
             for child in children.content() {
                 updater.add_node(child, view.clone(), offset, &mut top);
             }
         }
-    }
-
-    pub(crate) fn dom(&self) -> Rc<HtmlNode<H>> {
-        self.dom.clone()
-    }
-
-    pub(crate) fn content_dom(&self) -> Option<Rc<HtmlElement<H>>> {
-        self.content_dom.clone()
     }
 }

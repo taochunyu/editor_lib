@@ -1,3 +1,12 @@
+pub mod utils;
+pub mod element_type;
+mod fragment;
+pub mod slice;
+pub mod element;
+pub mod text;
+mod path;
+mod replace;
+
 use std::any::Any;
 use std::rc::Rc;
 use std::ops::Range;
@@ -10,15 +19,6 @@ use crate::node::slice::Slice;
 use crate::node::replace::replace;
 use crate::view::View;
 use std::cell::RefCell;
-use renderer::host::Host;
-
-pub mod element_type;
-mod fragment;
-pub mod slice;
-pub mod element;
-pub mod text;
-mod path;
-mod replace;
 
 pub trait Node {
     fn size(&self) -> usize;
@@ -31,7 +31,7 @@ pub trait Node {
     fn children(&self) -> Option<Rc<Fragment>>;
     fn replace_children(&self, new_children: Option<Rc<Fragment>>) -> Result<Rc<dyn Node>, String>;
     fn to_html_string(&self) -> String;
-    fn render<H: Host>(self: Rc<Self>, view: Rc<View<H>>) -> (OuterDOM<H>, ContentDOM<H>);
+    fn render(self: Rc<Self>, view: Rc<View>) -> (OuterDOM, ContentDOM);
 }
 
 impl dyn Node {
@@ -74,15 +74,4 @@ impl dyn Node {
     pub fn replace(self: Rc<Self>, from: usize, to: usize, slice: Slice) -> Result<Rc<dyn Node>, String> {
         replace(self, from, to, slice)
     }
-}
-
-pub fn create_node<T: ElementType>(
-    attrs: T::Attributes,
-    children: Option<Vec<Rc<dyn Node>>>,
-) -> Rc<dyn Node> {
-    T::create(Rc::new(attrs), children)
-}
-
-pub fn create_text_node(content: &str) -> Rc<dyn Node> {
-    Text::new(String::from(content))
 }

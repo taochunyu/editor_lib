@@ -4,6 +4,7 @@
 name = "browser"
 version = "0.1.0"
 dependencies = [
+ "document 0.1.0",
  "js-sys 0.3.41 (registry+https://github.com/rust-lang/crates.io-index)",
  "renderer 0.1.0",
  "wasm-bindgen 0.2.64 (registry+https://github.com/rust-lang/crates.io-index)",

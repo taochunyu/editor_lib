@@ -3,68 +3,92 @@ pub mod tag;
 pub mod p;
 pub mod div;
 
-use crate::host::Host;
+use std::rc::Rc;
+use crate::host::{Host, HostInstance};
 
-pub struct HtmlNode<H: Host> {
-    instance: H::Instance,
+#[derive(Clone)]
+pub struct HtmlNode {
+    host: Rc<dyn Host>,
+    instance: Rc<dyn HostInstance>,
 }
 
-pub struct HtmlTextNode<H: Host> {
-    instance: H::Instance,
+#[derive(Clone)]
+pub struct HtmlTextNode {
+    host: Rc<dyn Host>,
+    instance: Rc<dyn HostInstance>,
 }
 
-pub struct HtmlElement<H: Host> {
-    instance: H::Instance,
+#[derive(Clone)]
+pub struct HtmlElement {
+    host: Rc<dyn Host>,
+    instance: Rc<dyn HostInstance>,
 }
 
-pub struct HtmlVoidElement<H: Host> {
-    instance: H::Instance,
+#[derive(Clone)]
+pub struct HtmlVoidElement {
+    host: Rc<dyn Host>,
+    instance: Rc<dyn HostInstance>,
 }
 
-impl<H: Host> From<HtmlTextNode<H>> for HtmlNode<H> {
-    fn from(text_node: HtmlTextNode<H>) -> Self {
-        Self { instance: text_node.instance }
+impl From<HtmlTextNode> for HtmlNode {
+    fn from(text_node: HtmlTextNode) -> Self {
+        Self {
+            host: text_node.host.clone(),
+            instance: text_node.instance.clone(),
+        }
     }
 }
 
-impl<H: Host> From<HtmlElement<H>> for HtmlNode<H> {
-    fn from(html_element: HtmlElement<H>) -> Self {
-        Self { instance: html_element.instance }
+impl From<HtmlElement> for HtmlNode {
+    fn from(html_element: HtmlElement) -> Self {
+        Self {
+            host: html_element.host.clone(),
+            instance: html_element.instance.clone(),
+        }
     }
 }
 
-impl<H: Host> From<HtmlVoidElement<H>> for HtmlNode<H> {
-    fn from(html_void_element: HtmlVoidElement<H>) -> Self {
-        Self { instance: html_void_element.instance }
+impl From<HtmlVoidElement> for HtmlNode {
+    fn from(html_void_element: HtmlVoidElement) -> Self {
+        Self {
+            host: html_void_element.host.clone(),
+            instance: html_void_element.instance.clone(),
+        }
     }
 }
 
-impl<H: Host> HtmlNode<H> {
-    pub fn instance(&self) -> &H::Instance {
+impl HtmlNode {
+    pub fn host(&self) -> Rc<dyn Host> {
+        self.host.clone()
+    }
+    pub fn instance(&self) -> &Rc<dyn HostInstance> {
         &self.instance
     }
 }
 
-impl<H: Host> HtmlTextNode<H> {
-    pub(crate) fn new(instance: H::Instance) -> Self {
-        Self { instance }
+impl HtmlTextNode {
+    pub(crate) fn new(host: Rc<dyn Host>, instance: Rc<dyn HostInstance>) -> Self {
+        Self { host, instance, }
     }
 }
 
-impl<H: Host> HtmlElement<H> {
-    pub(crate) fn new(instance: H::Instance) -> Self {
-        Self { instance }
+impl HtmlElement {
+    pub(crate) fn new(host: Rc<dyn Host>, instance: Rc<dyn HostInstance>) -> Self {
+        Self { host, instance }
     }
 
-    pub fn append_child(&self, child: &HtmlNode<H>) -> &Self {
-        H::append_child(&self.instance, &child.instance);
+    pub fn append_child(&self, child: &HtmlNode) -> &Self {
+        self.host.append_child(&self.instance, &child.instance);
 
         self
     }
 }
 
-impl<H: Host> HtmlVoidElement<H> {
-    pub(crate) fn new(instance: H::Instance) -> Self {
-        Self { instance }
+impl HtmlVoidElement {
+    pub(crate) fn new(host: Rc<dyn Host>, instance: Rc<dyn HostInstance>) -> Self {
+        Self {
+            host,
+            instance,
+        }
     }
 }

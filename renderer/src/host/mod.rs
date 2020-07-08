@@ -1,11 +1,16 @@
+use std::any::Any;
+use std::rc::Rc;
+
+pub trait HostInstance {
+    fn as_any(&self) -> &dyn Any;
+}
+
 pub trait Host {
-    type Instance;
+    fn root_instance(&self) -> Rc<dyn HostInstance>;
 
-    fn root_instance(&self) -> Self::Instance;
+    fn create_instance(&self, name: &str) -> Rc<dyn HostInstance>;
 
-    fn create_instance(&self, name: &str) -> Self::Instance;
+    fn create_text_instance(&self, content: &str) -> Rc<dyn HostInstance>;
 
-    fn create_text_instance(&self, content: &str) -> Self::Instance;
-
-    fn append_child(parent: &Self::Instance, child: &Self::Instance);
+    fn append_child(&self, parent: &Rc<dyn HostInstance>, child: &Rc<dyn HostInstance>);
 }

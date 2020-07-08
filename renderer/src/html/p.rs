@@ -1,13 +1,14 @@
-use crate::html::HtmlElement;
+use std::rc::Rc;
 use crate::host::Host;
+use crate::html::HtmlElement;
 use crate::html::tag::HtmlElementTag;
 
 pub struct P;
 
-impl<H: Host> HtmlElementTag<H> for P {
-    fn create(host: &H) -> HtmlElement<H> {
+impl HtmlElementTag for P {
+    fn create(host: Rc<dyn Host>) -> HtmlElement {
         let instance = host.create_instance("p");
 
-        HtmlElement::new(instance)
+        HtmlElement::new(host, instance)
     }
 }

@@ -90,7 +90,7 @@ impl<T: ElementType> Node for Element<T> {
         }
     }
 
-    fn render<H: Host>(self: Rc<Self<>>, view: Rc<View<H>>) -> (OuterDOM<H>, ContentDOM<H>) {
+    fn render(self: Rc<Self<>>, view: Rc<View>) -> (OuterDOM, ContentDOM) {
         let attrs = self.clone().attributes.clone();
 
         T::render(view, self, attrs)

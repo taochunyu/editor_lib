@@ -6,22 +6,23 @@ use wasm_bindgen::JsCast;
 use renderer::Renderer;
 use renderer::html::div::Div;
 use crate::host::Browser;
+use document::node_types::paragraph::Paragraph;
+use document::node_types::root::Root;
+use document::view::View;
+use document::node::utils::{create_element, create_text};
+use std::rc::Rc;
 
 
 pub struct App {
-    renderer: Renderer<Browser>,
-    root: Node,
+    renderer: Rc<Renderer>,
 }
 
 impl App {
     pub fn new() -> Self {
         let host = Browser::new("#root");
-        let document = web_sys::window().unwrap().document().unwrap();
-        let root: Node = document.query_selector("#root").unwrap().unwrap().into();
 
         Self {
-            root,
-            renderer: Renderer::new(host),
+            renderer: Rc::new(Renderer::new(host)),
         }
     }
 
@@ -29,9 +30,32 @@ impl App {
         let text = self.renderer.create_text_node("hello");
         let div = self.renderer.create_element::<Div>();
 
-        div.append_child(text.into());
+        div.append_child(&text.into());
 
-        self.renderer.root().append_child(div.into());
+        self.renderer.root().append_child(&div.into());
+    }
+
+    pub fn trigger_test_doc(&self) {
+        let div = self.renderer.create_element::<Div>();
+
+        self.renderer.root().append_child(&div.clone().into());
+
+        let mut content = vec![];
+
+        for _ in 0..1 {
+            let hello = create_text("hello, world");
+            let paragraph = create_element::<Paragraph>(
+                (),
+                Some(vec![hello]),
+            );
+
+            content.push(paragraph);
+        }
+
+        let doc = create_element::<Root>((), Some(content));
+        let view = View::new(self.renderer.clone(), div, doc);
+
+        view.init();
     }
 }
 
@@ -41,7 +65,7 @@ pub fn start() {
     let document = web_sys::window().unwrap().document().unwrap();
     let event_target: EventTarget = document.into();
     let handle_keydown = Closure::wrap(Box::new(move || {
-        app.trigger_test();
+        app.trigger_test_doc();
     }) as Box<dyn FnMut()>);
 
     event_target.add_event_listener_with_callback("keydown", handle_keydown.as_ref().unchecked_ref());
