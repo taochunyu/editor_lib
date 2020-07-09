@@ -1,14 +1,48 @@
 use std::rc::Rc;
-use crate::host::Host;
-use crate::html::HtmlElement;
-use crate::html::tag::HtmlElementTag;
+use crate::host::{Host, HostInstance};
+use crate::html::tag::HTMLElementTag;
+use crate::html::node::HTMLNode;
+use crate::html::element::HTMLElement;
 
-pub struct Div;
+pub struct HTMLDivElement {
+    host: Rc<dyn Host>,
+    instance: Rc<dyn HostInstance>,
+}
 
-impl HtmlElementTag for Div {
-    fn create(host: Rc<dyn Host>) -> HtmlElement {
-        let instance = host.create_instance("div");
+impl From<HTMLDivElement> for HTMLElement {
+    fn from(div: HTMLDivElement) -> Self {
+        Self {
+            host: div.host.clone(),
+            instance: div.instance.clone(),
+        }
+    }
+}
 
-        HtmlElement::new(host, instance)
+impl From<HTMLDivElement> for HTMLNode {
+    fn from(element: HTMLDivElement) -> Self {
+        Self {
+            host: element.host.clone(),
+            instance: element.instance.clone(),
+        }
+    }
+}
+
+impl HTMLElementTag<HTMLDivElement> for HTMLDivElement {
+    fn new(host: Rc<dyn Host>, instance: Rc<dyn HostInstance>) -> HTMLDivElement {
+        Self { host, instance }
+    }
+
+    fn create(host: Rc<dyn Host>) -> Self {
+        let instance = host.create_instance("div", &vec![]);
+
+        Self { host, instance }
+    }
+}
+
+impl HTMLDivElement {
+    pub fn append_child(&self, child: &HTMLNode) -> &Self {
+        self.host.append_child(&self.instance, &child.instance);
+
+        self
     }
 }

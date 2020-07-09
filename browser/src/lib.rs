@@ -4,7 +4,7 @@ use web_sys::{window, Node, EventTarget};
 use wasm_bindgen::prelude::*;
 use wasm_bindgen::JsCast;
 use renderer::Renderer;
-use renderer::html::div::Div;
+use renderer::html::div::HtmlDivElement;
 use crate::host::Browser;
 use document::node_types::paragraph::Paragraph;
 use document::node_types::root::Root;
@@ -26,17 +26,8 @@ impl App {
         }
     }
 
-    pub fn trigger_test(&self) {
-        let text = self.renderer.create_text_node("hello");
-        let div = self.renderer.create_element::<Div>();
-
-        div.append_child(&text.into());
-
-        self.renderer.root().append_child(&div.into());
-    }
-
     pub fn trigger_test_doc(&self) {
-        let div = self.renderer.create_element::<Div>();
+        let div = self.renderer.create_element::<HtmlDivElement>();
 
         self.renderer.root().append_child(&div.clone().into());
 

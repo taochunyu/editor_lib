@@ -1,11 +1,7 @@
 use std::rc::Rc;
-use crate::host::Host;
-use crate::html::{HtmlElement, HtmlVoidElement};
+use crate::host::{Host, HostInstance};
 
-pub trait HtmlElementTag {
-    fn create(host: Rc<dyn Host>) -> HtmlElement;
-}
-
-pub trait HtmlVoidElementTag {
-    fn create(host: Rc<dyn Host>) -> HtmlVoidElement;
+pub trait HTMLElementTag<T> {
+    fn new(host: Rc<dyn Host>, instance: Rc<dyn HostInstance>) -> T;
+    fn create(host: Rc<dyn Host>) -> T;
 }

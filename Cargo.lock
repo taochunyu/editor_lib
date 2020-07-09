@@ -70,6 +70,16 @@ name = "renderer"
 version = "0.1.0"
 
 [[package]]
+name = "renderer_example_browser"
+version = "0.1.0"
+dependencies = [
+ "js-sys 0.3.41 (registry+https://github.com/rust-lang/crates.io-index)",
+ "renderer 0.1.0",
+ "wasm-bindgen 0.2.64 (registry+https://github.com/rust-lang/crates.io-index)",
+ "web-sys 0.3.41 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
 name = "syn"
 version = "1.0.33"
 source = "registry+https://github.com/rust-lang/crates.io-index"

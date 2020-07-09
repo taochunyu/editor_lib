@@ -3,4 +3,5 @@ members=[
     "browser",
     "document",
     "renderer",
+    "renderer/example/browser",
 ]
