@@ -1,24 +1,25 @@
 use std::rc::Rc;
 use std::cell::RefCell;
+use renderer::html::node::HTMLNode;
+use renderer::html::element::HTMLElement;
 use crate::node::Node;
 use crate::view::View;
 use crate::view::updater::Updater;
-use renderer::html::{HtmlNode, HtmlElement};
 
 pub struct NodeView {
     node: Rc<dyn Node>,
     parent: Option<Rc<RefCell<NodeView>>>,
     children: Vec<Rc<RefCell<NodeView>>>,
-    dom: HtmlNode,
-    content_dom: Option<HtmlElement>,
+    dom: HTMLNode,
+    content_dom: Option<HTMLElement>,
 }
 
 impl NodeView {
     pub(crate) fn new(
         node: Rc<dyn Node>,
         parent: Option<Rc<RefCell<NodeView>>>,
-        dom: HtmlNode,
-        content_dom: Option<HtmlElement>,
+        dom: HTMLNode,
+        content_dom: Option<HTMLElement>,
     ) -> Rc<RefCell<NodeView>> {
         Rc::new(RefCell::new(Self {
             node,
@@ -43,11 +44,11 @@ impl NodeView {
         self.children.insert(index, child);
     }
 
-    pub(crate) fn dom(&self) -> HtmlNode {
+    pub(crate) fn dom(&self) -> HTMLNode {
         self.dom.clone()
     }
 
-    pub(crate) fn content_dom(&self) -> Option<HtmlElement> {
+    pub(crate) fn content_dom(&self) -> Option<HTMLElement> {
         self.content_dom.clone()
     }
 

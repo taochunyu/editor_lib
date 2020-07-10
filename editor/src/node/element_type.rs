@@ -1,13 +1,13 @@
 use std::rc::Rc;
-use std::cell::RefCell;
-use renderer::html::{HtmlElement, HtmlNode};
+use renderer::html::node::HTMLNode;
+use renderer::html::element::HTMLElement;
 use crate::node::Node;
 use crate::node::fragment::Fragment;
 use crate::node::element::Element;
 use crate::view::View;
 
-pub type OuterDOM = HtmlNode;
-pub type ContentDOM = Option<HtmlElement>;
+pub type OuterDOM = HTMLNode;
+pub type ContentDOM = Option<HTMLElement>;
 
 pub trait ElementType: Sized + 'static {
     type Attributes;

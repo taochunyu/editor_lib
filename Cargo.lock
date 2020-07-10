@@ -25,6 +25,14 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 name = "document"
 version = "0.1.0"
 dependencies = [
+ "editor 0.1.0",
+ "renderer 0.1.0",
+]
+
+[[package]]
+name = "editor"
+version = "0.1.0"
+dependencies = [
  "renderer 0.1.0",
 ]
 

@@ -1,22 +1,21 @@
 use std::rc::Rc;
-use renderer::html::HtmlNode;
-use renderer::html::div::HtmlDivElement;
+use renderer::html::p::HTMLParagraphElement;
 use crate::node::element_type::{ElementType, OuterDOM, ContentDOM};
 use crate::node::Node;
 use crate::view::View;
 
-pub struct Root;
+pub struct Paragraph;
 
-impl ElementType for Root {
+impl ElementType for Paragraph {
     type Attributes = ();
 
     fn name() -> &'static str {
-        "root"
+        "paragraph"
     }
 
     fn render(view: Rc<View>, _node: Rc<dyn Node>, _attrs: Rc<Self::Attributes>) -> (OuterDOM, ContentDOM) {
-        let outer = view.renderer().create_element::<HtmlDivElement>();
+        let paragraph = view.renderer().create_element::<HTMLParagraphElement>();
 
-        (HtmlNode::from(outer.clone()), Some(outer))
+        (paragraph.clone().into(), Some(paragraph.into()))
     }
 }

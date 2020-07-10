@@ -1,13 +1,11 @@
 mod host;
 
 use std::rc::Rc;
-use web_sys::{window, Node, EventTarget};
 use wasm_bindgen::prelude::*;
 use wasm_bindgen::JsCast;
 use renderer::Renderer;
 use renderer::html::div::HTMLDivElement;
 use crate::host::Browser;
-use renderer::html::element::HTMLElement;
 
 
 pub struct App {
@@ -37,11 +35,11 @@ impl App {
 pub fn start() {
     let app = App::new();
     let document = web_sys::window().unwrap().document().unwrap();
-    let event_target: EventTarget = document.into();
+    let event_target: web_sys::EventTarget = document.into();
     let handle_keydown = Closure::wrap(Box::new(move || {
         app.trigger_test();
     }) as Box<dyn FnMut()>);
 
-    event_target.add_event_listener_with_callback("keydown", handle_keydown.as_ref().unchecked_ref());
+    event_target.add_event_listener_with_callback("keydown", handle_keydown.as_ref().unchecked_ref()).unwrap();
     handle_keydown.forget();
 }

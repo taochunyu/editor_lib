@@ -1,6 +1,5 @@
 use std::rc::Rc;
 use std::any::Any;
-use renderer::html::HtmlNode;
 use crate::node::fragment::Fragment;
 use crate::node::element_type::{OuterDOM, ContentDOM};
 use crate::view::View;
@@ -67,7 +66,7 @@ impl Node for Text {
     fn render(self: Rc<Self>, view: Rc<View>) -> (OuterDOM, ContentDOM) {
         let text = view.renderer().create_text_node(self.content.clone().as_str());
 
-        (HtmlNode::from(text.clone()), None)
+        (text.clone().into(), None)
     }
 }
 

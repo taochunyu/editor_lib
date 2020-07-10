@@ -4,6 +4,9 @@ use crate::html::tag::HTMLElementTag;
 use crate::html::node::HTMLNode;
 use crate::html::element::HTMLElement;
 
+const NAME: &str = "div";
+
+#[derive(Clone)]
 pub struct HTMLDivElement {
     host: Rc<dyn Host>,
     instance: Rc<dyn HostInstance>,
@@ -12,6 +15,7 @@ pub struct HTMLDivElement {
 impl From<HTMLDivElement> for HTMLElement {
     fn from(div: HTMLDivElement) -> Self {
         Self {
+            name: NAME,
             host: div.host.clone(),
             instance: div.instance.clone(),
         }
@@ -21,6 +25,7 @@ impl From<HTMLDivElement> for HTMLElement {
 impl From<HTMLDivElement> for HTMLNode {
     fn from(element: HTMLDivElement) -> Self {
         Self {
+            name: NAME,
             host: element.host.clone(),
             instance: element.instance.clone(),
         }
@@ -33,7 +38,7 @@ impl HTMLElementTag<HTMLDivElement> for HTMLDivElement {
     }
 
     fn create(host: Rc<dyn Host>) -> Self {
-        let instance = host.create_instance("div", &vec![]);
+        let instance = host.create_instance(NAME, &vec![]);
 
         Self { host, instance }
     }

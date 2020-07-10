@@ -30,7 +30,7 @@ impl Host for Browser {
         let host_instance = self.document.create_element(name).unwrap();
 
         for (key, value) in attrs {
-            host_instance.set_attribute(key.as_str(), value.as_str());
+            host_instance.set_attribute(key.as_str(), value.as_str()).unwrap();
         }
 
         Rc::new(BrowserHostInstance { host_instance: web_sys::Node::from(host_instance) })
@@ -46,7 +46,7 @@ impl Host for Browser {
         let parent: &BrowserHostInstance = parent.as_any().downcast_ref::<BrowserHostInstance>().unwrap();
         let child: &BrowserHostInstance = child.as_any().downcast_ref::<BrowserHostInstance>().unwrap();
 
-        parent.host_instance.append_child(&child.host_instance);
+        parent.host_instance.append_child(&child.host_instance).unwrap();
     }
 }
 

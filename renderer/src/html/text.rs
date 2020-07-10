@@ -2,6 +2,8 @@ use std::rc::Rc;
 use crate::host::{Host, HostInstance};
 use crate::html::node::HTMLNode;
 
+const NAME: &str = "text";
+
 #[derive(Clone)]
 pub struct HTMLTextNode {
     pub(crate) host: Rc<dyn Host>,
@@ -11,6 +13,7 @@ pub struct HTMLTextNode {
 impl From<HTMLTextNode> for HTMLNode {
     fn from(text_node: HTMLTextNode) -> Self {
         Self {
+            name: NAME,
             host: text_node.host.clone(),
             instance: text_node.instance.clone(),
         }
@@ -18,7 +21,7 @@ impl From<HTMLTextNode> for HTMLNode {
 }
 
 impl HTMLTextNode {
-    pub(crate) fn new(host: Rc<dyn Host>, instance: Rc<dyn HostInstance>) -> Self {
+    pub fn new(host: Rc<dyn Host>, instance: Rc<dyn HostInstance>) -> Self {
         Self { host, instance, }
     }
 }

@@ -2,6 +2,7 @@
 members=[
     "browser",
     "document",
+    "editor",
     "renderer",
     "renderer/example/browser",
 ]

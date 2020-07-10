@@ -3,9 +3,7 @@ use std::any::Any;
 use crate::node::element_type::{ElementType, OuterDOM, ContentDOM};
 use crate::node::Node;
 use crate::node::fragment::Fragment;
-use crate::node::text::Text;
 use crate::view::View;
-use renderer::host::Host;
 
 pub struct Element<T: ElementType> {
     attributes: Rc<T::Attributes>,

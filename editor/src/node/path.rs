@@ -1,7 +1,6 @@
 use std::rc::Rc;
 use std::cmp::Ordering;
 use crate::node::Node;
-use std::fmt::{Debug, Formatter};
 
 #[derive(Clone)]
 pub struct Step {

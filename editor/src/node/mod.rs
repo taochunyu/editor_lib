@@ -10,15 +10,13 @@ mod replace;
 use std::any::Any;
 use std::rc::Rc;
 use std::ops::Range;
-use crate::node::element_type::{ElementType, OuterDOM, ContentDOM};
-use crate::node::element::Element;
+use crate::node::element_type::{OuterDOM, ContentDOM};
 use crate::node::text::Text;
 use crate::node::path::Path;
 use crate::node::fragment::Fragment;
 use crate::node::slice::Slice;
 use crate::node::replace::replace;
 use crate::view::View;
-use std::cell::RefCell;
 
 pub trait Node {
     fn size(&self) -> usize;
