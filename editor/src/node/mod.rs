@@ -28,7 +28,7 @@ pub trait Node {
     fn get_child(&self, index: usize) -> Result<Rc<dyn Node>, String>;
     fn children(&self) -> Option<Rc<Fragment>>;
     fn replace_children(&self, new_children: Option<Rc<Fragment>>) -> Result<Rc<dyn Node>, String>;
-    fn to_html_string(&self) -> String;
+    fn serialize(&self) -> String;
     fn render(self: Rc<Self>, view: Rc<View>) -> (OuterDOM, ContentDOM);
 }
 

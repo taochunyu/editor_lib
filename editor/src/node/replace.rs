@@ -224,3 +224,43 @@ fn prepare_slice(slice: Slice, along: Rc<Path>) -> Result<(Rc<Path>, Rc<Path>), 
         node.clone().find_path(node.content_size() - slice.open_end())?,
     ))
 }
+
+#[cfg(test)]
+mod tests {
+    use std::rc::Rc;
+    use crate::node::Node;
+    use crate::node::utils::{create_text, create_element};
+    use crate::node_types::paragraph::Paragraph;
+    use crate::node_types::root::Root;
+    use crate::node::slice::Slice;
+    use crate::node::replace::replace;
+
+    fn create_root() -> Rc<dyn Node> {
+        let hello = create_text("hello");
+        let world = create_text("world");
+        let paragraph_hello = create_element::<Paragraph>((), Some(vec![hello]));
+        let paragraph_world = create_element::<Paragraph>((), Some(vec![world]));
+        let root = create_element::<Root>((), Some(vec![
+            paragraph_hello,
+            paragraph_world,
+        ]));
+
+        root
+    }
+
+    fn create_empty_slice() -> Slice {
+        Slice::new(0, 0, vec![])
+    }
+
+    #[test]
+    fn in_line() {
+        let root = create_root();
+        let slice = create_empty_slice();
+
+        println!("{}", root.serialize());
+
+        let new_root = root.replace(3, 4, slice).unwrap();
+
+        println!("{}", new_root.serialize());
+    }
+}

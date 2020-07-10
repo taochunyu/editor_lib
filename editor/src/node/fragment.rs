@@ -162,7 +162,7 @@ impl Fragment {
 
     pub(crate) fn to_string(&self) -> String {
         self.content.iter().fold(String::new(), |mut acc, x| {
-            acc.push_str(x.to_html_string().as_str());
+            acc.push_str(x.serialize().as_str());
 
             acc
         })

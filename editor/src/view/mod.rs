@@ -6,13 +6,10 @@ use std::cell::RefCell;
 use renderer::Renderer;
 use renderer::html::div::HTMLDivElement;
 use crate::node::Node;
-// use crate::state::State;
 use crate::view::node_view::NodeView;
 
 struct StateCell {
-    // state: State,
     test_count: u64,
-    // root_node: Rc<dyn Node>,
 }
 
 pub struct View {
@@ -34,9 +31,7 @@ impl View {
             renderer,
             root_node_view,
             state_cell: RefCell::new(StateCell {
-                // state,
                 test_count: 0,
-                // root_node,
             }),
         })
     }
@@ -45,7 +40,7 @@ impl View {
         NodeView::update_children(self.root_node_view.clone(), self, 0);
     }
 
-    pub(crate) fn renderer(&self) -> Rc<Renderer> {
+    pub fn renderer(&self) -> Rc<Renderer> {
         self.renderer.clone()
     }
 

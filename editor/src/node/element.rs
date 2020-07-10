@@ -75,7 +75,7 @@ impl<T: ElementType> Node for Element<T> {
         }))
     }
 
-    fn to_html_string(&self) -> String {
+    fn serialize(&self) -> String {
         match &self.children {
             Some(children) => {
                 let open = format!("<{}>", T::name());

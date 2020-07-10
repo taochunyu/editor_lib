@@ -118,7 +118,7 @@ impl Path {
 
     pub fn to_string(&self) -> String {
         self.path.iter()
-            .map(|x| format!("({}, {}, {}),", x.node.to_html_string(), x.index, x.offset))
+            .map(|x| format!("({}, {}, {}),", x.node.serialize(), x.index, x.offset))
             .collect::<Vec<String>>()
             .join("\n")
     }

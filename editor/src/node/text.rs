@@ -56,7 +56,7 @@ impl Node for Text {
         Err(format!("Text node cannot replace children."))
     }
 
-    fn to_html_string(&self) -> String {
+    fn serialize(&self) -> String {
         match self.marks.len() {
             0 => self.content.clone(),
             _ => format!("<span>{}</span>", self.content)

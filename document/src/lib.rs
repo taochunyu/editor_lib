@@ -24,7 +24,7 @@ impl Document {
 
         let mut content = vec![];
 
-        for _ in 0..1 {
+        for _ in 0..10 {
             let hello = create_text("hello, world");
             let paragraph = create_element::<Paragraph>(
                 (),
@@ -38,13 +38,5 @@ impl Document {
         let view = View::new(self.renderer.clone(), div, doc);
 
         view.init();
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    #[test]
-    fn it_works() {
-        assert_eq!(2 + 2, 4);
     }
 }
