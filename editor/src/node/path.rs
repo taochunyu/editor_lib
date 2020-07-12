@@ -10,8 +10,10 @@ pub struct Step {
 }
 
 pub struct Path {
+    base: Rc<dyn Node>,
     offset: usize,
     path: Vec<Step>,
+    depth: usize,
 }
 
 fn build_path(
@@ -60,15 +62,19 @@ impl Path {
     pub(crate) fn new(base: Rc<dyn Node>, offset: usize) -> Result<Rc<Self>, String> {
         let mut path: Vec<Step> = vec![];
 
-        build_path(&mut path, base, offset)?;
+        build_path(&mut path, base.clone(), offset)?;
 
-        Ok(Rc::new(Self { path, offset }))
+        let path_length = path.len();
+
+        if path_length == 0 {
+            Err(format!("Path must contain base node."))
+        } else {
+            Ok(Rc::new(Self { path, offset, base, depth: path_length - 1 }))
+        }
     }
 
-    pub fn base(&self) -> Option<Rc<dyn Node>> {
-        let path_node = self.path.first()?;
-
-        Some(path_node.node.clone())
+    pub fn base(&self) -> Rc<dyn Node> {
+        self.base.clone()
     }
 
     pub fn offset(&self) -> usize {
@@ -76,15 +82,21 @@ impl Path {
     }
 
     pub fn depth(&self) -> usize {
-        self.path.len()
+        self.depth
     }
 
-    pub fn parent(&self) -> Option<Rc<dyn Node>> {
-        Some(self.path.last()?.node.clone())
+    pub fn parent(&self) -> Rc<dyn Node> {
+        match self.path.last() {
+            Some(parent) => parent.node.clone(),
+            None => self.base.clone(),
+        }
     }
 
-    pub fn parent_offset(&self) -> Option<usize> {
-        Some(self.path.last()?.offset)
+    pub fn parent_offset(&self) -> usize {
+        match self.path.last() {
+            Some(parent) => parent.offset,
+            None => self.offset,
+        }
     }
 
     pub fn node_before(&self) -> Option<Rc<dyn Node>> {

@@ -28,7 +28,7 @@ impl Node for Text {
         self
     }
 
-    fn cut_node(&self, from: usize, to: usize) -> Result<Rc<dyn Node>, String> {
+    fn cut(&self, from: usize, to: usize) -> Result<Rc<dyn Node>, String> {
         match self.content.get(from..to) {
             Some(sub) => {
                 Ok(Rc::new(Self {
@@ -52,7 +52,7 @@ impl Node for Text {
         None
     }
 
-    fn replace_children(&self, _: Option<Rc<Fragment>>) -> Result<Rc<dyn Node>, String> {
+    fn replace_children(&self, _: Rc<Fragment>) -> Result<Rc<dyn Node>, String> {
         Err(format!("Text node cannot replace children."))
     }
 

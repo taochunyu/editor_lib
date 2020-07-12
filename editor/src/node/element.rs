@@ -36,7 +36,7 @@ impl<T: ElementType> Node for Element<T> {
         self
     }
 
-    fn cut_node(&self, from: usize, to: usize) -> Result<Rc<dyn Node>, String> {
+    fn cut(&self, from: usize, to: usize) -> Result<Rc<dyn Node>, String> {
         match &self.children {
             Some(fragment) => {
                 let result = fragment.cut(from, to)?;
@@ -68,10 +68,10 @@ impl<T: ElementType> Node for Element<T> {
         self.children.clone()
     }
 
-    fn replace_children(&self, new_children: Option<Rc<Fragment>>) -> Result<Rc<dyn Node>, String> {
+    fn replace_children(&self, new_children: Rc<Fragment>) -> Result<Rc<dyn Node>, String> {
         Ok(Rc::new(Self {
             attributes: self.attributes.clone(),
-            children: new_children,
+            children: Some(new_children),
         }))
     }
 

@@ -1,6 +1,6 @@
 use std::rc::Rc;
 use crate::node::Node;
-use crate::node::path::Path;
+use crate::node::path::{Path, Step};
 use crate::node::slice::Slice;
 use crate::node::fragment::Fragment;
 
@@ -28,46 +28,39 @@ fn replace_outer(
     slice: Slice,
     depth: usize,
 ) -> Result<Rc<dyn Node>, String> {
-    let from_step = from.step(depth)?;
-    let from_node = from_step.node;
-    let from_index = from_step.index;
-    let to_index = to.step(depth)?.index;
+    let Step { node, index, offset } = from.step(depth)?;
 
-    if from_index == to_index && depth < from.depth() - slice.open_start() {
-        let inner = replace_outer(from.clone(), to, slice, depth + 1)?;
+    if index == to.step(depth)?.index && from.depth() > depth + slice.open_start() + 1 {
+        let child = replace_outer(from.clone(), to, slice, depth + 1)?;
 
-        match from_node.children() {
-            Some(children) => {
-                let new_children = children.replace_child(from_index, inner)?;
-
-                Ok(from_node.replace_children(Some(new_children))?)
-            },
-            None => Err(format!("Node has no child."))
-        }
-    } else if slice.content().size() == 0 {
-        let content = replace_two_way(from.clone(), to, depth)?;
-
-        close(from_node, content)
+        node.replace_child(index, child)
     } else if slice.open_start() == 0 && slice.open_end() == 0 && from.clone().depth() == depth && to.depth() == depth {
-        let parent = from.clone().parent().unwrap();
-        let children = parent.children().unwrap();
-        let from_side = children.cut(0, from.clone().parent_offset().unwrap())?;
-        let to_side = children.cut(to.parent_offset().unwrap(), parent.content_size())?;
-        let content = from_side
-            .concat(slice.content())
-            .concat(to_side);
+        let new_children = rebuild(from, to, slice)?;
 
-        close(parent, content)
+        node.replace_children(new_children)
+    } else if slice.content().size() == 0 {
+        let new_children = replace_two_way(from.clone(), to, depth)?;
+
+        node.replace_children(new_children)
     } else {
         let (start, end) = prepare_slice(slice, from.clone())?;
-        let content = replace_three_way(from.clone(), start, end, to, depth)?;
+        let new_children = replace_three_way(from.clone(), start, end, to, depth)?;
 
-        close(from_node, content)
+        node.replace_children(new_children)
     }
 }
 
-fn close(node: Rc<dyn Node>, content: Rc<Fragment>) -> Result<Rc<dyn Node>, String> {
-    node.replace_children(Some(content))
+fn rebuild(from: Rc<Path>, to: Rc<Path>, slice: Slice) -> Result<Rc<Fragment>, String> {
+    let parent = from.parent();
+    let children = match parent.children() {
+        Some(children) => Ok(children),
+        None => Err(format!("Cannot replace a leaf node.")),
+    }?;
+
+    let from_side = children.cut(0, from.clone().parent_offset())?;
+    let to_side = children.cut(to.clone().parent_offset(), parent.content_size())?;
+
+    Ok(from_side.concat(slice.content()).concat(to_side))
 }
 
 fn add_node(node: Rc<dyn Node>, target: &mut Vec<Rc<dyn Node>>) {
@@ -103,13 +96,13 @@ fn add_range(
         if path.depth() > depth {
             start_index += 1;
         } else {
-            if let Some(parent_offset) = path.parent_offset() {
-                if parent_offset != 0 {
-                    if let Some(node) = path.node_after() {
-                        add_node(node, target);
+            let parent_offset = path.parent_offset();
 
-                        start_index += 1
-                    }
+            if parent_offset != 0 {
+                if let Some(node) = path.node_after() {
+                    add_node(node, target);
+
+                    start_index += 1
                 }
             }
         }
@@ -120,11 +113,11 @@ fn add_range(
     }
 
     if let Some(path) = &end {
-        if let Some(parent_offset) = path.parent_offset() {
-            if path.depth() == depth && parent_offset != 0 {
-                if let Some(node) = path.node_before() {
-                    add_node(node, target);
-                }
+        let parent_offset = path.parent_offset();
+
+        if path.depth() == depth && parent_offset != 0 {
+            if let Some(node) = path.node_before() {
+                add_node(node, target);
             }
         }
     }
@@ -138,10 +131,10 @@ fn replace_two_way(from: Rc<Path>, to: Rc<Path>, depth: usize) -> Result<Rc<Frag
 
     add_range(node, None, Some(from.clone()), depth, &mut target)?;
 
-    if from.depth() > depth {
+    if from.depth() > depth + 1 {
         let node = from.step(depth + 1)?.node;
         let content = replace_two_way(from.clone(), to, depth + 1)?;
-        let new_node = close(node, content)?;
+        let new_node = node.replace_children(content)?;
 
         add_node(new_node, &mut target);
     }
@@ -179,13 +172,13 @@ fn replace_three_way(
     if open_start.is_some() && open_end.is_some() && start_index == end_index {
         let os = open_start.unwrap();
         let content = replace_three_way(from.clone(), start, end, to.clone(), depth + 1)?;
-        let node = close(os, content)?;
+        let node = os.replace_children(content)?;
 
         add_node(node, &mut target);
     } else {
         if let Some(os) = open_start {
             let content = replace_two_way(from.clone(), start.clone(), depth + 1)?;
-            let node = close(os, content)?;
+            let node = os.replace_children(content)?;
 
             add_node(node, &mut target);
         }
@@ -196,7 +189,7 @@ fn replace_three_way(
 
         if let Some(oe) = open_end {
             let content = replace_two_way(end.clone(), to.clone(), depth + 1)?;
-            let node = close(oe, content)?;
+            let node = oe.replace_children(content)?;
 
             add_node(node, &mut target);
         }
@@ -213,10 +206,10 @@ fn prepare_slice(slice: Slice, along: Rc<Path>) -> Result<(Rc<Path>, Rc<Path>), 
     let extra = along.depth() - slice.open_start() - 1;
     let parent = along.step(extra)?.node;
 
-    let mut node = parent.replace_children(Some(slice.content()))?;
+    let mut node = parent.replace_children(slice.content())?;
 
     for depth in (extra - 1)..=0 {
-        node = along.step(depth)?.node.replace_children(Some(Rc::new(Fragment::from(node))))?;
+        node = along.step(depth)?.node.replace_children(Rc::new(Fragment::from(node)))?;
     }
 
     Ok((

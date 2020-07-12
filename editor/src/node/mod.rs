@@ -23,11 +23,14 @@ pub trait Node {
     fn content_size(&self) -> usize;
     fn child_count(&self) -> usize;
     fn as_any(&self) -> &dyn Any;
-    fn cut_node(&self, from: usize, to: usize) -> Result<Rc<dyn Node>, String>;
+    fn cut(&self, from: usize, to: usize) -> Result<Rc<dyn Node>, String>;
     fn index(&self, offset: usize) -> Result<usize, String>;
     fn get_child(&self, index: usize) -> Result<Rc<dyn Node>, String>;
+    fn replace_child(&self, index: usize, child: Rc<dyn Node>) -> Result<Rc<dyn Node>, String> {
+        unimplemented!()
+    }
     fn children(&self) -> Option<Rc<Fragment>>;
-    fn replace_children(&self, new_children: Option<Rc<Fragment>>) -> Result<Rc<dyn Node>, String>;
+    fn replace_children(&self, children: Rc<Fragment>) -> Result<Rc<dyn Node>, String>;
     fn serialize(&self) -> String;
     fn render(self: Rc<Self>, view: Rc<View>) -> (OuterDOM, ContentDOM);
 }
@@ -61,7 +64,7 @@ impl dyn Node {
         if from == 0 && to == self.content_size() {
             Ok(self.clone())
         } else {
-            Ok(self.cut_node(from, to)?)
+            Ok(self.cut(from, to)?)
         }
     }
 
