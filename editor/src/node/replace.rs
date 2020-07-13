@@ -84,29 +84,17 @@ fn add_range(
     target: &mut Vec<Rc<dyn Node>>,
 ) -> Result<(), String> {
     let mut start_index = match &start {
-        Some(path) => path.step(depth)?.index,
+        Some(path) => {
+            let index = path.step(depth)?.index;
+
+            if path.depth() == depth { index } else { index + 1 }
+        },
         None => 0,
     };
     let end_index = match &end {
         Some(path) => path.step(depth)?.index,
         None => node.child_count(),
     };
-
-    if let Some(path) = &start {
-        if path.depth() > depth {
-            start_index += 1;
-        } else {
-            let parent_offset = path.parent_offset();
-
-            if parent_offset != 0 {
-                if let Some(node) = path.node_after() {
-                    add_node(node, target);
-
-                    start_index += 1
-                }
-            }
-        }
-    }
 
     for index in start_index..end_index {
         add_node(node.get_child(index)?, target);
@@ -216,44 +204,4 @@ fn prepare_slice(slice: Slice, along: Rc<Path>) -> Result<(Rc<Path>, Rc<Path>), 
         node.clone().find_path(slice.open_start() + extra)?,
         node.clone().find_path(node.content_size() - slice.open_end())?,
     ))
-}
-
-#[cfg(test)]
-mod tests {
-    use std::rc::Rc;
-    use crate::node::Node;
-    use crate::node::utils::{create_text, create_element};
-    use crate::node_types::paragraph::Paragraph;
-    use crate::node_types::root::Root;
-    use crate::node::slice::Slice;
-    use crate::node::replace::replace;
-
-    fn create_root() -> Rc<dyn Node> {
-        let hello = create_text("hello");
-        let world = create_text("world");
-        let paragraph_hello = create_element::<Paragraph>((), Some(vec![hello]));
-        let paragraph_world = create_element::<Paragraph>((), Some(vec![world]));
-        let root = create_element::<Root>((), Some(vec![
-            paragraph_hello,
-            paragraph_world,
-        ]));
-
-        root
-    }
-
-    fn create_empty_slice() -> Slice {
-        Slice::new(0, 0, vec![])
-    }
-
-    #[test]
-    fn in_line() {
-        let root = create_root();
-        let slice = create_empty_slice();
-
-        println!("{}", root.serialize());
-
-        let new_root = root.replace(3, 4, slice).unwrap();
-
-        println!("{}", new_root.serialize());
-    }
 }

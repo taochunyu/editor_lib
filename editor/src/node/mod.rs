@@ -19,6 +19,7 @@ use crate::node::replace::replace;
 use crate::view::View;
 
 pub trait Node {
+    fn type_name(&self) -> &str;
     fn size(&self) -> usize;
     fn content_size(&self) -> usize;
     fn child_count(&self) -> usize;
@@ -38,6 +39,10 @@ pub trait Node {
 impl dyn Node {
     fn as_text(&self) -> Option<&Text> {
         self.as_any().downcast_ref::<Text>()
+    }
+
+    fn is_text(&self) -> bool {
+        self.as_text().is_some()
     }
 
     fn join(&self, node: Rc<dyn Node>) -> Option<Rc<dyn Node>> {

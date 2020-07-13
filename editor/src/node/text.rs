@@ -5,6 +5,7 @@ use crate::node::element_type::{OuterDOM, ContentDOM};
 use crate::view::View;
 use crate::node::Node;
 
+const NAME: &'static str = "text";
 
 pub struct Text {
     marks: Vec<u64>,
@@ -12,6 +13,10 @@ pub struct Text {
 }
 
 impl Node for Text {
+    fn type_name(&self) -> &str {
+        NAME
+    }
+
     fn size(&self) -> usize {
         self.content_size()
     }

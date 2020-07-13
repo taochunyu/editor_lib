@@ -11,6 +11,10 @@ pub struct Element<T: ElementType> {
 }
 
 impl<T: ElementType> Node for Element<T> {
+    fn type_name(&self) -> &str {
+        T::name()
+    }
+
     fn size(&self) -> usize {
         match &self.children {
             Some(fragment) => fragment.size() + 2,
