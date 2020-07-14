@@ -22,4 +22,10 @@ pub mod tools {
     pub fn create_empty_slice() -> Slice {
         Slice::new(0, 0, vec![])
     }
+
+    pub fn create_slice_with_char() -> Slice {
+        let char = create_text("c");
+
+        Slice::new(0, 0, vec![char])
+    }
 }

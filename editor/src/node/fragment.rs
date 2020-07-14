@@ -54,7 +54,7 @@ impl Fragment {
                 for (index, node) in self.content.iter().enumerate() {
                     let window_end = window_start + node.size();
 
-                    if offset <= window_end {
+                    if offset < window_end {
                         return Ok(index);
                     }
 

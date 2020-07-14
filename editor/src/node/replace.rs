@@ -28,18 +28,18 @@ fn replace_outer(
     slice: Slice,
     depth: usize,
 ) -> Result<Rc<dyn Node>, String> {
-    let Step { node, index, offset } = from.step(depth)?;
+    let Step { node, index, offset: _ } = from.step(depth)?;
 
-    if index == to.step(depth)?.index && from.depth() > depth + slice.open_start() + 1 {
+    if index == to.step(depth)?.index && from.depth() > depth + slice.open_start() {
         let child = replace_outer(from.clone(), to, slice, depth + 1)?;
 
         node.replace_child(index, child)
-    } else if slice.open_start() == 0 && slice.open_end() == 0 && from.clone().depth() == depth && to.depth() == depth {
-        let new_children = rebuild(from, to, slice)?;
-
-        node.replace_children(new_children)
     } else if slice.content().size() == 0 {
         let new_children = replace_two_way(from.clone(), to, depth)?;
+
+        node.replace_children(new_children)
+    } else if slice.open_start() == 0 && slice.open_end() == 0 && from.clone().depth() == depth && to.depth() == depth {
+        let new_children = splice(from, to, slice)?;
 
         node.replace_children(new_children)
     } else {
@@ -50,7 +50,7 @@ fn replace_outer(
     }
 }
 
-fn rebuild(from: Rc<Path>, to: Rc<Path>, slice: Slice) -> Result<Rc<Fragment>, String> {
+fn splice(from: Rc<Path>, to: Rc<Path>, slice: Slice) -> Result<Rc<Fragment>, String> {
     let parent = from.parent();
     let children = match parent.children() {
         Some(children) => Ok(children),
@@ -83,7 +83,7 @@ fn add_range(
     depth: usize,
     target: &mut Vec<Rc<dyn Node>>,
 ) -> Result<(), String> {
-    let mut start_index = match &start {
+    let start_index = match &start {
         Some(path) => {
             let index = path.step(depth)?.index;
 
@@ -204,4 +204,35 @@ fn prepare_slice(slice: Slice, along: Rc<Path>) -> Result<(Rc<Path>, Rc<Path>), 
         node.clone().find_path(slice.open_start() + extra)?,
         node.clone().find_path(node.content_size() - slice.open_end())?,
     ))
+}
+
+#[cfg(test)]
+mod test {
+    use crate::test::tools::{create_root, create_empty_slice, create_slice_with_char};
+    use crate::node::slice::Slice;
+
+    // root
+    //       0   1 2 3 4 5 6    7   8 9 10 11 12 13    14
+    // <root> <p> h e l l o </p> <p> w o  r  l  d  </p>  </root>
+    fn replace_root(from: usize, to: usize, slice: Slice) {
+        let root = create_root();
+
+        println!("{}", root.serialize());
+
+        let root = root.replace(from, to, slice).unwrap();
+
+        println!("{}", root.serialize());
+    }
+
+    #[test]
+    fn splice() {
+        replace_root(3, 4, create_slice_with_char());
+
+        replace_root(6, 8, create_slice_with_char());
+    }
+
+    #[test]
+    fn replace_two_way() {
+        replace_root(3, 4, create_empty_slice())
+    }
 }

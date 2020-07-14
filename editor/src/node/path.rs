@@ -14,9 +14,10 @@ pub struct Path {
     offset: usize,
     path: Vec<Step>,
     depth: usize,
+    parent_offset: usize,
 }
 
-fn build_path(path: &mut Vec<Step>, node: Rc<dyn Node>, offset: usize, cursor: usize) -> Result<(), String> {
+fn build_path(path: &mut Vec<Step>, node: Rc<dyn Node>, offset: usize, cursor: usize) -> Result<usize, String> {
     if !node.is_text() {
         match offset.cmp(&node.content_size()) {
             Ordering::Greater => {
@@ -26,7 +27,7 @@ fn build_path(path: &mut Vec<Step>, node: Rc<dyn Node>, offset: usize, cursor: u
                 path.push(Step {
                     node: node.clone(),
                     index: node.child_count(),
-                    offset: cursor,
+                    offset: node.content_size(),
                 });
             },
             Ordering::Less => {
@@ -34,7 +35,6 @@ fn build_path(path: &mut Vec<Step>, node: Rc<dyn Node>, offset: usize, cursor: u
                 let child = node.get_child(index)?;
                 let size = node.get_child_range(0..index)?.iter()
                     .fold(0, |acc, x| acc + x.size());
-                let offset = offset - size - 1;
                 let cursor = cursor + size;
 
                 path.push(Step {
@@ -43,12 +43,17 @@ fn build_path(path: &mut Vec<Step>, node: Rc<dyn Node>, offset: usize, cursor: u
                     offset: cursor,
                 });
 
-                build_path(path, child, offset, cursor + 1)?;
+                if offset != size && !child.is_text() {
+                    let offset = offset - size - 1;
+
+                    return build_path(path, child, offset, cursor + 1);
+                }
+
             }
         }
     }
 
-    Ok(())
+    Ok(offset)
 }
 
 impl Path {
@@ -59,14 +64,14 @@ impl Path {
 
         let mut path: Vec<Step> = vec![];
 
-        build_path(&mut path, base.clone(), offset, 0);
+        let parent_offset = build_path(&mut path, base.clone(), offset, 0)?;
 
         let path_length = path.len();
 
         if path_length == 0 {
             Err(format!("Path must contain base node."))
         } else {
-            Ok(Rc::new(Self { path, offset, base, depth: path_length - 1 }))
+            Ok(Rc::new(Self { path, offset, base, parent_offset, depth: path_length - 1 }))
         }
     }
 
@@ -90,10 +95,7 @@ impl Path {
     }
 
     pub fn parent_offset(&self) -> usize {
-        match self.path.last() {
-            Some(parent) => parent.offset,
-            None => self.offset,
-        }
+        self.parent_offset
     }
 
     pub fn text_offset(&self) -> usize {
@@ -104,12 +106,18 @@ impl Path {
     }
 
     pub fn node_before(&self) -> Option<Rc<dyn Node>> {
-        let path_node = self.path.last()?;
+        let step = self.path.last()?;
+        let text_offset = self.text_offset();
 
-        if path_node.index < 1 {
+        if text_offset != 0 {
+            match step.node.clone().cut(0, text_offset) {
+                Ok(node) => Some(node),
+                Err(_) => None,
+            }
+        } else if step.index == 0 {
             None
         } else {
-            match path_node.node.get_child(path_node.index.clone() - 1) {
+            match step.node.clone().get_child(step.index - 1) {
                 Ok(node) => Some(node),
                 Err(_) => None,
             }
@@ -117,11 +125,26 @@ impl Path {
     }
 
     pub fn node_after(&self) -> Option<Rc<dyn Node>> {
-        let path_node = self.path.last()?;
+        let step = self.path.last()?;
 
-        match path_node.node.get_child(path_node.index.clone() + 1) {
-            Ok(node) => Some(node),
-            Err(_) => None,
+        if step.index == step.node.child_count() {
+            None
+        } else {
+            match step.node.clone().get_child(step.index) {
+                Ok(node) => {
+                    let text_offset = self.text_offset();
+
+                    if text_offset == 0 {
+                        Some(node)
+                    } else {
+                        match step.node.clone().cut(text_offset, node.size()) {
+                            Ok(node) => Some(node),
+                            Err(_) => None,
+                        }
+                    }
+                },
+                Err(_) => None,
+            }
         }
     }
 
@@ -135,13 +158,11 @@ impl Path {
 
 #[cfg(test)]
 mod test {
+    use std::rc::Rc;
     use crate::test::tools::create_root;
     use crate::node::path::Path;
-    use std::rc::Rc;
 
     fn to_debug_string(path: Rc<Path>) -> String {
-        let mut content: Vec<String> = vec![];
-
         path.path.iter()
             .map(|x| format!("    ({}, {}, {}),", x.node.type_name(), x.index, x.offset))
             .collect::<Vec<String>>()
@@ -151,7 +172,7 @@ mod test {
     #[test]
     fn build_path() {
         let base = create_root();
-        let path = Path::new(base, 7).unwrap();
+        let path = Path::new(base, 14).unwrap();
 
         println!("Path Debug String: [\n{}\n]", to_debug_string(path));
     }

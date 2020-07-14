@@ -40,7 +40,11 @@ impl<T: ElementType> Node for Element<T> {
         self
     }
 
-    fn cut(&self, from: usize, to: usize) -> Result<Rc<dyn Node>, String> {
+    fn cut(self: Rc<Self>, from: usize, to: usize) -> Result<Rc<dyn Node>, String> {
+        if from == 0 && to == self.content_size() {
+            return Ok(self.clone() as Rc<dyn Node>);
+        }
+
         match &self.children {
             Some(fragment) => {
                 let result = fragment.cut(from, to)?;
@@ -65,6 +69,17 @@ impl<T: ElementType> Node for Element<T> {
         match &self.children {
             Some(children) => children.get(index),
             None => Err(format!("Cannot get child on element node without children.")),
+        }
+    }
+
+    fn replace_child(&self, index: usize, child: Rc<dyn Node>) -> Result<Rc<dyn Node>, String> {
+        match &self.children {
+            Some(children) => {
+                let children = children.replace_child(index, child)?;
+
+                self.replace_children(children)
+            },
+            None => Err(format!("Node without children cannot replace child."))
         }
     }
 
