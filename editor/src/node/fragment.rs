@@ -114,26 +114,6 @@ impl Fragment {
         }
     }
 
-    pub(crate) fn append(&self, node: Rc<dyn Node>) -> Rc<Self> {
-        let size = self.size + node.size();
-        let mut content = self.content.iter()
-            .map(|node| node.clone())
-            .collect::<Vec<Rc<dyn Node>>>();
-
-        if let Some(last) = content.last() {
-            if let Some(joined) = last.join(node.clone()) {
-                content.pop();
-                content.push(joined);
-
-                return Rc::new(Self { content, size })
-            }
-        }
-
-        content.push(node);
-
-        Rc::new(Self { content, size })
-    }
-
     pub(crate) fn concat(self: Rc<Self>, fragment: Rc<Fragment>) -> Rc<Self> {
         if let Some((first, rest)) = fragment.content.split_first() {
             if let Some((last, nodes)) = self.content.split_last() {

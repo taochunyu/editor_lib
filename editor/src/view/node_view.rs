@@ -40,16 +40,16 @@ impl NodeView {
         Self::new(node, Some(parent), dom, content_dom)
     }
 
-    pub(crate) fn insert_child(&mut self, index: usize, child: Rc<RefCell<NodeView>>) {
-        self.children.insert(index, child);
-    }
-
     pub(crate) fn dom(&self) -> HTMLNode {
         self.dom.clone()
     }
 
     pub(crate) fn content_dom(&self) -> Option<HTMLElement> {
         self.content_dom.clone()
+    }
+
+    pub(crate) fn insert_child(&mut self, index: usize, child: Rc<RefCell<NodeView>>) {
+        self.children.insert(index, child);
     }
 
     pub(crate) fn update_children(node_view: Rc<RefCell<NodeView>>, view: Rc<View>, offset: usize) {

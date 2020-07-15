@@ -27,7 +27,7 @@ fn build_path(path: &mut Vec<Step>, node: Rc<dyn Node>, offset: usize, cursor: u
                 path.push(Step {
                     node: node.clone(),
                     index: node.child_count(),
-                    offset: node.content_size(),
+                    offset: offset + 1,
                 });
             },
             Ordering::Less => {

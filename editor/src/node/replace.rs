@@ -21,11 +21,11 @@ fn replace_outer(from: Rc<Path>, to: Rc<Path>, slice: Slice, depth: usize) -> Re
     let Step { node, index, offset: _ } = from.step(depth)?;
 
     if index == to.step(depth)?.index && from.depth() > depth + slice.open_start() {
-        let child = replace_outer(from.clone(), to, slice, depth + 1)?;
+        let child = replace_outer(from, to, slice, depth + 1)?;
 
         node.replace_child(index, child)
     } else if slice.content().size() == 0 {
-        let new_children = replace_two_way(from.clone(), to, depth)?;
+        let new_children = replace_two_way(from, to, depth)?;
 
         node.replace_children(new_children)
     } else if slice.open_start() == 0 && slice.open_end() == 0 && from.clone().depth() == depth && to.depth() == depth {
@@ -34,7 +34,7 @@ fn replace_outer(from: Rc<Path>, to: Rc<Path>, slice: Slice, depth: usize) -> Re
         node.replace_children(new_children)
     } else {
         let (start, end) = prepare_slice(slice, from.clone())?;
-        let new_children = replace_three_way(from.clone(), start, end, to, depth)?;
+        let new_children = replace_three_way(from, start, end, to, depth)?;
 
         node.replace_children(new_children)
     }
@@ -97,6 +97,10 @@ fn add_range_after(path:  Rc<Path>, depth: usize, target: &mut Vec<Rc<dyn Node>>
         from += 1;
     }
 
+    if path.depth() > depth {
+        from += 1;
+    }
+
     for index in from..to {
         add_node(node.get_child(index)?, target);
     }
@@ -110,6 +114,10 @@ fn add_range(start: Rc<Path>, end: Rc<Path>, depth: usize, target: &mut Vec<Rc<d
 
     if start.depth() == depth && start.text_offset() != 0 {
         add_node(with_text_node_split_error(start.node_after())?, target);
+        from += 1;
+    }
+
+    if start.depth() > depth {
         from += 1;
     }
 
@@ -137,7 +145,7 @@ fn replace_two_way(from: Rc<Path>, to: Rc<Path>, depth: usize) -> Result<Rc<Frag
         add_node(new_node, &mut target);
     }
 
-    add_range_after(to.clone(), depth, &mut target);
+    add_range_after(to.clone(), depth, &mut target)?;
 
     Ok(Rc::new(Fragment::from(target)))
 }
@@ -162,8 +170,6 @@ fn replace_three_way(
 
     let mut target: Vec<Rc<dyn Node>> = vec![];
 
-    let node = from.step(depth)?.node;
-
     add_range_before(from.clone(), depth, &mut target)?;
 
     let start_index = start.step(depth)?.index;
@@ -183,8 +189,6 @@ fn replace_three_way(
             add_node(node, &mut target);
         }
 
-        let node = start.step(depth)?.node;
-
         add_range(start.clone(), end.clone(), depth, &mut target)?;
 
         if let Some(oe) = open_end {
@@ -195,15 +199,13 @@ fn replace_three_way(
         }
     }
 
-    let node = to.step(depth)?.node;
-
     add_range_after(to.clone(), depth, &mut target)?;
 
     Ok(Rc::new(Fragment::from(target)))
 }
 
 fn prepare_slice(slice: Slice, along: Rc<Path>) -> Result<(Rc<Path>, Rc<Path>), String> {
-    let extra = along.depth() - slice.open_start() - 1;
+    let extra = along.depth() - slice.open_start();
     let parent = along.step(extra)?.node;
 
     let mut node = parent.replace_children(slice.content())?;
