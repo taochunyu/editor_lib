@@ -4,12 +4,7 @@ use crate::node::path::{Path, Step};
 use crate::node::slice::Slice;
 use crate::node::fragment::Fragment;
 
-pub fn replace(
-    base: Rc<dyn Node>,
-    from: usize,
-    to: usize,
-    slice: Slice
-) -> Result<Rc<dyn Node>, String> {
+pub fn replace(base: Rc<dyn Node>, from: usize, to: usize, slice: Slice) -> Result<Rc<dyn Node>, String> {
     let resolved_from = base.clone().find_path(from)?;
     let resolved_to = base.clone().find_path(to)?;
 
@@ -22,12 +17,7 @@ pub fn replace(
     }
 }
 
-fn replace_outer(
-    from: Rc<Path>,
-    to: Rc<Path>,
-    slice: Slice,
-    depth: usize,
-) -> Result<Rc<dyn Node>, String> {
+fn replace_outer(from: Rc<Path>, to: Rc<Path>, slice: Slice, depth: usize) -> Result<Rc<dyn Node>, String> {
     let Step { node, index, offset: _ } = from.step(depth)?;
 
     if index == to.step(depth)?.index && from.depth() > depth + slice.open_start() {
@@ -76,38 +66,59 @@ fn add_node(node: Rc<dyn Node>, target: &mut Vec<Rc<dyn Node>>) {
     target.push(node);
 }
 
-fn add_range(
-    node: Rc<dyn Node>,
-    start: Option<Rc<Path>>,
-    end: Option<Rc<Path>>,
-    depth: usize,
-    target: &mut Vec<Rc<dyn Node>>,
-) -> Result<(), String> {
-    let start_index = match &start {
-        Some(path) => {
-            let index = path.step(depth)?.index;
+fn with_text_node_split_error(node: Option<Rc<dyn Node>>) -> Result<Rc<dyn Node>, String> {
+    match node {
+        Some(node) => Ok(node),
+        None => Err(String::from("Path should have text node child when text offset != 0.")),
+    }
+}
 
-            if path.depth() == depth { index } else { index + 1 }
-        },
-        None => 0,
-    };
-    let end_index = match &end {
-        Some(path) => path.step(depth)?.index,
-        None => node.child_count(),
+fn add_range_before(path:  Rc<Path>, depth: usize, target: &mut Vec<Rc<dyn Node>>) -> Result<(), String>{
+    let Step { node, index, offset: _ } = path.step(depth)?;
+
+    for index in 0..index {
+        add_node(node.get_child(index)?, target);
     };
 
-    for index in start_index..end_index {
+    if path.depth() == depth && path.text_offset() != 0 {
+        add_node(with_text_node_split_error(path.node_before())?, target);
+    }
+
+    Ok(())
+}
+
+fn add_range_after(path:  Rc<Path>, depth: usize, target: &mut Vec<Rc<dyn Node>>) -> Result<(), String>{
+    let Step { node, index, offset: _ } = path.step(depth)?;
+    let mut from = index;
+    let to = node.child_count();
+
+    if path.depth() == depth && path.text_offset() != 0 {
+        add_node(with_text_node_split_error(path.node_after())?, target);
+        from += 1;
+    }
+
+    for index in from..to {
         add_node(node.get_child(index)?, target);
     }
 
-    if let Some(path) = &end {
-        let parent_offset = path.parent_offset();
+    Ok(())
+}
 
-        if path.depth() == depth && parent_offset != 0 {
-            if let Some(node) = path.node_before() {
-                add_node(node, target);
-            }
-        }
+fn add_range(start: Rc<Path>, end: Rc<Path>, depth: usize, target: &mut Vec<Rc<dyn Node>>) -> Result<(), String> {
+    let mut from = start.step(depth)?.index;
+    let Step { node, index: to, offset: _ } = end.step(depth)?;
+
+    if start.depth() == depth && start.text_offset() != 0 {
+        add_node(with_text_node_split_error(start.node_after())?, target);
+        from += 1;
+    }
+
+    for index in from..to {
+        add_node(node.get_child(index)?, target);
+    };
+
+    if end.depth() == depth && end.text_offset() != 0 {
+        add_node(with_text_node_split_error(end.node_before())?, target);
     }
 
     Ok(())
@@ -115,17 +126,18 @@ fn add_range(
 
 fn replace_two_way(from: Rc<Path>, to: Rc<Path>, depth: usize) -> Result<Rc<Fragment>, String> {
     let mut target: Vec<Rc<dyn Node>> = vec![];
-    let node = from.step(depth)?.node;
 
-    add_range(node, None, Some(from.clone()), depth, &mut target)?;
+    add_range_before(from.clone(), depth, &mut target)?;
 
-    if from.depth() > depth + 1 {
+    if from.depth() > depth {
         let node = from.step(depth + 1)?.node;
-        let content = replace_two_way(from.clone(), to, depth + 1)?;
+        let content = replace_two_way(from.clone(), to.clone(), depth + 1)?;
         let new_node = node.replace_children(content)?;
 
         add_node(new_node, &mut target);
     }
+
+    add_range_after(to.clone(), depth, &mut target);
 
     Ok(Rc::new(Fragment::from(target)))
 }
@@ -152,7 +164,7 @@ fn replace_three_way(
 
     let node = from.step(depth)?.node;
 
-    add_range(node, None, Some(from.clone()), depth, &mut target)?;
+    add_range_before(from.clone(), depth, &mut target)?;
 
     let start_index = start.step(depth)?.index;
     let end_index = end.step(depth)?.index;
@@ -173,7 +185,7 @@ fn replace_three_way(
 
         let node = start.step(depth)?.node;
 
-        add_range(node, Some(start.clone()), Some(end.clone()), depth, &mut target)?;
+        add_range(start.clone(), end.clone(), depth, &mut target)?;
 
         if let Some(oe) = open_end {
             let content = replace_two_way(end.clone(), to.clone(), depth + 1)?;
@@ -185,7 +197,7 @@ fn replace_three_way(
 
     let node = to.step(depth)?.node;
 
-    add_range(node, Some(to.clone()), None, depth, &mut target)?;
+    add_range_after(to.clone(), depth, &mut target)?;
 
     Ok(Rc::new(Fragment::from(target)))
 }
@@ -233,6 +245,8 @@ mod test {
 
     #[test]
     fn replace_two_way() {
-        replace_root(3, 4, create_empty_slice())
+        // replace_root(3, 4, create_empty_slice());
+
+        replace_root(6, 8, create_empty_slice());
     }
 }

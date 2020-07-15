@@ -110,8 +110,11 @@ impl Path {
         let text_offset = self.text_offset();
 
         if text_offset != 0 {
-            match step.node.clone().cut(0, text_offset) {
-                Ok(node) => Some(node),
+            match step.node.clone().get_child(step.index) {
+                Ok(text_node) => match text_node.cut(0, text_offset) {
+                    Ok(node) => Some(node),
+                    Err(_) => None,
+                },
                 Err(_) => None,
             }
         } else if step.index == 0 {
@@ -137,8 +140,11 @@ impl Path {
                     if text_offset == 0 {
                         Some(node)
                     } else {
-                        match step.node.clone().cut(text_offset, node.size()) {
-                            Ok(node) => Some(node),
+                        match step.node.clone().get_child(step.index) {
+                            Ok(text_node) => match text_node.cut(text_offset, node.size()) {
+                                Ok(node) => Some(node),
+                                Err(_) => None,
+                            },
                             Err(_) => None,
                         }
                     }
@@ -175,5 +181,13 @@ mod test {
         let path = Path::new(base, 14).unwrap();
 
         println!("Path Debug String: [\n{}\n]", to_debug_string(path));
+    }
+
+    #[test]
+    fn node_before() {
+        let base = create_root();
+        let path = base.find_path(6).unwrap();
+
+        println!("{} {}", path.text_offset(), path.node_before().is_some());
     }
 }
