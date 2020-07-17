@@ -3,8 +3,10 @@
     <words>
       <w>abcdefghijklmnopqrstuvwxyz</w>
       <w>bindgen</w>
+      <w>contenteditable</w>
       <w>ello</w>
       <w>joinable</w>
+      <w>renderable</w>
       <w>todomvc</w>
       <w>wasm</w>
     </words>

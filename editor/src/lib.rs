@@ -1,13 +1,7 @@
-pub mod document;
+mod transform;
+pub mod node_types;
 pub mod node;
-mod position;
-mod schema;
-pub mod slice;
+pub mod view;
 
 #[cfg(test)]
-mod tests {
-    #[test]
-    fn it_works() {
-        assert_eq!(2 + 2, 4);
-    }
-}
+mod test;

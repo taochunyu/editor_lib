@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Content Editable Plan Test</title>
+    <style>
+        .fix-top {
+            position: fixed;
+            left: 10px;
+            top: 10px;
+            width: 200px;
+            height: 200px;
+            background: gray;
+            z-index: 10;
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+    <script>
+        const $root = document.querySelector("#root");
+
+        const createContenteditable = innerHTML => {
+            const $div = document.createElement("div");
+
+            $div.setAttribute("contenteditable", "true");
+
+            if (innerHTML) {
+                $div.innerHTML = innerHTML;
+            }
+
+            return $div;
+        }
+
+        const createNode = () => {
+            const $p = document.createElement("p");
+
+            $p.innerHTML = `hello<span style="color: brown">world</span>🍩hello<span style="color: brown">world</span>🍩`;
+
+            return $p;
+        }
+
+        const createTest = (nodeNumber, isInContenteditable = true) => {
+            const $container = isInContenteditable ? createContenteditable() : document.createElement("div");
+
+
+            for (let i = 0; i < nodeNumber; i++) {
+                $container.appendChild(createNode());
+            }
+
+            if (!isInContenteditable) {
+                // const $input = createContenteditable("hello world");
+                const $input = document.createElement("input");
+
+                // $input.classList.add("fix-top")
+                $container.appendChild($input);
+            }
+
+            return $container
+        }
+
+        const mountTest = $test => $root.appendChild($test);
+
+        mountTest(createTest(10000, false));
+    </script>
+</body>
+</html>

@@ -1,5 +1,3 @@
 /target
 **/*.rs.bk
 .DS_Store
-test.rs
-test
