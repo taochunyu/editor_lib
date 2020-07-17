@@ -17,46 +17,46 @@ pub struct Path {
     parent_offset: usize,
 }
 
-fn build_path(path: &mut Vec<Step>, node: Rc<dyn Node>, offset: usize, cursor: usize) -> Result<usize, String> {
-    if !node.is_text() {
-        match offset.cmp(&node.content_size()) {
-            Ordering::Greater => {
-                return Err(format!("Offset {} outside of base node.", offset));
-            },
-            Ordering::Equal => {
-                path.push(Step {
-                    node: node.clone(),
-                    index: node.child_count(),
-                    offset: offset + 1,
-                });
-            },
-            Ordering::Less => {
-                let index = node.index(offset)?;
-                let child = node.get_child(index)?;
-                let size = node.get_child_range(0..index)?.iter()
-                    .fold(0, |acc, x| acc + x.size());
-                let cursor = cursor + size;
+impl Path {
+    fn build_path(path: &mut Vec<Step>, node: Rc<dyn Node>, offset: usize, cursor: usize) -> Result<usize, String> {
+        if !node.is_text() {
+            match offset.cmp(&node.content_size()) {
+                Ordering::Greater => {
+                    return Err(format!("Offset {} outside of base node.", offset));
+                },
+                Ordering::Equal => {
+                    path.push(Step {
+                        node: node.clone(),
+                        index: node.child_count(),
+                        offset: offset + 1,
+                    });
+                },
+                Ordering::Less => {
+                    let index = node.index(offset)?;
+                    let child = node.get_child(index)?;
+                    let size = node.get_child_range(0..index)?.iter()
+                        .fold(0, |acc, x| acc + x.size());
+                    let cursor = cursor + size;
 
-                path.push(Step {
-                    node: node.clone(),
-                    index,
-                    offset: cursor,
-                });
+                    path.push(Step {
+                        node: node.clone(),
+                        index,
+                        offset: cursor,
+                    });
 
-                if offset != size && !child.is_text() {
-                    let offset = offset - size - 1;
+                    if offset != size && !child.is_text() {
+                        let offset = offset - size - 1;
 
-                    return build_path(path, child, offset, cursor + 1);
+                        return Self::build_path(path, child, offset, cursor + 1);
+                    }
+
                 }
-
             }
         }
+
+        Ok(offset)
     }
 
-    Ok(offset)
-}
-
-impl Path {
     pub(crate) fn new(base: Rc<dyn Node>, offset: usize) -> Result<Rc<Self>, String> {
         if base.is_text() {
             return Err(format!("Path base node cannot be a text node."))
@@ -64,7 +64,7 @@ impl Path {
 
         let mut path: Vec<Step> = vec![];
 
-        let parent_offset = build_path(&mut path, base.clone(), offset, 0)?;
+        let parent_offset = Self::build_path(&mut path, base.clone(), offset, 0)?;
 
         let path_length = path.len();
 
@@ -85,6 +85,28 @@ impl Path {
 
     pub fn depth(&self) -> usize {
         self.depth
+    }
+
+    pub fn start(&self, depth: usize) -> Result<usize, String> {
+        if depth == 0 {
+            Ok(0)
+        } else {
+            Ok(self.step(depth - 1)?.offset + 1)
+        }
+    }
+
+    pub fn end(&self, depth: usize) -> Result<usize, String> {
+        Ok(self.start(depth)? + self.step(depth)?.node.content_size())
+    }
+
+    pub fn shared_depth(&self, offset: usize) -> Result<usize, String> {
+        for depth in self.depth..0 {
+            if offset >= self.start(depth)? && offset <= self.end(depth)? {
+                return Ok(depth);
+            }
+        }
+
+        Ok(0)
     }
 
     pub fn parent(&self) -> Rc<dyn Node> {
@@ -160,6 +182,10 @@ impl Path {
             None => Err(format!("Depth {} out range of offset path", depth)),
         }
     }
+
+    pub fn index_after(&self, depth: usize) -> Result<usize, String> {
+        Ok(self.step(depth)?.index + if self.depth == depth && self.text_offset() == 0 { 0 } else { 1 })
+    }
 }
 
 #[cfg(test)]
@@ -186,7 +212,7 @@ mod test {
     #[test]
     fn node_before() {
         let base = create_root();
-        let path = base.find_path(6).unwrap();
+        let path = base.resolve(6).unwrap();
 
         println!("{} {}", path.text_offset(), path.node_before().is_some());
     }

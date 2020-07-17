@@ -19,13 +19,13 @@ pub mod tools {
         root
     }
 
-    pub fn create_empty_slice() -> Slice {
-        Slice::new(0, 0, vec![])
+    pub fn create_empty_slice() -> Rc<Slice> {
+        Rc::new(Slice::from(vec![]))
     }
 
-    pub fn create_slice_with_char() -> Slice {
+    pub fn create_slice_with_char() -> Rc<Slice> {
         let char = create_text("c");
 
-        Slice::new(0, 0, vec![char])
+        Rc::new(Slice::from(char))
     }
 }

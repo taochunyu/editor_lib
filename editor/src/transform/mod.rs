@@ -1,3 +1,7 @@
+mod step;
+mod replace;
+mod step_map;
+
 use std::rc::Rc;
 use crate::node::Node;
 

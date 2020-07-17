@@ -8,13 +8,35 @@ pub struct Slice {
     content: Rc<Fragment>,
 }
 
+impl From<Rc<dyn Node>> for Slice {
+    fn from(node: Rc<dyn Node>) -> Self {
+        Self::new(Rc::new(Fragment::from(node)), 0, 0)
+    }
+}
+
+impl From<Vec<Rc<dyn Node>>> for Slice {
+    fn from(nodes: Vec<Rc<dyn Node>>) -> Self {
+        Self::new(Rc::new(Fragment::from(nodes)), 0, 0)
+    }
+}
+
+impl From<Rc<Fragment>> for Slice {
+    fn from(content: Rc<Fragment>) -> Self {
+        Self::new( content, 0, 0)
+    }
+}
+
 impl Slice {
-    pub fn new(open_start: usize, open_end: usize, content: Vec<Rc<dyn Node>>) -> Self {
-        Self {
-            open_start,
-            open_end,
-            content: Rc::new(Fragment::from(content)),
-        }
+    pub fn new(content: Rc<Fragment>, open_start: usize, open_end: usize) -> Self {
+        Self { content, open_start, open_end }
+    }
+
+    pub fn empty() -> Self {
+        Self::from(vec![])
+    }
+
+    pub fn size(&self) -> usize {
+        self.content.size()
     }
 
     pub fn open_start(&self) -> usize {

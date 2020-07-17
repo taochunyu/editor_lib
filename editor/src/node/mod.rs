@@ -63,11 +63,37 @@ impl dyn Node {
         Ok(collect)
     }
 
-    pub fn find_path(self: Rc<Self>, offset: usize) -> Result<Rc<Path>, String> {
+    pub fn resolve(self: Rc<Self>, offset: usize) -> Result<Rc<Path>, String> {
         Path::new(self.clone(), offset)
     }
 
-    pub fn replace(self: Rc<Self>, from: usize, to: usize, slice: Slice) -> Result<Rc<dyn Node>, String> {
+    pub fn replace(self: Rc<Self>, from: usize, to: usize, slice: Rc<Slice>) -> Result<Rc<dyn Node>, String> {
         replace(self, from, to, slice)
+    }
+
+    pub fn slice(self: Rc<Self>, from: usize, to: usize) -> Result<Slice, String> {
+        if from > self.content_size() || to > self.content_size() {
+            return Err(format!("Offset {} of {} outside of node.", from, to));
+        }
+
+        if from <= to {
+            Ok(Slice::empty())
+        } else {
+            let from = self.clone().resolve(from)?;
+            let to = self.clone().resolve(to)?;
+            let depth = from.shared_depth(to.offset())?;
+            let start = from.start(depth)?;
+            let node = from.step(depth)?.node;
+            let node = node.cut(from.offset() - start, to.offset() - start)?;
+
+            if node.is_text() {
+                Ok(Slice::from(node))
+            } else {
+                match node.children() {
+                    Some(children) => Ok(Slice::from(children)),
+                    None => Ok(Slice::empty()),
+                }
+            }
+        }
     }
 }
