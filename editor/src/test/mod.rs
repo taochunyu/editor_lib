@@ -5,8 +5,9 @@ pub mod tools {
     use crate::node_types::paragraph::Paragraph;
     use crate::node_types::root::Root;
     use crate::node::slice::Slice;
+    use crate::Doc;
 
-    pub fn create_root() -> Rc<dyn Node> {
+    pub fn create_doc() -> Doc {
         let hello = create_text("hello");
         let world = create_text("world");
         let paragraph_hello = create_element::<Paragraph>((), Some(vec![hello]));
@@ -19,13 +20,13 @@ pub mod tools {
         root
     }
 
-    pub fn create_empty_slice() -> Rc<Slice> {
-        Rc::new(Slice::from(vec![]))
+    pub fn create_empty_slice() -> Slice {
+        Slice::from(vec![])
     }
 
-    pub fn create_slice_with_char() -> Rc<Slice> {
+    pub fn create_slice_with_char() -> Slice {
         let char = create_text("c");
 
-        Rc::new(Slice::from(char))
+        Slice::from(char)
     }
 }

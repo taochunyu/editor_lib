@@ -67,7 +67,7 @@ impl dyn Node {
         Path::new(self.clone(), offset)
     }
 
-    pub fn replace(self: Rc<Self>, from: usize, to: usize, slice: Rc<Slice>) -> Result<Rc<dyn Node>, String> {
+    pub fn replace(self: Rc<Self>, from: usize, to: usize, slice: Slice) -> Result<Rc<dyn Node>, String> {
         replace(self, from, to, slice)
     }
 

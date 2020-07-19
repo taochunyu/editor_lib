@@ -4,7 +4,7 @@ use crate::node::path::{Path, Step};
 use crate::node::slice::Slice;
 use crate::node::fragment::Fragment;
 
-pub fn replace(base: Rc<dyn Node>, from: usize, to: usize, slice: Rc<Slice>) -> Result<Rc<dyn Node>, String> {
+pub fn replace(base: Rc<dyn Node>, from: usize, to: usize, slice: Slice) -> Result<Rc<dyn Node>, String> {
     let resolved_from = base.clone().resolve(from)?;
     let resolved_to = base.clone().resolve(to)?;
 
@@ -17,7 +17,7 @@ pub fn replace(base: Rc<dyn Node>, from: usize, to: usize, slice: Rc<Slice>) -> 
     }
 }
 
-fn replace_outer(from: Rc<Path>, to: Rc<Path>, slice: Rc<Slice>, depth: usize) -> Result<Rc<dyn Node>, String> {
+fn replace_outer(from: Rc<Path>, to: Rc<Path>, slice: Slice, depth: usize) -> Result<Rc<dyn Node>, String> {
     let Step { node, index, offset: _ } = from.step(depth)?;
 
     if index == to.step(depth)?.index && from.depth() > depth + slice.open_start() {
@@ -40,7 +40,7 @@ fn replace_outer(from: Rc<Path>, to: Rc<Path>, slice: Rc<Slice>, depth: usize) -
     }
 }
 
-fn splice(from: Rc<Path>, to: Rc<Path>, slice: Rc<Slice>) -> Result<Rc<Fragment>, String> {
+fn splice(from: Rc<Path>, to: Rc<Path>, slice: Slice) -> Result<Rc<Fragment>, String> {
     let parent = from.parent();
     let children = match parent.children() {
         Some(children) => Ok(children),
@@ -204,7 +204,7 @@ fn replace_three_way(
     Ok(Rc::new(Fragment::from(target)))
 }
 
-fn prepare_slice(slice: Rc<Slice>, along: Rc<Path>) -> Result<(Rc<Path>, Rc<Path>), String> {
+fn prepare_slice(slice: Slice, along: Rc<Path>) -> Result<(Rc<Path>, Rc<Path>), String> {
     let extra = along.depth() - slice.open_start();
     let parent = along.step(extra)?.node;
 
@@ -222,15 +222,15 @@ fn prepare_slice(slice: Rc<Slice>, along: Rc<Path>) -> Result<(Rc<Path>, Rc<Path
 
 #[cfg(test)]
 mod test {
-    use crate::test::tools::{create_root, create_empty_slice, create_slice_with_char};
+    use crate::test::tools::{create_doc, create_empty_slice, create_slice_with_char};
     use crate::node::slice::Slice;
     use std::rc::Rc;
 
     // root
     //       0   1 2 3 4 5 6    7   8 9 10 11 12 13    14
     // <root> <p> h e l l o </p> <p> w o  r  l  d  </p>  </root>
-    fn replace_root(from: usize, to: usize, slice: Rc<Slice>) {
-        let root = create_root();
+    fn replace_root(from: usize, to: usize, slice: Slice) {
+        let root = create_doc();
 
         println!("{}", root.serialize());
 

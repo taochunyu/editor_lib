@@ -1,32 +1,33 @@
 use std::rc::Rc;
 use crate::Doc;
-use crate::transform::step_map::Mapping;
+use crate::transform::step_map::{Mapping, StepMap};
 use crate::node::slice::Slice;
 
-pub trait Step {
-    fn apply(&self, doc: Rc<Doc>) -> StepResult;
-    fn invert(&self, doc: Rc<Doc>) -> Box<dyn Step>;
-    fn map(&self, mapping: Mapping) -> Option<Box<dyn Step>>;
-}
-
-pub struct StepResult {
-    doc: Option<Rc<Doc>>,
-    err: Option<String>,
+pub enum StepResult {
+    Success(Doc),
+    Failed(String),
 }
 
 impl StepResult {
-    pub fn ok(doc: Rc<Doc>) -> Self {
-        Self { doc: Some(doc), err: None }
+    pub fn success(doc: Doc) -> Self {
+        Self::Success(doc)
     }
 
-    pub fn err(err: String) -> Self {
-        Self { doc: None, err: Some(err) }
+    pub fn failed(reason: String) -> Self {
+        Self::Failed(reason)
     }
 
-    pub fn from_replace(doc: Rc<Doc>, from: usize, to: usize, slice: Rc<Slice>) -> Self {
+    pub fn from_replace(doc: Doc, from: usize, to: usize, slice: Slice) -> Self {
         match doc.replace(from, to, slice) {
-            Ok(doc) => Self::ok(doc),
-            Err(err) => Self::err(err),
+            Ok(doc) => Self::success(doc),
+            Err(err) => Self::failed(err),
         }
     }
+}
+
+pub trait Step {
+    fn apply(&self, doc: Doc) -> StepResult;
+    fn invert(&self, doc: Doc) -> Result<Box<dyn Step>, String>;
+    fn get_map(&self) -> StepMap;
+    fn map(&self, mapping: Mapping) -> Option<Box<dyn Step>>;
 }

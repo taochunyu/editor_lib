@@ -2,6 +2,7 @@ use std::rc::Rc;
 use crate::node::Node;
 use crate::node::fragment::Fragment;
 
+#[derive(Clone)]
 pub struct Slice {
     open_start: usize,
     open_end: usize,

@@ -191,7 +191,7 @@ impl Path {
 #[cfg(test)]
 mod test {
     use std::rc::Rc;
-    use crate::test::tools::create_root;
+    use crate::test::tools::create_doc;
     use crate::node::path::Path;
 
     fn to_debug_string(path: Rc<Path>) -> String {
@@ -203,7 +203,7 @@ mod test {
 
     #[test]
     fn build_path() {
-        let base = create_root();
+        let base = create_doc();
         let path = Path::new(base, 14).unwrap();
 
         println!("Path Debug String: [\n{}\n]", to_debug_string(path));
@@ -211,7 +211,7 @@ mod test {
 
     #[test]
     fn node_before() {
-        let base = create_root();
+        let base = create_doc();
         let path = base.resolve(6).unwrap();
 
         println!("{} {}", path.text_offset(), path.node_before().is_some());
