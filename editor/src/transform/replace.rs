@@ -2,9 +2,10 @@ use std::rc::Rc;
 use crate::node::slice::Slice;
 use crate::transform::step::{Step, StepResult};
 use crate::node::Node;
-use crate::transform::step_map::{Mapping, StepMap};
 use crate::Doc;
 use crate::transform::Transform;
+use crate::transform::step_map::StepMap;
+use crate::transform::mapping::Mapping;
 
 pub struct ReplaceStep {
     from: usize,
@@ -34,7 +35,7 @@ impl Step for ReplaceStep {
     }
 
     fn get_map(&self) -> StepMap {
-        unimplemented!()
+        StepMap::new(vec![(self.from, self.to - self.from, self.slice.size())], false)
     }
 
     fn map(&self, mapping: Mapping) -> Option<Box<dyn Step>> {

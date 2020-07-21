@@ -1,6 +1,8 @@
+mod mapping;
+mod step_map;
+mod mappable;
 mod step;
 mod replace;
-mod step_map;
 
 use std::rc::Rc;
 use crate::node::Node;
@@ -8,7 +10,7 @@ use crate::Doc;
 use crate::node::slice::Slice;
 use crate::transform::replace::ReplaceStep;
 use crate::transform::step::{Step, StepResult};
-use crate::transform::step_map::Mapping;
+use crate::transform::mapping::Mapping;
 
 struct Transform {
     doc: Doc,
@@ -19,7 +21,12 @@ struct Transform {
 
 impl Transform {
     pub fn new(doc: Doc) -> Self {
-        Transform { doc, docs: vec![], steps: vec![], mapping: Mapping::new() }
+        Transform {
+            doc,
+            docs: vec![],
+            steps: vec![],
+            mapping: Mapping::new(vec![], None, 0, 0),
+        }
     }
 
     fn step(&mut self, step: Box<dyn Step>) -> Result<StepResult, String> {
@@ -38,6 +45,7 @@ impl Transform {
     fn add_step(&mut self, step: Box<dyn Step>, doc: Doc) {
         self.doc = doc.clone();
         self.docs.push(doc.clone());
+        self.mapping.add_map(step.get_map(), None);
         self.steps.push(step);
     }
 }
@@ -48,11 +56,15 @@ mod test {
     use crate::test::tools::{create_doc, create_empty_slice};
 
     #[test]
-    fn it_works() {
+    fn replace_works() {
         let doc = create_doc();
         let slice = create_empty_slice();
         let mut transform = Transform::new(doc);
 
-        transform.replace(3, 4, slice);
+        transform
+            .replace(3, 4, slice.clone())
+            .replace(3, 4, slice.clone());
+
+        println!("{}", transform.doc.serialize());
     }
 }

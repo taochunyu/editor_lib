@@ -1,7 +1,8 @@
 use std::rc::Rc;
 use crate::Doc;
-use crate::transform::step_map::{Mapping, StepMap};
 use crate::node::slice::Slice;
+use crate::transform::step_map::StepMap;
+use crate::transform::mapping::Mapping;
 
 pub enum StepResult {
     Success(Doc),
