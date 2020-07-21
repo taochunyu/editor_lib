@@ -4,7 +4,7 @@ mod fragment;
 pub mod slice;
 pub mod element;
 pub mod text;
-mod path;
+pub mod path;
 mod replace;
 
 use std::any::Any;
@@ -63,7 +63,7 @@ impl dyn Node {
         Ok(collect)
     }
 
-    pub fn resolve(self: Rc<Self>, offset: usize) -> Result<Rc<Path>, String> {
+    pub fn resolve(self: Rc<Self>, offset: usize) -> Result<Path, String> {
         Path::new(self.clone(), offset)
     }
 

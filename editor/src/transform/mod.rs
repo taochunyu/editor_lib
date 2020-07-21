@@ -1,6 +1,6 @@
-mod mapping;
+pub mod mapping;
 mod step_map;
-mod mappable;
+pub mod mappable;
 mod step;
 mod replace;
 
@@ -12,7 +12,7 @@ use crate::transform::replace::ReplaceStep;
 use crate::transform::step::{Step, StepResult};
 use crate::transform::mapping::Mapping;
 
-struct Transform {
+pub struct Transform {
     doc: Doc,
     docs: Vec<Doc>,
     steps: Vec<Box<dyn Step>>,
@@ -27,6 +27,10 @@ impl Transform {
             steps: vec![],
             mapping: Mapping::new(vec![], None, 0, 0),
         }
+    }
+
+    pub fn doc(&self) -> Doc {
+        self.doc.clone()
     }
 
     fn step(&mut self, step: Box<dyn Step>) -> Result<StepResult, String> {

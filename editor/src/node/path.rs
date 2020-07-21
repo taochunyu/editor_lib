@@ -57,7 +57,7 @@ impl Path {
         Ok(offset)
     }
 
-    pub(crate) fn new(base: Rc<dyn Node>, offset: usize) -> Result<Rc<Self>, String> {
+    pub fn new(base: Rc<dyn Node>, offset: usize) -> Result<Self, String> {
         if base.is_text() {
             return Err(format!("Path base node cannot be a text node."))
         }
@@ -71,7 +71,7 @@ impl Path {
         if path_length == 0 {
             Err(format!("Path must contain base node."))
         } else {
-            Ok(Rc::new(Self { path, offset, base, parent_offset, depth: path_length - 1 }))
+            Ok(Self { path, offset, base, parent_offset, depth: path_length - 1 })
         }
     }
 
@@ -194,7 +194,7 @@ mod test {
     use crate::test::tools::create_doc;
     use crate::node::path::Path;
 
-    fn to_debug_string(path: Rc<Path>) -> String {
+    fn to_debug_string(path: Path) -> String {
         path.path.iter()
             .map(|x| format!("    ({}, {}, {}),", x.node.type_name(), x.index, x.offset))
             .collect::<Vec<String>>()

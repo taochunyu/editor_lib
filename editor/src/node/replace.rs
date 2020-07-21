@@ -5,8 +5,8 @@ use crate::node::slice::Slice;
 use crate::node::fragment::Fragment;
 
 pub fn replace(base: Rc<dyn Node>, from: usize, to: usize, slice: Slice) -> Result<Rc<dyn Node>, String> {
-    let resolved_from = base.clone().resolve(from)?;
-    let resolved_to = base.clone().resolve(to)?;
+    let resolved_from = Rc::new(base.clone().resolve(from)?);
+    let resolved_to = Rc::new(base.clone().resolve(to)?);
 
     if slice.open_start() > resolved_from.depth() {
         Err(format!("Inserted content deeper than insertion position."))
@@ -215,8 +215,8 @@ fn prepare_slice(slice: Slice, along: Rc<Path>) -> Result<(Rc<Path>, Rc<Path>), 
     }
 
     Ok((
-        node.clone().resolve(slice.open_start() + extra)?,
-        node.clone().resolve(node.content_size() - slice.open_end())?,
+        Rc::new(node.clone().resolve(slice.open_start() + extra)?),
+        Rc::new(node.clone().resolve(node.content_size() - slice.open_end())?),
     ))
 }
 
