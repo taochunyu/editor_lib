@@ -23,10 +23,10 @@ pub struct View {
 
 impl View {
     pub fn new(renderer: Rc<Renderer>, dom: HTMLDivElement, doc: Doc) -> Self {
-        let state = State::new(doc.clone());
+        let state = State::new(doc);
         let doc_view = NodeViewDesc::new(
             None,
-            doc,
+            state.doc(),
             dom.clone().into(),
             Some(dom.clone().into()),
             0,
