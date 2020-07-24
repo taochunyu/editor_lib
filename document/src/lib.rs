@@ -7,20 +7,14 @@ use editor::node_types::root::Root;
 use editor::view::View;
 
 pub struct Document {
-    renderer: Rc<Renderer>,
+    view: View,
 }
 
 impl Document {
-    pub fn new(renderer: Renderer) -> Self {
-        Self {
-            renderer: Rc::new(renderer),
-        }
-    }
+    pub fn new(renderer: Rc<Renderer>) -> Self {
+        let div = renderer.create_element::<HTMLDivElement>();
 
-    pub fn trigger_test_doc(&self) {
-        let div = self.renderer.create_element::<HTMLDivElement>();
-
-        self.renderer.root().append_child(&div.clone().into());
+        renderer.root().append_child(&div.clone().into());
 
         let mut content = vec![];
 
@@ -35,8 +29,30 @@ impl Document {
         }
 
         let doc = create_element::<Root>((), Some(content));
-        let view = View::new(self.renderer.clone(), div, doc);
 
-        view.init();
+        Self {
+            view: View::new(renderer, div, doc)
+        }
+    }
+
+    pub fn trigger_test(&mut self) {
+
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use renderer::host::test_host::TestHost;
+    use std::rc::Rc;
+    use renderer::Renderer;
+    use editor::view::View;
+    use crate::Document;
+
+    #[test]
+    fn doc_init_works() {
+        let test_host = TestHost::new();
+        let renderer = Rc::new(Renderer::new(test_host));
+
+        Document::new(renderer);
     }
 }

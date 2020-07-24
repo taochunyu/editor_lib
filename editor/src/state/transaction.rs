@@ -7,7 +7,7 @@ use crate::state::selection::Selection;
 
 pub struct Transaction {
     transform: Transform,
-    selection: Rc<dyn Selection>,
+    selection: Option<Rc<dyn Selection>>,
 }
 
 impl Transaction {
@@ -22,8 +22,20 @@ impl Transaction {
         self.transform.doc()
     }
 
+    pub fn selection(&self) -> Option<Rc<dyn Selection>> {
+        self.selection.clone()
+    }
+
+    pub fn set_selection(&mut self, selection: Option<Rc<dyn Selection>>) -> &mut Self {
+        self.selection = selection;
+
+        self
+    }
+
     pub fn replace_selection(&mut self, slice: Slice) -> &mut Self {
-        self.selection.replace(&mut self.transform, slice);
+        if let Some(selection) = &self.selection {
+            selection.replace(&mut self.transform, slice);
+        }
 
         self
     }

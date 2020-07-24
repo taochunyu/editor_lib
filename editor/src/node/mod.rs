@@ -1,6 +1,6 @@
 pub mod utils;
 pub mod element_type;
-mod fragment;
+pub mod fragment;
 pub mod slice;
 pub mod element;
 pub mod text;
@@ -10,13 +10,13 @@ mod replace;
 use std::any::Any;
 use std::rc::Rc;
 use std::ops::Range;
+use renderer::Renderer;
 use crate::node::element_type::{OuterDOM, ContentDOM};
 use crate::node::text::Text;
 use crate::node::path::Path;
 use crate::node::fragment::Fragment;
 use crate::node::slice::Slice;
 use crate::node::replace::replace;
-use crate::view::View;
 
 pub trait Node {
     fn type_name(&self) -> &str;
@@ -31,7 +31,7 @@ pub trait Node {
     fn children(&self) -> Option<Rc<Fragment>>;
     fn replace_children(&self, children: Rc<Fragment>) -> Result<Rc<dyn Node>, String>;
     fn serialize(&self) -> String;
-    fn render(self: Rc<Self>, view: Rc<View>) -> (OuterDOM, ContentDOM);
+    fn render(self: Rc<Self>, renderer: Rc<Renderer>) -> (OuterDOM, ContentDOM);
 }
 
 impl dyn Node {

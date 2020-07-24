@@ -1,52 +1,56 @@
+mod node_view_desc;
+mod view_desc;
 mod updater;
-mod node_view;
 
 use std::rc::Rc;
 use std::cell::RefCell;
 use renderer::Renderer;
 use renderer::html::div::HTMLDivElement;
-use crate::node::Node;
-use crate::view::node_view::NodeView;
+use renderer::html::node::HTMLNode;
 
-struct StateCell {
-    test_count: u64,
-}
+use crate::node::Node;
+use crate::state::State;
+use crate::{Doc, Position};
+use crate::state::transaction::Transaction;
+use crate::view::node_view_desc::NodeViewDesc;
+use crate::view::view_desc::ViewDesc;
 
 pub struct View {
     renderer: Rc<Renderer>,
-    root_node_view: Rc<RefCell<NodeView>>,
-    state_cell: RefCell<StateCell>,
+    state: State,
+    doc_view: Rc<dyn ViewDesc>
 }
 
 impl View {
-    pub fn new(renderer: Rc<Renderer>, root_html_element: HTMLDivElement, root_node: Rc<dyn Node>) -> Rc<Self> {
-        let root_node_view = NodeView::new(
-            root_node.clone(),
+    pub fn new(renderer: Rc<Renderer>, dom: HTMLDivElement, doc: Doc) -> Self {
+        let state = State::new(doc.clone());
+        let doc_view = NodeViewDesc::new(
             None,
-            root_html_element.clone().into(),
-            Some(root_html_element.clone().into()),
+            doc,
+            dom.clone().into(),
+            Some(dom.clone().into()),
+            0,
+            renderer.clone(),
         );
 
-        Rc::new(Self {
+        Self {
             renderer,
-            root_node_view,
-            state_cell: RefCell::new(StateCell {
-                test_count: 0,
-            }),
-        })
-    }
-
-    pub fn init(self: Rc<Self>) {
-        NodeView::update_children(self.root_node_view.clone(), self, 0);
+            state,
+            doc_view,
+        }
     }
 
     pub fn renderer(&self) -> Rc<Renderer> {
         self.renderer.clone()
     }
 
-    pub fn dispatch(&self) {
-        let mut state_cell = self.state_cell.borrow_mut();
-
-        state_cell.test_count += 1;
+    pub fn dispatch(&mut self, transaction: &Transaction) {
+        self.state = self.state.apply(transaction);
     }
+}
+
+#[cfg(test)]
+mod test {
+    #[test]
+    fn it_works() {}
 }

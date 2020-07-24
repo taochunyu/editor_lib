@@ -1,3 +1,5 @@
+pub mod test_host;
+
 use std::any::Any;
 use std::rc::Rc;
 

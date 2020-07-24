@@ -1,6 +1,7 @@
 use std::rc::Rc;
 use renderer::html::node::HTMLNode;
 use renderer::html::element::HTMLElement;
+use renderer::Renderer;
 use crate::node::Node;
 use crate::node::fragment::Fragment;
 use crate::node::element::Element;
@@ -26,5 +27,5 @@ pub trait ElementType: Sized + 'static {
         Element::<Self>::new(attrs, element_children)
     }
 
-    fn render(view: Rc<View>, node: Rc<dyn Node>, attrs: Rc<Self::Attributes>) -> (OuterDOM, ContentDOM);
+    fn render(renderer: Rc<Renderer>, node: Rc<dyn Node>, attrs: Rc<Self::Attributes>) -> (OuterDOM, ContentDOM);
 }

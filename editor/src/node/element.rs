@@ -4,6 +4,7 @@ use crate::node::element_type::{ElementType, OuterDOM, ContentDOM};
 use crate::node::Node;
 use crate::node::fragment::Fragment;
 use crate::view::View;
+use renderer::Renderer;
 
 pub struct Element<T: ElementType> {
     attributes: Rc<T::Attributes>,
@@ -107,10 +108,10 @@ impl<T: ElementType> Node for Element<T> {
         }
     }
 
-    fn render(self: Rc<Self<>>, view: Rc<View>) -> (OuterDOM, ContentDOM) {
+    fn render(self: Rc<Self<>>, renderer: Rc<Renderer>) -> (OuterDOM, ContentDOM) {
         let attrs = self.clone().attributes.clone();
 
-        T::render(view, self, attrs)
+        T::render(renderer, self, attrs)
     }
 }
 
