@@ -22,8 +22,7 @@ pub struct View {
 }
 
 impl View {
-    pub fn new(renderer: Rc<Renderer>, dom: HTMLDivElement, doc: Doc) -> Self {
-        let state = State::new(doc);
+    pub fn new(renderer: Rc<Renderer>, dom: HTMLDivElement, state: State) -> Self {
         let doc_view = NodeViewDesc::new(
             None,
             state.doc(),
@@ -40,12 +39,21 @@ impl View {
         }
     }
 
+    pub fn state(&self) -> &State {
+        &self.state
+    }
+
     pub fn renderer(&self) -> Rc<Renderer> {
         self.renderer.clone()
     }
 
     pub fn dispatch(&mut self, transaction: &Transaction) {
         self.state = self.state.apply(transaction);
+        self.doc_view.clone().update(self.state.doc());
+
+        let str =self.doc_view.to_debug_string();
+
+        println!("{}", str);
     }
 }
 

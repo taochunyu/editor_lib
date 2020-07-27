@@ -82,6 +82,14 @@ impl Node for Text {
 
         (text.clone().into(), None)
     }
+
+    fn eq(self: Rc<Self>, other: Rc<dyn Node>) -> bool {
+        if let Some(other) = other.as_text() {
+            self.content == other.content
+        } else {
+            false
+        }
+    }
 }
 
 impl Text {

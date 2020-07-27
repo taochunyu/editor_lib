@@ -32,6 +32,7 @@ pub trait Node {
     fn replace_children(&self, children: Rc<Fragment>) -> Result<Rc<dyn Node>, String>;
     fn serialize(&self) -> String;
     fn render(self: Rc<Self>, renderer: Rc<Renderer>) -> (OuterDOM, ContentDOM);
+    fn eq(self: Rc<Self>, other: Rc<dyn Node>) -> bool;
 }
 
 impl dyn Node {

@@ -7,8 +7,17 @@ use crate::view::View;
 
 pub struct Root;
 
+#[derive(Eq, PartialEq)]
+pub struct RootAttributes;
+
+impl RootAttributes {
+    pub fn new() -> Self {
+        Self
+    }
+}
+
 impl ElementType for Root {
-    type Attributes = ();
+    type Attributes = RootAttributes;
 
     fn name() -> &'static str {
         "root"

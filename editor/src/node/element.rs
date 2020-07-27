@@ -113,6 +113,14 @@ impl<T: ElementType> Node for Element<T> {
 
         T::render(renderer, self, attrs)
     }
+
+    fn eq(self: Rc<Self>, other: Rc<dyn Node>) -> bool {
+        if let Some(other) = other.as_any().downcast_ref::<Self>() {
+            self.attributes == other.attributes || self.attributes.as_ref() == other.attributes.as_ref()
+        } else {
+            false
+        }
+    }
 }
 
 impl<T: ElementType> Element<T> {

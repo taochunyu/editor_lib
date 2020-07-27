@@ -7,10 +7,19 @@ use crate::view::View;
 
 const NAME: &'static str = "paragraph";
 
+#[derive(Eq, PartialEq)]
+pub struct ParagraphAttributes;
+
+impl ParagraphAttributes {
+    pub fn new() -> Self {
+        Self
+    }
+}
+
 pub struct Paragraph;
 
 impl ElementType for Paragraph {
-    type Attributes = ();
+    type Attributes = ParagraphAttributes;
 
     fn name() -> &'static str {
         NAME

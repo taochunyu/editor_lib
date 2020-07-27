@@ -7,6 +7,7 @@ use crate::node::Node;
 use crate::view::view_desc::ViewDesc;
 use crate::Position;
 use crate::view::updater::Updater;
+use std::any::Any;
 
 struct NodeViewDescMeta {
     parent: Option<Rc<dyn ViewDesc>>,
@@ -46,17 +47,34 @@ impl ViewDesc for NodeViewDesc {
         self.meta.borrow().node.size()
     }
 
-    fn update(self: Rc<Self>, node: Rc<dyn Node>) {
-        let self_ref = self.clone();
-        let self_trait_object = self.clone() as Rc<dyn ViewDesc>;
-        let pos = self_trait_object.pos_at_start();
-        let mut meta = self.meta.borrow_mut();
+    fn as_any(&self) -> &dyn Any {
+        self
+    }
 
-        meta.node = node.clone();
+    fn update(self: Rc<Self>, node: Rc<dyn Node>) -> bool {
+        if !self.node().eq(node.clone()) {
+            false
+        } else {
+            self.update_inner(node);
 
-        if meta.content_dom.is_some() {
-            self_ref.update_children(node, pos);
+            true
         }
+    }
+
+    fn destroy(&self) {
+        for child in self.children().iter() {
+            child.destroy();
+        }
+    }
+
+    fn to_debug_string(&self) -> String {
+        let content = self.meta.borrow().node.serialize();
+        let children = self.children.borrow().iter()
+            .map(|child| child.to_debug_string())
+            .collect::<Vec<String>>()
+            .join("\n");
+
+        format!("({})[{}]", content, children)
     }
 }
 
@@ -80,7 +98,9 @@ impl NodeViewDesc {
             renderer,
         });
 
-        node_view_desc.clone().update_children(node, pos);
+        if node_view_desc.clone().update_children(node, pos) {
+            (node_view_desc.clone() as Rc<dyn ViewDesc>).mount_children();
+        };
 
         node_view_desc
     }
@@ -96,12 +116,39 @@ impl NodeViewDesc {
         Self::new(parent, node, dom, content_dom, pos, renderer)
     }
 
-    fn update_children(self: Rc<Self>, node: Rc<dyn Node>, pos: Position) {
+    fn update_inner(self: Rc<Self>, node: Rc<dyn Node>) {
+        let need_update_children = {
+            let mut meta = self.meta.borrow_mut();
+
+            meta.node = node.clone();
+
+            meta.content_dom.is_some()
+        };
+
+        if need_update_children {
+            let self_trait = self.clone() as Rc<dyn ViewDesc>;
+            let pos = self_trait.clone().pos_at_start();
+            let updated = self.update_children(node, pos);
+
+            if updated {
+                self_trait.mount_children();
+            }
+        }
+
+    }
+
+    fn update_children(self: Rc<Self>, node: Rc<dyn Node>, pos: Position) -> bool {
         let mut updater = Updater::new(self.clone(), &self.children, node.clone(), self.renderer.clone());
 
         if let Some(children) = node.clone().children() {
             for (index, child) in children.content().iter().enumerate() {
                 if updater.find_node_match(child.clone(), index) {
+                    println!("Found node match!");
+                    break;
+                }
+
+                if updater.update_next_node(child.clone(), index) {
+                    println!("Found node update!");
                     break;
                 }
 
@@ -109,10 +156,8 @@ impl NodeViewDesc {
             }
         }
 
-        if !updater.changed() {
-            return;
-        }
+        updater.destroy_rest();
 
-        (self.clone() as Rc<dyn ViewDesc>).mount_children();
+        updater.changed()
     }
 }

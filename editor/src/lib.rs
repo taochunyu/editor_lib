@@ -1,4 +1,4 @@
-mod state;
+pub mod state;
 mod transform;
 pub mod node_types;
 pub mod node;
@@ -12,4 +12,4 @@ pub type Doc = Rc<dyn Node>;
 pub type Position = usize;
 
 #[cfg(test)]
-mod test;
+pub mod test;

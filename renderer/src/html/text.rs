@@ -13,7 +13,6 @@ pub struct HTMLTextNode {
 impl From<HTMLTextNode> for HTMLNode {
     fn from(text_node: HTMLTextNode) -> Self {
         Self {
-            name: NAME,
             host: text_node.host.clone(),
             instance: text_node.instance.clone(),
         }

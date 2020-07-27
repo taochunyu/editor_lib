@@ -1,5 +1,6 @@
 use std::rc::Rc;
 use std::cell::{RefMut, RefCell, Ref};
+use std::any::Any;
 use renderer::Renderer;
 use renderer::html::node::HTMLNode;
 use renderer::html::element::HTMLElement;
@@ -13,7 +14,10 @@ pub trait ViewDesc {
     fn dom(&self) -> HTMLNode;
     fn content_dom(&self) -> Option<HTMLElement>;
     fn size(&self) -> usize;
-    fn update(self: Rc<Self>, node: Rc<dyn Node>);
+    fn as_any(&self) -> &dyn Any;
+    fn update(self: Rc<Self>, node: Rc<dyn Node>) -> bool;
+    fn destroy(&self);
+    fn to_debug_string(&self) -> String;
 }
 
 impl dyn ViewDesc {
@@ -40,15 +44,47 @@ impl dyn ViewDesc {
     }
 
     pub fn matches_node(&self, node: Rc<dyn Node>) -> bool {
-        Rc::ptr_eq(&self.node(), &node)
+        self.node().eq(node)
     }
 
     pub fn mount_children(&self) {
-        if let Some(parent) = self.content_dom() {
+        if let Some(parent_dom) = self.content_dom() {
+            let mut dom = parent_dom.first_child();
+
             for child in self.children().iter() {
-                parent.append_child(&child.dom());
-                child.mount_children();
+                let child_dom = child.dom();
+
+                match child_dom.parent() {
+                    Some(child_dom_parent) if child_dom_parent == parent_dom.clone().into() => {
+                        while let Some(next) = dom.clone() {
+                            if child_dom.eq(&next) {
+                                break;
+                            }
+
+                            dom = remove_dom(next);
+                        }
+
+                        if let Some(next) = dom.clone() {
+                            dom = next.next_sibling();
+                        }
+                    },
+                    _ => {
+                        parent_dom.insert_before(child_dom, dom.clone());
+                    }
+                }
+            }
+
+            while let Some(next) = dom.clone() {
+                dom = remove_dom(next)
             }
         }
     }
+}
+
+fn remove_dom(dom: HTMLNode) -> Option<HTMLNode> {
+    let next = dom.next_sibling();
+
+    dom.remove();
+
+    next
 }

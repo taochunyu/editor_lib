@@ -1,10 +1,16 @@
+mod host;
+
 use std::rc::Rc;
 use renderer::Renderer;
 use renderer::html::div::HTMLDivElement;
+use editor::node::slice::Slice;
 use editor::node::utils::{create_text, create_element};
-use editor::node_types::paragraph::Paragraph;
-use editor::node_types::root::Root;
+use editor::node_types::paragraph::{Paragraph, ParagraphAttributes};
+use editor::node_types::root::{Root, RootAttributes};
 use editor::view::View;
+use editor::state::State;
+use editor::state::text_selection::TextSelection;
+use editor::state::transaction::Transaction;
 
 pub struct Document {
     view: View,
@@ -18,35 +24,45 @@ impl Document {
 
         let mut content = vec![];
 
-        for _ in 0..10 {
+        for _ in 0..1 {
             let hello = create_text("hello, world");
             let paragraph = create_element::<Paragraph>(
-                (),
+                ParagraphAttributes::new(),
                 Some(vec![hello]),
             );
 
             content.push(paragraph);
         }
 
-        let doc = create_element::<Root>((), Some(content));
+        let doc = create_element::<Root>(RootAttributes::new(), Some(content));
+        let state = State::new(doc);
 
         Self {
-            view: View::new(renderer, div, doc)
+            view: View::new(renderer, div, state),
         }
     }
 
-    pub fn trigger_test(&mut self) {
+    pub fn trigger_test(&mut self) -> String {
+        let slice = Slice::from(vec![]);
+        let selection = Rc::new(TextSelection::new(self.view.state().doc(), 3, 4).unwrap());
+        let mut transaction = self.view.state().create_transaction();
+
+        transaction.set_selection(Some(selection)).replace_selection(slice);
+
+        self.view.dispatch(&transaction);
+
+        self.view.state().doc().serialize()
 
     }
 }
 
 #[cfg(test)]
 mod test {
-    use renderer::host::test_host::TestHost;
     use std::rc::Rc;
     use renderer::Renderer;
     use editor::view::View;
     use crate::Document;
+    use crate::host::TestHost;
 
     #[test]
     fn doc_init_works() {
@@ -54,5 +70,15 @@ mod test {
         let renderer = Rc::new(Renderer::new(test_host));
 
         Document::new(renderer);
+    }
+
+    #[test]
+    fn doc_test_works() {
+        let test_host = TestHost::new();
+        let renderer = Rc::new(Renderer::new(test_host));
+
+        let mut doc = Document::new(renderer);
+
+        doc.trigger_test();
     }
 }

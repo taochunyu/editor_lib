@@ -15,7 +15,7 @@ pub struct HTMLDivElement {
 impl From<HTMLDivElement> for HTMLElement {
     fn from(div: HTMLDivElement) -> Self {
         Self {
-            name: NAME,
+            tag_name: NAME,
             host: div.host.clone(),
             instance: div.instance.clone(),
         }
@@ -25,7 +25,6 @@ impl From<HTMLDivElement> for HTMLElement {
 impl From<HTMLDivElement> for HTMLNode {
     fn from(element: HTMLDivElement) -> Self {
         Self {
-            name: NAME,
             host: element.host.clone(),
             instance: element.instance.clone(),
         }
@@ -46,7 +45,7 @@ impl HTMLElementTag<HTMLDivElement> for HTMLDivElement {
 
 impl HTMLDivElement {
     pub fn append_child(&self, child: &HTMLNode) -> &Self {
-        self.host.append_child(&self.instance, &child.instance);
+        self.host.append_child(self.instance.clone(), child.instance.clone());
 
         self
     }

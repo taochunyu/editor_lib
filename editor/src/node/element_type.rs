@@ -11,7 +11,7 @@ pub type OuterDOM = HTMLNode;
 pub type ContentDOM = Option<HTMLElement>;
 
 pub trait ElementType: Sized + 'static {
-    type Attributes;
+    type Attributes: PartialEq + Eq;
 
     fn name() -> &'static str;
 

@@ -1,13 +1,12 @@
-mod text_selection;
-mod node_selection;
+pub mod text_selection;
+pub mod node_selection;
+pub mod transaction;
+pub mod selection;
 
 use std::rc::Rc;
 use crate::Doc;
 use crate::state::selection::Selection;
 use crate::state::transaction::Transaction;
-
-pub mod transaction;
-pub mod selection;
 
 pub struct State {
     doc: Doc,
@@ -25,6 +24,10 @@ impl State {
 
     pub fn selection(&self) -> Option<Rc<dyn Selection>> {
         self.selection.clone()
+    }
+
+    pub fn create_transaction(&self) -> Transaction {
+        Transaction::new(&self)
     }
 
     pub fn apply(&self, transaction: &Transaction) -> State {
@@ -47,9 +50,9 @@ mod test {
     #[test]
     fn replace_selection_works() {
         let doc = create_doc();
+        let state = State::new(doc.clone());
         let slice = create_empty_slice();
         let selection = Rc::new(TextSelection::new(doc.clone(), 3, 4).unwrap());
-        let state = State::new(doc);
         let mut transaction = Transaction::new(&state);
 
         transaction.set_selection(Some(selection)).replace_selection(slice);

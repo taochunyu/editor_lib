@@ -81,7 +81,39 @@ impl<'a> Updater<'a> {
         }
     }
 
-    pub fn update_next_node(&mut self) -> bool { false }
+    pub fn update_next_node(&mut self, node: Rc<dyn Node>, index: usize) -> bool {
+        let mut found: Option<usize> = None;
+
+        for i in self.index..self.children.borrow().len() {
+            if let Some(next) = self.children.borrow().get(i) {
+                if let Some(node_view_desc) = next.as_any().downcast_ref::<NodeViewDesc>() {
+                    let pre_match = self.pre_matched.iter().position(|desc| Rc::ptr_eq(desc, &next.clone()));
+
+                    if let Some(pre_match) = pre_match {
+                        if pre_match + self.pre_match_offset != index {
+                            return false;
+                        }
+                    }
+
+                    if next.clone().update(node) {
+                        found = Some(i);
+                    }
+
+                    break;
+                }
+            }
+        }
+
+        if let Some(found) = found {
+            self.destroy_between(self.index, found);
+            self.changed = true;
+            self.index += 1;
+
+            true
+        } else {
+            false
+        }
+    }
 
     pub fn add_node(&mut self, node: Rc<dyn Node>, pos: Position) {
         let node_view = NodeViewDesc::create(Some(self.view_desc.clone()), node, pos, self.renderer.clone());
@@ -91,7 +123,19 @@ impl<'a> Updater<'a> {
         self.changed = true;
     }
 
-    pub fn destroy_between(&self, from: usize, to: usize) {}
+    pub fn destroy_between(&mut self, from: usize, to: usize) {
+        for child in self.children.borrow_mut().drain(from..to) {
+            child.destroy();
+        }
+
+        self.changed = true;
+    }
+
+    pub fn destroy_rest(&mut self) {
+        let to = { self.children.borrow().len() };
+
+        self.destroy_between(self.index, to);
+    }
 
     fn get_pre_match(&self, index: usize) -> Option<Rc<dyn ViewDesc>> {
         if index >= self.pre_match_offset {

@@ -16,7 +16,9 @@ pub fn start() {
     let document = web_sys::window().unwrap().document().unwrap();
     let event_target: web_sys::EventTarget = document.into();
     let handle_keydown = Closure::wrap(Box::new(move || {
-        doc.trigger_test();
+        let log = doc.trigger_test();
+
+        web_sys::console::log_1(&log.into());
     }) as Box<dyn FnMut()>);
 
     event_target.add_event_listener_with_callback("keydown", handle_keydown.as_ref().unchecked_ref()).unwrap();
