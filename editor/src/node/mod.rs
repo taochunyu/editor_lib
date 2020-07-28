@@ -11,7 +11,8 @@ use std::any::Any;
 use std::rc::Rc;
 use std::ops::Range;
 use renderer::Renderer;
-use crate::node::element_type::{OuterDOM, ContentDOM};
+use renderer::html::node::HTMLNode;
+use renderer::html::element::HTMLElement;
 use crate::node::text::Text;
 use crate::node::path::Path;
 use crate::node::fragment::Fragment;
@@ -31,16 +32,17 @@ pub trait Node {
     fn children(&self) -> Option<Rc<Fragment>>;
     fn replace_children(&self, children: Rc<Fragment>) -> Result<Rc<dyn Node>, String>;
     fn serialize(&self) -> String;
-    fn render(self: Rc<Self>, renderer: Rc<Renderer>) -> (OuterDOM, ContentDOM);
-    fn eq(self: Rc<Self>, other: Rc<dyn Node>) -> bool;
+    fn render(self: Rc<Self>, renderer: Rc<Renderer>) -> (HTMLNode, Option<HTMLElement>);
+    fn same_mark_up(self: Rc<Self>, other: Rc<dyn Node>) -> bool;
+    fn value_eq(self: Rc<Self>, other: Rc<dyn Node>) -> bool;
 }
 
 impl dyn Node {
-    fn as_text(&self) -> Option<&Text> {
+    pub fn as_text(&self) -> Option<&Text> {
         self.as_any().downcast_ref::<Text>()
     }
 
-    fn is_text(&self) -> bool {
+    pub fn is_text(&self) -> bool {
         self.as_text().is_some()
     }
 

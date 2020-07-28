@@ -18,7 +18,7 @@ impl HostInstance for TestHostInstance {
 
 impl Host for TestHost {
     fn log(&self, info: String) {
-        unimplemented!()
+        println!("{}", info)
     }
 
     fn root_instance(&self) -> Rc<dyn HostInstance> {

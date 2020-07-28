@@ -7,11 +7,10 @@ use crate::node::fragment::Fragment;
 use crate::node::element::Element;
 use crate::view::View;
 
-pub type OuterDOM = HTMLNode;
-pub type ContentDOM = Option<HTMLElement>;
-
 pub trait ElementType: Sized + 'static {
     type Attributes: PartialEq + Eq;
+    type DOM: Into<HTMLNode>;
+    // type ContentDOM: From<HTMLElement>;
 
     fn name() -> &'static str;
 
@@ -27,5 +26,5 @@ pub trait ElementType: Sized + 'static {
         Element::<Self>::new(attrs, element_children)
     }
 
-    fn render(renderer: Rc<Renderer>, node: Rc<dyn Node>, attrs: Rc<Self::Attributes>) -> (OuterDOM, ContentDOM);
+    fn render(renderer: Rc<Renderer>, node: Rc<dyn Node>, attrs: Rc<Self::Attributes>) -> (HTMLNode, Option<HTMLElement>);
 }

@@ -5,7 +5,7 @@ use crate::node::Node;
 use crate::view::View;
 use crate::Position;
 use crate::node::fragment::Fragment;
-use crate::view::view_desc::ViewDesc;
+use crate::view::view_desc::{ViewDesc, create_node_or_text_view_desc};
 use crate::view::node_view_desc::NodeViewDesc;
 
 pub struct Updater<'a> {
@@ -41,23 +41,24 @@ impl<'a> Updater<'a> {
     }
 
     pub fn find_node_match(&mut self, node: Rc<dyn Node>, index: usize) -> bool {
+        let children = self.children.borrow();
         let mut found: Option<usize> = None;
 
         if let Some(pre_match) = self.get_pre_match(index) {
             if pre_match.matches_node(node.clone()) {
-                found = self.view_desc.children().iter().position(|p| Rc::ptr_eq(p, &pre_match))
+                found = children.iter().position(|p| Rc::ptr_eq(p, &pre_match))
             }
         }
 
         if found.is_none() {
-            let children_length = self.view_desc.children().len();
+            let children_length = children.len();
             let mut i = self.index;
             let mut end = if children_length > i + 5 { i + 5 } else { children_length };
 
             while i < end {
-                if let Some(child) = self.view_desc.children().get(i) {
+                if let Some(child) = children.get(i) {
                     let is_matched = child.matches_node(node.clone());
-                    let is_in_pre_match = self.view_desc.children().iter().position(|p| Rc::ptr_eq(p, child));
+                    let is_in_pre_match = children.iter().position(|p| Rc::ptr_eq(p, child));
 
                     if  is_matched && is_in_pre_match.is_none() {
                         found = Some(i);
@@ -116,7 +117,7 @@ impl<'a> Updater<'a> {
     }
 
     pub fn add_node(&mut self, node: Rc<dyn Node>, pos: Position) {
-        let node_view = NodeViewDesc::create(Some(self.view_desc.clone()), node, pos, self.renderer.clone());
+        let node_view = create_node_or_text_view_desc(Some(self.view_desc.clone()), node, pos, self.renderer.clone());
 
         self.children.borrow_mut().insert(self.index, node_view);
         self.index += 1;
@@ -150,6 +151,8 @@ impl<'a> Updater<'a> {
         let mut end: usize = 0;
 
         if let Some(fragment) = fragment {
+            end = fragment.count();
+
             for desc in descs.iter().rev() {
                 if end == 0 {
                     break;
@@ -162,7 +165,7 @@ impl<'a> Updater<'a> {
                 }
 
                 result.push(desc.clone());
-                end += 1;
+                end -= 1;
             }
         }
 

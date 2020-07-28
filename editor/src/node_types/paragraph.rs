@@ -1,7 +1,9 @@
 use std::rc::Rc;
 use renderer::html::p::HTMLParagraphElement;
 use renderer::Renderer;
-use crate::node::element_type::{ElementType, OuterDOM, ContentDOM};
+use renderer::html::node::HTMLNode;
+use renderer::html::element::HTMLElement;
+use crate::node::element_type::ElementType;
 use crate::node::Node;
 use crate::view::View;
 
@@ -20,12 +22,13 @@ pub struct Paragraph;
 
 impl ElementType for Paragraph {
     type Attributes = ParagraphAttributes;
+    type DOM = HTMLParagraphElement;
 
     fn name() -> &'static str {
         NAME
     }
 
-    fn render(renderer: Rc<Renderer>, _node: Rc<dyn Node>, _attrs: Rc<Self::Attributes>) -> (OuterDOM, ContentDOM) {
+    fn render(renderer: Rc<Renderer>, _node: Rc<dyn Node>, _attrs: Rc<Self::Attributes>) -> (HTMLNode, Option<HTMLElement>) {
         let paragraph = renderer.create_element::<HTMLParagraphElement>();
 
         (paragraph.clone().into(), Some(paragraph.into()))

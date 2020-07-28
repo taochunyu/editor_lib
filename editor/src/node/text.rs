@@ -1,10 +1,12 @@
 use std::rc::Rc;
 use std::any::Any;
 use crate::node::fragment::Fragment;
-use crate::node::element_type::{OuterDOM, ContentDOM};
 use crate::view::View;
 use crate::node::Node;
 use renderer::Renderer;
+use renderer::html::node::HTMLNode;
+use renderer::html::element::HTMLElement;
+use renderer::html::text::HTMLTextNode;
 
 const NAME: &'static str = "text";
 
@@ -77,13 +79,15 @@ impl Node for Text {
         }
     }
 
-    fn render(self: Rc<Self>, renderer: Rc<Renderer>) -> (OuterDOM, ContentDOM) {
-        let text = renderer.create_text_node(self.content.clone().as_str());
-
-        (text.clone().into(), None)
+    fn render(self: Rc<Self>, _renderer: Rc<Renderer>) -> (HTMLNode, Option<HTMLElement>) {
+        unreachable!("Render text node should use render_text method.")
     }
 
-    fn eq(self: Rc<Self>, other: Rc<dyn Node>) -> bool {
+    fn same_mark_up(self: Rc<Self>, other: Rc<dyn Node>) -> bool {
+        other.is_text()
+    }
+
+    fn value_eq(self: Rc<Self>, other: Rc<dyn Node>) -> bool {
         if let Some(other) = other.as_text() {
             self.content == other.content
         } else {
@@ -111,5 +115,13 @@ impl Text {
         } else {
             None
         }
+    }
+
+    pub fn content(&self) -> String {
+        self.content.clone()
+    }
+
+    pub fn render_text(&self, renderer: Rc<Renderer>) -> HTMLTextNode {
+        renderer.create_text_node(self.content.clone().as_str())
     }
 }

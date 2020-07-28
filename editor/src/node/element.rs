@@ -1,10 +1,12 @@
 use std::rc::Rc;
 use std::any::Any;
-use crate::node::element_type::{ElementType, OuterDOM, ContentDOM};
+use crate::node::element_type::ElementType;
 use crate::node::Node;
 use crate::node::fragment::Fragment;
 use crate::view::View;
 use renderer::Renderer;
+use renderer::html::node::HTMLNode;
+use renderer::html::element::HTMLElement;
 
 pub struct Element<T: ElementType> {
     attributes: Rc<T::Attributes>,
@@ -108,23 +110,39 @@ impl<T: ElementType> Node for Element<T> {
         }
     }
 
-    fn render(self: Rc<Self<>>, renderer: Rc<Renderer>) -> (OuterDOM, ContentDOM) {
+    fn render(self: Rc<Self<>>, renderer: Rc<Renderer>) -> (HTMLNode, Option<HTMLElement>) {
         let attrs = self.clone().attributes.clone();
+        let (outer, content) = T::render(renderer, self, attrs);
 
-        T::render(renderer, self, attrs)
+        (outer.into(), content)
     }
 
-    fn eq(self: Rc<Self>, other: Rc<dyn Node>) -> bool {
-        if let Some(other) = other.as_any().downcast_ref::<Self>() {
-            self.attributes == other.attributes || self.attributes.as_ref() == other.attributes.as_ref()
+    fn same_mark_up(self: Rc<Self>, other: Rc<dyn Node>) -> bool {
+        if Rc::ptr_eq(&(self.clone() as Rc<dyn Node>), &other) {
+            true
+        } else if let Some(other) = other.as_any().downcast_ref::<Self>() {
+            Rc::ptr_eq(&self.attributes, &other.attributes) || self.attributes.as_ref() == other.attributes.as_ref()
         } else {
             false
         }
+    }
+
+    fn value_eq(self: Rc<Self>, other: Rc<dyn Node>) -> bool {
+        self.clone().same_mark_up(other.clone()) && self.children_eq(other)
     }
 }
 
 impl<T: ElementType> Element<T> {
     pub(crate) fn new(attributes: Rc<T::Attributes>, children: Option<Rc<Fragment>>) -> Rc<Self> {
         Rc::new(Self { attributes, children })
+    }
+
+    fn children_eq(&self, other: Rc<dyn Node>) -> bool {
+        match (self.children(), other.children()) {
+            (Some(self_children), Some(other_children)) => {
+                self_children.value_eq(other_children)
+            },
+            _ => false
+        }
     }
 }

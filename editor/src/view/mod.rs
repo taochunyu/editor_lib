@@ -1,3 +1,4 @@
+mod text_view_desc;
 mod node_view_desc;
 mod view_desc;
 mod updater;

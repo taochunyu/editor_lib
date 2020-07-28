@@ -27,8 +27,8 @@ impl ViewDesc for NodeViewDesc {
         self.meta.borrow().parent.clone()
     }
 
-    fn children(&self) -> Ref<Vec<Rc<dyn ViewDesc>>> {
-        self.children.borrow()
+    fn children(&self) -> Option<Ref<Vec<Rc<dyn ViewDesc>>>> {
+        Some(self.children.borrow())
     }
 
     fn node(&self) -> Rc<dyn Node> {
@@ -52,7 +52,7 @@ impl ViewDesc for NodeViewDesc {
     }
 
     fn update(self: Rc<Self>, node: Rc<dyn Node>) -> bool {
-        if !self.node().eq(node.clone()) {
+        if !self.node().value_eq(node.clone()) {
             false
         } else {
             self.update_inner(node);
@@ -62,8 +62,10 @@ impl ViewDesc for NodeViewDesc {
     }
 
     fn destroy(&self) {
-        for child in self.children().iter() {
-            child.destroy();
+        if let Some(children) = self.children() {
+            for child in children.iter() {
+                child.destroy();
+            }
         }
     }
 
@@ -142,13 +144,15 @@ impl NodeViewDesc {
 
         if let Some(children) = node.clone().children() {
             for (index, child) in children.content().iter().enumerate() {
+                println!("do update. {}", node.clone().serialize());
+
                 if updater.find_node_match(child.clone(), index) {
                     println!("Found node match!");
                     break;
                 }
 
                 if updater.update_next_node(child.clone(), index) {
-                    println!("Found node update!");
+                    println!("Found node update!, {}", child.clone().serialize());
                     break;
                 }
 

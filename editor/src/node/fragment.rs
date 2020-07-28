@@ -24,26 +24,26 @@ impl From<Vec<Rc<dyn Node>>> for Fragment {
 }
 
 impl Fragment {
-    pub(crate) fn content(&self) -> Vec<Rc<dyn Node>> {
+    pub fn content(&self) -> Vec<Rc<dyn Node>> {
         self.content.clone()
     }
 
-    pub(crate) fn size(&self) -> usize {
+    pub fn size(&self) -> usize {
         self.size
     }
 
-    pub(crate) fn count(&self) -> usize {
+    pub fn count(&self) -> usize {
         self.content.len()
     }
 
-    pub(crate) fn get(&self, index: usize) -> Result<Rc<dyn Node>, String> {
+    pub fn get(&self, index: usize) -> Result<Rc<dyn Node>, String> {
         match self.content.get(index) {
             Some(node) => Ok(node.clone()),
             None => Err(format!("Index {} outside of fragment.", index)),
         }
     }
 
-    pub(crate) fn index(&self, offset: usize) -> Result<usize, String> {
+    pub fn index(&self, offset: usize) -> Result<usize, String> {
         match offset {
             0 => Ok(0),
             o if o == self.size => Ok(self.content.len()),
@@ -66,7 +66,7 @@ impl Fragment {
         }
     }
 
-    pub(crate) fn cut(&self, from: usize, to: usize) -> Result<Rc<Self>, String> {
+    pub fn cut(&self, from: usize, to: usize) -> Result<Rc<Self>, String> {
         if from >= to {
             Ok(Rc::new(Self { content: vec![], size: 0 }))
         } else {
@@ -100,7 +100,7 @@ impl Fragment {
         }
     }
 
-    pub(crate) fn replace_child(&self, index: usize, node: Rc<dyn Node>) -> Result<Rc<Self>, String> {
+    pub fn replace_child(&self, index: usize, node: Rc<dyn Node>) -> Result<Rc<Self>, String> {
         match self.content.get(index) {
             None => Err(format!("Index {} outside of fragment", index)),
             Some(child) => {
@@ -114,7 +114,7 @@ impl Fragment {
         }
     }
 
-    pub(crate) fn concat(self: Rc<Self>, fragment: Rc<Fragment>) -> Rc<Self> {
+    pub fn concat(self: Rc<Self>, fragment: Rc<Fragment>) -> Rc<Self> {
         if let Some((first, rest)) = fragment.content.split_first() {
             if let Some((last, nodes)) = self.content.split_last() {
                 let size = self.size + fragment.size;
@@ -138,6 +138,28 @@ impl Fragment {
         } else {
             self.clone()
         }
+    }
+
+    pub fn value_eq(self: Rc<Self>, other: Rc<Fragment>) -> bool {
+        if Rc::ptr_eq(&self, &other) {
+            return true;
+        }
+
+        if self.count() != other.count() {
+            return false;
+        }
+
+        for (index, child) in self.content.iter().enumerate() {
+            if let Some(other) = other.content().get(index) {
+                if !child.clone().value_eq(other.clone()) {
+                    return false;
+                }
+            } else {
+                return false;
+            }
+        }
+
+        false
     }
 
     pub(crate) fn to_string(&self) -> String {
