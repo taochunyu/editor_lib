@@ -51,4 +51,8 @@ impl Slice {
     pub fn content(&self) -> Rc<Fragment> {
         self.content.clone()
     }
+
+    pub fn to_debug_string(&self) -> String {
+        format!("Slice: [{}]", self.content.to_string())
+    }
 }

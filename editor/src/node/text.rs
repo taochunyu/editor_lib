@@ -122,6 +122,7 @@ impl Text {
     }
 
     pub fn render_text(&self, renderer: Rc<Renderer>) -> HTMLTextNode {
+        // renderer.log("text render", self.serialize());
         renderer.create_text_node(self.content.clone().as_str())
     }
 }

@@ -51,16 +51,24 @@ impl ViewDesc for TextViewDesc {
     fn update(self: Rc<Self>, node: Rc<dyn Node>) -> bool {
         let meta = self.meta.borrow_mut();
 
-        HTMLNode::from(meta.dom.clone()).log(format!("here2"));
+        // self.renderer.log("text desc check update", meta.node.serialize());
 
-        if !meta.node.clone().value_eq(node.clone()) {
+        if !meta.node.clone().same_mark_up(node.clone()) {
             return false;
         }
-        HTMLNode::from(meta.dom.clone()).log(format!("here1"));
 
-        if let Some(text) = node.as_text() {
-            HTMLNode::from(meta.dom.clone()).log(format!("here"));
-            meta.dom.set_node_value(Some(text.content().as_str()))
+        // self.renderer.log(
+        //     "text desc will update inplace",
+        //     format!("{} -> {}", meta.node.serialize(), node.clone().serialize()),
+        // );
+
+        if let Some(text) = node.clone().as_text() {
+            meta.dom.set_node_value(Some(text.content().as_str()));
+
+            // self.renderer.log(
+            //     "text desc updated inplace",
+            //     format!("{} -> {}", meta.node.serialize(), node.clone().serialize()),
+            // );
         }
 
         true
@@ -70,6 +78,10 @@ impl ViewDesc for TextViewDesc {
 
     fn to_debug_string(&self) -> String {
         format!("{}", self.node().serialize())
+    }
+
+    fn debug_log(&self, tag: &str, info: String) {
+        self.renderer.log(tag, info);
     }
 }
 

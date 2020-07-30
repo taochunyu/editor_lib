@@ -110,7 +110,9 @@ impl<T: ElementType> Node for Element<T> {
         }
     }
 
-    fn render(self: Rc<Self<>>, renderer: Rc<Renderer>) -> (HTMLNode, Option<HTMLElement>) {
+    fn render(self: Rc<Self>, renderer: Rc<Renderer>) -> (HTMLNode, Option<HTMLElement>) {
+        // renderer.clone().log("node render", self.clone().serialize());
+
         let attrs = self.clone().attributes.clone();
         let (outer, content) = T::render(renderer, self, attrs);
 
@@ -128,6 +130,10 @@ impl<T: ElementType> Node for Element<T> {
     }
 
     fn value_eq(self: Rc<Self>, other: Rc<dyn Node>) -> bool {
+        if Rc::ptr_eq(&(self.clone() as Rc<dyn Node>), &other) {
+            return true;
+        }
+
         self.clone().same_mark_up(other.clone()) && self.children_eq(other)
     }
 }

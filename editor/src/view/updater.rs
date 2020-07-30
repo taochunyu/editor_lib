@@ -41,19 +41,21 @@ impl<'a> Updater<'a> {
     }
 
     pub fn find_node_match(&mut self, node: Rc<dyn Node>, index: usize) -> bool {
-        let children = self.children.borrow();
         let mut found: Option<usize> = None;
 
         if let Some(pre_match) = self.get_pre_match(index) {
+            let children = self.children.borrow();
+
             if pre_match.matches_node(node.clone()) {
                 found = children.iter().position(|p| Rc::ptr_eq(p, &pre_match))
             }
         }
 
         if found.is_none() {
+            let children = self.children.borrow();
             let children_length = children.len();
             let mut i = self.index;
-            let mut end = if children_length > i + 5 { i + 5 } else { children_length };
+            let end = if children_length > i + 5 { i + 5 } else { children_length };
 
             while i < end {
                 if let Some(child) = children.get(i) {
@@ -68,7 +70,6 @@ impl<'a> Updater<'a> {
                 }
 
                 i += 1;
-                end = if children_length > i + 5 { i + 5 } else { children_length }
             }
         }
 
@@ -87,21 +88,19 @@ impl<'a> Updater<'a> {
 
         for i in self.index..self.children.borrow().len() {
             if let Some(next) = self.children.borrow().get(i) {
-                if let Some(node_view_desc) = next.as_any().downcast_ref::<NodeViewDesc>() {
-                    let pre_match = self.pre_matched.iter().position(|desc| Rc::ptr_eq(desc, &next.clone()));
+                let pre_match = self.pre_matched.iter().position(|desc| Rc::ptr_eq(desc, &next.clone()));
 
-                    if let Some(pre_match) = pre_match {
-                        if pre_match + self.pre_match_offset != index {
-                            return false;
-                        }
+                if let Some(pre_match) = pre_match {
+                    if pre_match + self.pre_match_offset != index {
+                        return false;
                     }
-
-                    if next.clone().update(node) {
-                        found = Some(i);
-                    }
-
-                    break;
                 }
+
+                if next.clone().update(node) {
+                    found = Some(i);
+                }
+
+                break;
             }
         }
 

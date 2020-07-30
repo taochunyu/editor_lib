@@ -52,7 +52,7 @@ impl ViewDesc for NodeViewDesc {
     }
 
     fn update(self: Rc<Self>, node: Rc<dyn Node>) -> bool {
-        if !self.node().value_eq(node.clone()) {
+        if !self.node().same_mark_up(node.clone()) {
             false
         } else {
             self.update_inner(node);
@@ -77,6 +77,10 @@ impl ViewDesc for NodeViewDesc {
             .join("\n");
 
         format!("({})[{}]", content, children)
+    }
+
+    fn debug_log(&self, tag: &str, info: String) {
+        self.renderer.log(tag, info);
     }
 }
 
@@ -142,21 +146,25 @@ impl NodeViewDesc {
     fn update_children(self: Rc<Self>, node: Rc<dyn Node>, pos: Position) -> bool {
         let mut updater = Updater::new(self.clone(), &self.children, node.clone(), self.renderer.clone());
 
+        // self.debug_log("update node desc children", format!("length {}: {}", node.child_count(), node.clone().serialize()));
+
         if let Some(children) = node.clone().children() {
             for (index, child) in children.content().iter().enumerate() {
-                println!("do update. {}", node.clone().serialize());
+                // self.debug_log("update a child node", child.clone().serialize());
 
                 if updater.find_node_match(child.clone(), index) {
-                    println!("Found node match!");
-                    break;
+                    // self.debug_log("found node match", child.clone().serialize());
+                    continue;
                 }
 
                 if updater.update_next_node(child.clone(), index) {
-                    println!("Found node update!, {}", child.clone().serialize());
-                    break;
+                    // self.debug_log("updated node desc", child.clone().serialize());
+                    continue;
                 }
 
-                updater.add_node(child.clone(), pos)
+                updater.add_node(child.clone(), pos);
+
+                // self.debug_log("added a new node", child.clone().serialize());
             }
         }
 

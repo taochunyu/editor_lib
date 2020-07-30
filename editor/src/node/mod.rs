@@ -79,7 +79,7 @@ impl dyn Node {
             return Err(format!("Offset {} of {} outside of node.", from, to));
         }
 
-        if from <= to {
+        if from >= to {
             Ok(Slice::empty())
         } else {
             let from = self.clone().resolve(from)?;

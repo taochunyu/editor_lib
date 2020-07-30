@@ -1,3 +1,4 @@
+pub mod event;
 pub mod host;
 pub mod html;
 
@@ -31,5 +32,9 @@ impl Renderer {
 
     pub fn root(&self) -> &HTMLDivElement {
         &self.root
+    }
+
+    pub fn log(&self, tag: &str, info: String) {
+        self.host.log(format!("=== {} ===\n {}", tag, info));
     }
 }

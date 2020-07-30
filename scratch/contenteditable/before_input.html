@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Before Input</title>
+</head>
+<body>
+    <div id="editor" contenteditable="true">hello world</div>
+    <script>
+        const $editor = document.querySelector("#editor");
+
+        $editor.addEventListener("beforeinput", event => {
+            console.log(event);
+            event.preventDefault();
+        });
+
+        $editor.addEventListener("keydown", event => {
+            console.log(event);
+        });
+    </script>
+</body>
+</html>

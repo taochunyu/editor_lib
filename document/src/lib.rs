@@ -24,8 +24,8 @@ impl Document {
 
         let mut content = vec![];
 
-        for _ in 0..430 {
-            let hello = create_text("hello, world");
+        for _ in 0..5 {
+            let hello = create_text("helloworldhelloworldhelloworldhelloworldhelloworldhelloworldhelloworldhelloworldhelloworldhelloworldhelloworldhelloworldhelloworldhelloworldhelloworldhelloworldhelloworldhelloworldhelloworldhelloworld");
             let paragraph = create_element::<Paragraph>(
                 ParagraphAttributes::new(),
                 Some(vec![hello]),
@@ -42,17 +42,14 @@ impl Document {
         }
     }
 
-    pub fn trigger_test(&mut self) -> String {
-        let slice = Slice::from(vec![]);
-        let selection = Rc::new(TextSelection::new(self.view.state().doc(), 3, 4).unwrap());
+    pub fn trigger_test(&mut self) {
+        let slice = self.view.state().doc().slice(0, 201).unwrap();
+        let selection = Rc::new(TextSelection::new(self.view.state().doc(), 0, 0).unwrap());
         let mut transaction = self.view.state().create_transaction();
 
         transaction.set_selection(Some(selection)).replace_selection(slice);
 
-        self.view.dispatch(&transaction);
-
-        self.view.state().doc().serialize()
-
+        self.view.dispatch(&transaction)
     }
 }
 

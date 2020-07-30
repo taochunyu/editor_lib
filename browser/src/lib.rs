@@ -9,17 +9,16 @@ use crate::host::Browser;
 
 #[wasm_bindgen(start)]
 pub fn start() {
-    let host = Browser::new("#root");
+    let host = Browser::new("#editor");
     let renderer = Rc::new(Renderer::new(host));
     let mut doc = Document::new(renderer);
 
     let document = web_sys::window().unwrap().document().unwrap();
     let event_target: web_sys::EventTarget = document.into();
-    let handle_keydown = Closure::wrap(Box::new(move || {
-        let log = doc.trigger_test();
-
-        web_sys::console::log_1(&log.into());
-    }) as Box<dyn FnMut()>);
+    let handle_keydown = Closure::wrap(Box::new(move |event: web_sys::KeyboardEvent| {
+        event.prevent_default();
+        doc.trigger_test();
+    }) as Box<dyn FnMut(_)>);
 
     event_target.add_event_listener_with_callback("keydown", handle_keydown.as_ref().unchecked_ref()).unwrap();
     handle_keydown.forget();

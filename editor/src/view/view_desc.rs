@@ -20,6 +20,7 @@ pub trait ViewDesc {
     fn update(self: Rc<Self>, node: Rc<dyn Node>) -> bool;
     fn destroy(&self);
     fn to_debug_string(&self) -> String;
+    fn debug_log(&self, tag: &str, info: String);
 }
 
 impl dyn ViewDesc {
@@ -48,19 +49,20 @@ impl dyn ViewDesc {
     }
 
     pub fn matches_node(&self, node: Rc<dyn Node>) -> bool {
+        // self.debug_log("matches", format!("{} match {}", self.node().serialize(), node.serialize()));
         self.node().value_eq(node)
     }
 
     pub fn mount_children(&self) {
+        // self.debug_log("will mount dom", self.to_debug_string());
+        // self.debug_log("will mount dom", String::new());
+
         if let Some(parent_dom) = self.content_dom() {
             if let Some(children) = self.children() {
                 let mut dom = parent_dom.first_child();
 
-
                 for child in children.iter() {
                     let child_dom = child.dom();
-
-                    parent_dom.log(format!("{}", child_dom.parent().is_some()));
 
                     match child_dom.parent() {
                         Some(child_dom_parent) if child_dom_parent == parent_dom.clone().into() => {

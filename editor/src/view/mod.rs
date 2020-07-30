@@ -50,11 +50,19 @@ impl View {
 
     pub fn dispatch(&mut self, transaction: &Transaction) {
         self.state = self.state.apply(transaction);
-        self.doc_view.clone().update(self.state.doc());
 
-        let str =self.doc_view.to_debug_string();
+        if !self.doc_view.clone().update(self.state.doc()) {
+            self.doc_view = NodeViewDesc::new(
+                None,
+                self.state.doc(),
+                self.doc_view.dom(),
+                self.doc_view.content_dom(),
+                0,
+                self.renderer(),
+            );
+        }
 
-        println!("{}", str);
+        // self.renderer.log("Render result", self.doc_view.to_debug_string());
     }
 }
 
