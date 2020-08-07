@@ -10,7 +10,7 @@ use crate::view::View;
 pub trait ElementType: Sized + 'static {
     type Attributes: PartialEq + Eq;
     type DOM: Into<HTMLNode>;
-    // type ContentDOM: From<HTMLElement>;
+    // type ContentDOM: Into<HTMLElement>;
 
     fn name() -> &'static str;
 

@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>DomParser</title>
+</head>
+<body>
+    <script>
+        let html = "<p>1234</p>";
+        let dom = (new DOMParser()).parseFromString(html, 'text/html');
+
+        // performance 上看，不查询就不会渲染
+        dom.firstElementChild.getBoundingClientRect();
+    </script>
+</body>
+</html>

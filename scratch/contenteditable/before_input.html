@@ -5,18 +5,44 @@
     <title>Before Input</title>
 </head>
 <body>
-    <div id="editor" contenteditable="true">hello world</div>
+    <div id="editor" contenteditable="true" disabled>hello world</div>
     <script>
         const $editor = document.querySelector("#editor");
 
-        $editor.addEventListener("beforeinput", event => {
-            console.log(event);
-            event.preventDefault();
-        });
+        const prevent_contenteditable = $editor => {
+            $editor.addEventListener("beforeinput", event => {
+                console.log("prevent before input event", event);
+                event.preventDefault();
+            });
 
-        $editor.addEventListener("keydown", event => {
-            console.log(event);
-        });
+            $editor.addEventListener("input", event => {
+                console.log("prevent input event", event);
+                event.preventDefault();
+            });
+
+            $editor.addEventListener("compositionstart", event => {
+                console.log("prevent compositionstart event", event);
+                event.preventDefault();
+            });
+
+            $editor.addEventListener("compositionend", event => {
+                console.log("prevent compositionend event", event);
+                event.preventDefault();
+            });
+
+            $editor.addEventListener("keydown", event => {
+                console.log("prevent keydown event", event);
+                event.preventDefault();
+            });
+
+
+            $editor.addEventListener("keyup", event => {
+                console.log("prevent up event", event);
+                event.preventDefault();
+            });
+        }
+
+        prevent_contenteditable($editor);
     </script>
 </body>
 </html>

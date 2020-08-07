@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>WKWebView</title>
+</head>
+<body>
+    <p>hello</p>
+    <button id="button">do some</button>
+    <script>
+        function triggerMessage() {
+            window.webkit.messageHandlers.msg.postMessage("hello");
+        }
+
+        const $button = document.querySelector("#button");
+
+        $button.addEventListener("click", () => {
+            console.log(Date.now())
+            triggerMessage();
+        });
+    </script>
+</body>
+</html>

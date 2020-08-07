@@ -11,3 +11,8 @@ contenteditable 外部大量节点，内部少量节点
 
 input 比 contenteditable 有更好的性能
 
+## before input
+
+1. 兼容性差，firefox 不支持
+2. 输入法不好处理
+

@@ -1,12 +1,12 @@
 use std::rc::Rc;
 use std::any::Any;
+use renderer::Renderer;
+use renderer::html::node::HTMLNode;
+use renderer::html::element::HTMLElement;
 use crate::node::element_type::ElementType;
 use crate::node::Node;
 use crate::node::fragment::Fragment;
 use crate::view::View;
-use renderer::Renderer;
-use renderer::html::node::HTMLNode;
-use renderer::html::element::HTMLElement;
 
 pub struct Element<T: ElementType> {
     attributes: Rc<T::Attributes>,
