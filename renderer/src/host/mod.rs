@@ -1,3 +1,5 @@
+pub mod debug_host;
+
 use std::any::Any;
 use std::rc::Rc;
 
@@ -35,12 +37,9 @@ pub trait Host {
 
     fn node_value(&self, instance: Rc<dyn HostInstance>) -> Option<String>;
 
-    fn set_attribute(&self, instance: Rc<dyn HostInstance>, name: &str, value: &str) {
-    }
+    fn set_attribute(&self, instance: Rc<dyn HostInstance>, name: &str, value: &str);
 
     fn set_node_value(&self, instance: Rc<dyn HostInstance>, value: Option<&str>);
 
-    fn set_selection(&self, anchor_instance: Rc<dyn HostInstance>, anchor_offset: usize, head_instance: Rc<dyn HostInstance>, head_offset: usize) {
-
-    }
+    fn set_selection(&self, anchor_instance: Rc<dyn HostInstance>, anchor_offset: usize, head_instance: Rc<dyn HostInstance>, head_offset: usize);
 }

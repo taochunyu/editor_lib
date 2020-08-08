@@ -1,5 +1,3 @@
-pub mod host;
-
 use std::rc::Rc;
 use renderer::Renderer;
 use renderer::html::div::HTMLDivElement;
@@ -13,7 +11,7 @@ use editor::state::text_selection::TextSelection;
 use editor::state::transaction::Transaction;
 
 pub struct Document {
-    // view: View,
+    view: View,
 }
 
 impl Document {
@@ -24,7 +22,7 @@ impl Document {
 
         let mut content = vec![];
 
-        for _ in 0..10000 {
+        for _ in 0..500 {
             let hello = create_text("helloworldhelloworldhelloworldhelloworldhelloworldhelloworldhelloworldhelloworldhelloworldhelloworldhelloworldhelloworldhelloworldhelloworldhelloworldhelloworldhelloworldhelloworldhelloworldhelloworld");
             let paragraph = create_element::<Paragraph>(
                 ParagraphAttributes::new(),
@@ -38,18 +36,18 @@ impl Document {
         let state = State::new(doc);
 
         Self {
-            // view: View::new(renderer, div, state),
+            view: View::new(renderer, div, state),
         }
     }
 
     pub fn trigger_test(&mut self) {
-        // let slice = self.view.state().doc().slice(0, 201).unwrap();
-        // let selection = Rc::new(TextSelection::new(self.view.state().doc(), 0, 0).unwrap());
-        // let mut transaction = self.view.state().create_transaction();
-        //
-        // transaction.set_selection(Some(selection)).replace_selection(slice);
+        let slice = self.view.state().doc().slice(0, 201).unwrap();
+        let selection = Rc::new(TextSelection::new(self.view.state().doc(), 0, 0).unwrap());
+        let mut transaction = self.view.state().create_transaction();
 
-        // self.view.dispatch(&transaction)
+        transaction.set_selection(Some(selection)).replace_selection(slice);
+
+        self.view.dispatch(&transaction)
     }
 }
 

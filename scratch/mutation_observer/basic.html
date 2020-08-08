@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Mutation Observer 基础</title>
+</head>
+<body>
+    <div id="editor" contenteditable="true"></div>
+    <script>
+        const $editor = document.querySelector("#editor");
+
+        const options = {
+            childList: true,
+            characterData: true,
+            characterDataOldValue: true,
+            attributes: true,
+            attributesOldValue: true,
+            subtree: true,
+        }
+
+        const handleMutation = mutations => {
+            console.log(mutations)
+        }
+
+        const observer = new MutationObserver(handleMutation);
+
+        observer.observe($editor, options)
+    </script>
+</body>
+</html>

@@ -4,23 +4,37 @@
     <meta charset="UTF-8">
     <title></title>
     <style>
-        div {
-            overflow-wrap: break-word;
+        body {
+            margin: 0;
         }
 
-        #title, #editor {
-            padding: 0 20px;
+        #canvas {
+            min-height: calc(100vh - 90px);
+            background: #fff;
+        }
+
+        #title {
+            padding: 0 calc(100vw / 2 - 308px);
         }
 
         #editor {
             outline: none;
         }
 
+        #editor p {
+            overflow-wrap: break-word;
+            width: 616px;
+            padding: 0 calc(100vw / 2 - 308px);
+        }
+
     </style>
 </head>
 <body>
-    <h1 id="title">Title</h1>
-    <div id="editor" contenteditable="true"></div>
+    <div id="canvas">
+        <h1 id="title">Title</h1>
+        <div id="editor" contenteditable="true"></div>
+    </div>
+
     <script type="module">
         import init from "../pkg/browser.js";
 

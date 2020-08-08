@@ -96,10 +96,13 @@
       <sourceFolder url="file://$MODULE_DIR$/render_vm/examples/browser/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/render_vm/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/render_vm/examples" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/browser/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/app/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/renderer/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/renderer/example/browser/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/document/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/browser/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/iced_native/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/druid_native/src" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/../editor/.tmp" />
       <excludeFolder url="file://$MODULE_DIR$/../editor/editor_core/target" />
       <excludeFolder url="file://$MODULE_DIR$/../editor/editor_wasm/target" />

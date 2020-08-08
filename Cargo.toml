@@ -2,7 +2,8 @@
 members=[
     "browser",
     "document",
+    "native_druid",
     "editor",
+    "native_iced",
     "renderer",
-    "renderer/example/browser",
 ]

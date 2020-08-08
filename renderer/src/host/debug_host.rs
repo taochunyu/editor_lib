@@ -1,12 +1,12 @@
 use std::rc::Rc;
 use std::any::Any;
-use renderer::host::{HostInstance, Host, Attributes};
+use crate::host::{HostInstance, Host, Attributes};
 
-struct TestHostInstance;
+struct DebugHostInstance;
 
-pub struct TestHost;
+pub struct DebugHost;
 
-impl HostInstance for TestHostInstance {
+impl HostInstance for DebugHostInstance {
     fn as_any(&self) -> &dyn Any {
         self
     }
@@ -16,21 +16,21 @@ impl HostInstance for TestHostInstance {
     }
 }
 
-impl Host for TestHost {
+impl Host for DebugHost {
     fn log(&self, info: String) {
         println!("{}", info)
     }
 
     fn root_instance(&self) -> Rc<dyn HostInstance> {
-        Rc::new(TestHostInstance)
+        Rc::new(DebugHostInstance)
     }
 
     fn create_instance(&self, _name: &str, _attrs: &Attributes) -> Rc<dyn HostInstance> {
-        Rc::new(TestHostInstance)
+        Rc::new(DebugHostInstance)
     }
 
     fn create_text_instance(&self, _content: &str) -> Rc<dyn HostInstance> {
-        Rc::new(TestHostInstance)
+        Rc::new(DebugHostInstance)
     }
 
     fn append_child(&self, _parent: Rc<dyn HostInstance>, _child: Rc<dyn HostInstance>) {}
@@ -59,11 +59,15 @@ impl Host for TestHost {
         None
     }
 
+    fn set_attribute(&self, instance: Rc<dyn HostInstance>, name: &str, value: &str) {}
+
     fn set_node_value(&self, instance: Rc<dyn HostInstance>, value: Option<&str>) {}
+
+    fn set_selection(&self, anchor_instance: Rc<dyn HostInstance>, anchor_offset: usize, head_instance: Rc<dyn HostInstance>, head_offset: usize) {}
 }
 
-impl TestHost {
+impl DebugHost {
     pub fn new() -> Rc<dyn Host> {
-        Rc::new(TestHost)
+        Rc::new(DebugHost)
     }
 }

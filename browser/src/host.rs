@@ -116,10 +116,18 @@ impl Host for Browser {
         node.host_instance.node_value()
     }
 
+    fn set_attribute(&self, instance: Rc<dyn HostInstance>, name: &str, value: &str) {
+        unimplemented!()
+    }
+
     fn set_node_value(&self, instance: Rc<dyn HostInstance>, value: Option<&str>) {
         let node: &BrowserHostInstance = instance.as_any().downcast_ref::<BrowserHostInstance>().unwrap();
 
         node.host_instance.set_node_value(value);
+    }
+
+    fn set_selection(&self, anchor_instance: Rc<dyn HostInstance>, anchor_offset: usize, head_instance: Rc<dyn HostInstance>, head_offset: usize) {
+        unimplemented!()
     }
 }
 
