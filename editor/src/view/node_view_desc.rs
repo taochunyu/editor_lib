@@ -8,6 +8,8 @@ use crate::view::view_desc::ViewDesc;
 use crate::Position;
 use crate::view::updater::Updater;
 use std::any::Any;
+use renderer::host::ExtraInfo;
+use crate::view::TypedExtraInfo;
 
 struct NodeViewDescMeta {
     parent: Option<Rc<dyn ViewDesc>>,
@@ -41,6 +43,10 @@ impl ViewDesc for NodeViewDesc {
 
     fn content_dom(&self) -> Option<HTMLElement> {
         self.meta.borrow().content_dom.clone()
+    }
+
+    fn border(&self) -> usize {
+        if self.meta.borrow().node.children().is_none() { 0 } else { 1 }
     }
 
     fn size(&self) -> usize {
@@ -97,12 +103,14 @@ impl NodeViewDesc {
             meta: RefCell::new(NodeViewDescMeta {
                 parent,
                 node: node.clone(),
-                dom,
+                dom: dom.clone(),
                 content_dom,
             }),
             children: RefCell::new(vec![]),
             renderer,
         });
+
+        dom.set_extra_info(TypedExtraInfo::new(node_view_desc.clone()));
 
         if node_view_desc.clone().update_children(node, pos) {
             (node_view_desc.clone() as Rc<dyn ViewDesc>).mount_children();

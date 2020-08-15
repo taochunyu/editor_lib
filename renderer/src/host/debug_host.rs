@@ -1,6 +1,6 @@
 use std::rc::Rc;
 use std::any::Any;
-use crate::host::{HostInstance, Host, Attributes};
+use crate::host::{HostInstance, Host, Attributes, ExtraInfo};
 
 struct DebugHostInstance;
 
@@ -64,6 +64,8 @@ impl Host for DebugHost {
     fn set_node_value(&self, instance: Rc<dyn HostInstance>, value: Option<&str>) {}
 
     fn set_selection(&self, anchor_instance: Rc<dyn HostInstance>, anchor_offset: usize, head_instance: Rc<dyn HostInstance>, head_offset: usize) {}
+
+    fn set_extra_info(&self, instance: Rc<dyn HostInstance>, extra_info: Box<dyn ExtraInfo>) {}
 }
 
 impl DebugHost {

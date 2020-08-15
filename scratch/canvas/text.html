@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<canvas id="canvas-1" width="500" height="100">
+</canvas>
+
+<script>
+    var c   = document.getElementById("canvas-1");
+    var ctx = c.getContext("2d");
+    ctx.font = "19px Arial";
+
+    const a = Date.now();
+    let w = 0;
+    for (let i = 0; i < 1; i++) {
+        // 有缓存，关闭浏览器时缓存失效
+        w += ctx.measureText("123455").width;
+
+    }
+    const b = Date.now();
+
+    ctx.fillText(`${w} ${b - a}`,50,50);
+</script>

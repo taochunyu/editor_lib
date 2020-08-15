@@ -12,6 +12,10 @@ pub type AttributeKey = String;
 pub type AttributeValue = String;
 pub type Attributes = Vec<(AttributeKey, AttributeValue)>;
 
+pub trait ExtraInfo {
+    fn as_any(&self) -> &dyn Any;
+}
+
 pub trait Host {
     fn log(&self, info: String);
 
@@ -42,4 +46,6 @@ pub trait Host {
     fn set_node_value(&self, instance: Rc<dyn HostInstance>, value: Option<&str>);
 
     fn set_selection(&self, anchor_instance: Rc<dyn HostInstance>, anchor_offset: usize, head_instance: Rc<dyn HostInstance>, head_offset: usize);
+
+    fn set_extra_info(&self, instance: Rc<dyn HostInstance>, extra_info: Box<dyn ExtraInfo>);
 }

@@ -7,7 +7,7 @@ use crate::node::fragment::Fragment;
 use crate::node::element::Element;
 use crate::view::View;
 
-pub trait ElementType: Sized + 'static {
+pub trait NodeType: Sized + 'static {
     type Attributes: PartialEq + Eq;
     type DOM: Into<HTMLNode>;
     // type ContentDOM: Into<HTMLElement>;

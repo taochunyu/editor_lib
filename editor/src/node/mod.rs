@@ -1,5 +1,4 @@
 pub mod utils;
-pub mod element_type;
 pub mod fragment;
 pub mod slice;
 pub mod element;

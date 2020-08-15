@@ -3,7 +3,7 @@ use renderer::html::p::HTMLParagraphElement;
 use renderer::Renderer;
 use renderer::html::node::HTMLNode;
 use renderer::html::element::HTMLElement;
-use crate::node::element_type::ElementType;
+use crate::schema::node_type::NodeType;
 use crate::node::Node;
 use crate::view::View;
 
@@ -20,7 +20,7 @@ impl ParagraphAttributes {
 
 pub struct Paragraph;
 
-impl ElementType for Paragraph {
+impl NodeType for Paragraph {
     type Attributes = ParagraphAttributes;
     type DOM = HTMLParagraphElement;
 

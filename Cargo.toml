@@ -4,6 +4,6 @@ members=[
     "document",
     "native_druid",
     "editor",
-    "native_iced",
     "renderer",
+    "scratch/learn_rust",
 ]

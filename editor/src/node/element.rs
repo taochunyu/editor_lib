@@ -3,17 +3,17 @@ use std::any::Any;
 use renderer::Renderer;
 use renderer::html::node::HTMLNode;
 use renderer::html::element::HTMLElement;
-use crate::node::element_type::ElementType;
+use crate::schema::node_type::NodeType;
 use crate::node::Node;
 use crate::node::fragment::Fragment;
 use crate::view::View;
 
-pub struct Element<T: ElementType> {
+pub struct Element<T: NodeType> {
     attributes: Rc<T::Attributes>,
     children: Option<Rc<Fragment>>,
 }
 
-impl<T: ElementType> Node for Element<T> {
+impl<T: NodeType> Node for Element<T> {
     fn type_name(&self) -> &str {
         T::name()
     }
@@ -138,7 +138,7 @@ impl<T: ElementType> Node for Element<T> {
     }
 }
 
-impl<T: ElementType> Element<T> {
+impl<T: NodeType> Element<T> {
     pub(crate) fn new(attributes: Rc<T::Attributes>, children: Option<Rc<Fragment>>) -> Rc<Self> {
         Rc::new(Self { attributes, children })
     }

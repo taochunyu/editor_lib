@@ -101,8 +101,9 @@
       <sourceFolder url="file://$MODULE_DIR$/renderer/example/browser/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/document/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/browser/src" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/iced_native/src" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/druid_native/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/native_iced/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/native_druid/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/scratch/learn_rust/src" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/../editor/.tmp" />
       <excludeFolder url="file://$MODULE_DIR$/../editor/editor_core/target" />
       <excludeFolder url="file://$MODULE_DIR$/../editor/editor_wasm/target" />

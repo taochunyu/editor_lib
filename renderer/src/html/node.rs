@@ -1,5 +1,5 @@
 use std::rc::Rc;
-use crate::host::{Host, HostInstance};
+use crate::host::{Host, HostInstance, ExtraInfo};
 
 #[derive(Clone)]
 pub struct HTMLNode {
@@ -38,5 +38,9 @@ impl HTMLNode {
         if let Some(parent) = self.parent() {
             self.host.remove_child(parent.instance.clone(), self.instance.clone());
         }
+    }
+
+    pub fn set_extra_info(&self, extra_info: Box<dyn ExtraInfo>) {
+        self.host.set_extra_info(self.instance.clone(), extra_info);
     }
 }

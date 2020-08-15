@@ -15,6 +15,7 @@ pub trait ViewDesc {
     fn node(&self) -> Rc<dyn Node>;
     fn dom(&self) -> HTMLNode;
     fn content_dom(&self) -> Option<HTMLElement>;
+    fn border(&self) -> usize;
     fn size(&self) -> usize;
     fn as_any(&self) -> &dyn Any;
     fn update(self: Rc<Self>, node: Rc<dyn Node>) -> bool;
@@ -42,21 +43,21 @@ impl dyn ViewDesc {
 
     pub fn pos_at_start(self: Rc<Self>) -> Position {
         if let Some(parent) = self.parent() {
-            parent.pos_before_child(self)
+            self.border() + parent.pos_before_child(self)
         } else {
             0
         }
     }
 
+    pub fn pos_at_end(self: Rc<Self>) -> Position {
+        self.size() - 2 * self.border() + self.pos_at_start()
+    }
+
     pub fn matches_node(&self, node: Rc<dyn Node>) -> bool {
-        // self.debug_log("matches", format!("{} match {}", self.node().serialize(), node.serialize()));
         self.node().value_eq(node)
     }
 
     pub fn mount_children(&self) {
-        // self.debug_log("will mount dom", self.to_debug_string());
-        // self.debug_log("will mount dom", String::new());
-
         if let Some(parent_dom) = self.content_dom() {
             if let Some(children) = self.children() {
                 let mut dom = parent_dom.first_child();

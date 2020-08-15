@@ -1,7 +1,7 @@
 use std::rc::Rc;
 use renderer::html::div::HTMLDivElement;
 use renderer::Renderer;
-use crate::node::element_type::ElementType;
+use crate::schema::node_type::NodeType;
 use crate::node::Node;
 use crate::view::View;
 use renderer::html::node::HTMLNode;
@@ -18,7 +18,7 @@ impl RootAttributes {
     }
 }
 
-impl ElementType for Root {
+impl NodeType for Root {
     type Attributes = RootAttributes;
     type DOM = HTMLDivElement;
 

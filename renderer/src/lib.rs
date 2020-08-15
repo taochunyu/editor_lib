@@ -3,10 +3,12 @@ pub mod host;
 pub mod html;
 
 use std::rc::Rc;
+use std::ops::Fn;
 use crate::host::Host;
 use crate::html::tag::HTMLElementTag;
 use crate::html::div::HTMLDivElement;
 use crate::html::text::HTMLTextNode;
+use crate::html::node::HTMLNode;
 
 pub struct Renderer {
     host: Rc<dyn Host>,

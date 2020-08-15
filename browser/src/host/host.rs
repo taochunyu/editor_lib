@@ -1,7 +1,10 @@
 use web_sys;
-use renderer::host::{Host, HostInstance, Attributes};
+use renderer::host::{Host, HostInstance, Attributes, ExtraInfo};
 use std::rc::Rc;
 use std::any::Any;
+use wasm_bindgen::JsCast;
+use editor::view::TypedExtraInfo;
+use crate::host::dom_pointer::{EXTRA_INFO_NAME, DOMPointer};
 
 struct BrowserHostInstance {
     host_instance: web_sys::Node,
@@ -128,6 +131,12 @@ impl Host for Browser {
 
     fn set_selection(&self, anchor_instance: Rc<dyn HostInstance>, anchor_offset: usize, head_instance: Rc<dyn HostInstance>, head_offset: usize) {
         unimplemented!()
+    }
+
+    fn set_extra_info(&self, instance: Rc<dyn HostInstance>, extra_info: Box<dyn ExtraInfo>) {
+        let node = &instance.as_any().downcast_ref::<BrowserHostInstance>().unwrap().host_instance;
+
+        DOMPointer::set(node, extra_info);
     }
 }
 
