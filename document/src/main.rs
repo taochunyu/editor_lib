@@ -4,6 +4,7 @@ use renderer::host::debug_host::DebugHost;
 use editor::view::View;
 use document::Document;
 use std::time::{SystemTime, UNIX_EPOCH};
+use editor::node::Node;
 
 fn timestamp_ms() -> i64 {
     let start = SystemTime::now();

@@ -6,6 +6,7 @@ use renderer::html::element::HTMLElement;
 use crate::schema::node_type::NodeType;
 use crate::node::Node;
 use crate::view::View;
+use renderer::html::any_node::HTMLAnyNode;
 
 const NAME: &'static str = "paragraph";
 
@@ -26,6 +27,10 @@ impl NodeType for Paragraph {
 
     fn name() -> &'static str {
         NAME
+    }
+
+    fn parse_from_html(node: Box<dyn HTMLAnyNode>) -> Option<Rc<Self::Attributes>> {
+        unimplemented!()
     }
 
     fn render(renderer: Rc<Renderer>, _node: Rc<dyn Node>, _attrs: Rc<Self::Attributes>) -> (HTMLNode, Option<HTMLElement>) {

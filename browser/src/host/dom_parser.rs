@@ -1,4 +1,5 @@
 use renderer::html::any_node::{HTMLAnyNode, HTMLNodeType};
+use wasm_bindgen::JsCast;
 
 struct AnyNode {
     node: web_sys::Node,
@@ -6,7 +7,7 @@ struct AnyNode {
 
 impl AnyNode {
     fn to_element(&self) -> Option<web_sys::Element> {
-        match self.node.dyn_into::<web_sys::Element>() {
+        match self.node.clone().dyn_into::<web_sys::Element>() {
             Ok(element) => Some(element),
             _ => None,
         }
@@ -23,7 +24,7 @@ impl HTMLAnyNode for AnyNode {
     }
 
     fn tag_name(&self) -> Option<String> {
-        self.to_element().map_or(None, |elm| elm.tag_name())
+        self.to_element().map(|elm| elm.tag_name())
     }
 
     fn text_content(&self) -> Option<String> {
@@ -31,7 +32,7 @@ impl HTMLAnyNode for AnyNode {
     }
 
     fn get_attribute(&self, name: &str) -> Option<String> {
-        self.to_element().map_or(None, |elm| elm.get_attrinute(name))
+        self.to_element().map_or(None, |elm| elm.get_attribute(name))
     }
 }
 

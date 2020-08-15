@@ -13,6 +13,14 @@ use crate::node::Node;
 pub type Doc = Rc<dyn Node>;
 pub type Position = usize;
 
+pub struct Editor {
+
+}
+
+impl Editor {
+
+}
+
 
 
 #[cfg(test)]
