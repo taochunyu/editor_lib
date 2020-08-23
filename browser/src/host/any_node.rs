@@ -1,8 +1,22 @@
 use renderer::html::any_node::{HTMLAnyNode, HTMLNodeType};
 use wasm_bindgen::JsCast;
+use editor::editor::Editor;
+use editor::node::Node;
+use std::rc::Rc;
+use renderer::html::node::HTMLNode;
+use crate::host::host::BrowserHostInstance;
 
-struct AnyNode {
+pub struct AnyNode {
     node: web_sys::Node,
+}
+
+impl From<HTMLNode> for AnyNode {
+    fn from(node: HTMLNode) -> Self {
+        match node.instance().as_any().downcast_ref::<BrowserHostInstance>() {
+            Some(instance) => AnyNode { node: instance.node().clone() },
+            None => unreachable!("Downcast to web_sys node failed."),
+        }
+    }
 }
 
 impl AnyNode {
@@ -34,9 +48,8 @@ impl HTMLAnyNode for AnyNode {
     fn get_attribute(&self, name: &str) -> Option<String> {
         self.to_element().map_or(None, |elm| elm.get_attribute(name))
     }
+
+    fn children(&self) -> Option<Vec<Box<dyn HTMLAnyNode>>> {
+        unimplemented!()
+    }
 }
-
-pub struct DOMParser {
-
-}
-

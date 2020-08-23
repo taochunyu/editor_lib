@@ -28,7 +28,7 @@
       <sourceFolder url="file://$MODULE_DIR$/editor_core_1/examples" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/editor_core_1/tests" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/editor_core_1/benches" isTestSource="true" />
-      <sourceFolder url="file://$MODULE_DIR$/editor_core/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/editor/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/yew_web/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/editor_bootstrap/examples" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/editor_bootstrap/tests" isTestSource="true" />
@@ -89,7 +89,6 @@
       <sourceFolder url="file://$MODULE_DIR$/client/tests" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/client/benches" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/platform/web/src" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/editor/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/web_vm/examples" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/view_vm/examples/browser/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/view_vm/examples" isTestSource="false" />
@@ -104,6 +103,7 @@
       <sourceFolder url="file://$MODULE_DIR$/native_iced/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/native_druid/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/scratch/learn_rust/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/scratch/learn_rust_lib/src" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/../editor/.tmp" />
       <excludeFolder url="file://$MODULE_DIR$/../editor/editor_core/target" />
       <excludeFolder url="file://$MODULE_DIR$/../editor/editor_wasm/target" />

@@ -10,25 +10,12 @@ use renderer::html::any_node::HTMLAnyNode;
 
 pub struct Root;
 
-#[derive(Eq, PartialEq)]
-pub struct RootAttributes;
-
-impl RootAttributes {
-    pub fn new() -> Self {
-        Self
-    }
-}
-
 impl NodeType for Root {
-    type Attributes = RootAttributes;
+    type Attributes = ();
     type DOM = HTMLDivElement;
 
     fn name() -> &'static str {
         "root"
-    }
-
-    fn parse_from_html(node: Box<dyn HTMLAnyNode>) -> Option<Rc<Self::Attributes>> {
-        unimplemented!()
     }
 
     fn render(renderer: Rc<Renderer>, _node: Rc<dyn Node>, _attrs: Rc<Self::Attributes>) -> (HTMLNode, Option<HTMLElement>) {

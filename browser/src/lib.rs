@@ -17,7 +17,7 @@ pub fn start() {
 
     let document = web_sys::window().unwrap().document().unwrap();
     let node = document.query_selector("#editor").unwrap().unwrap().into();
-    let dom_observer = DOMObserver::new(node);
+    let dom_observer = DOMObserver::new(node, doc.editor());
 
     dom_observer.start();
 

@@ -1,4 +1,4 @@
-pub mod utils;
+pub mod diff;
 pub mod fragment;
 pub mod slice;
 pub mod element;

@@ -7,8 +7,10 @@ use crate::schema::node_type::NodeType;
 use crate::node::Node;
 use crate::node::fragment::Fragment;
 use crate::view::View;
+use crate::schema::SchemaToken;
 
 pub struct Element<T: NodeType> {
+    schema_token: SchemaToken,
     attributes: Rc<T::Attributes>,
     children: Option<Rc<Fragment>>,
 }
@@ -53,6 +55,7 @@ impl<T: NodeType> Node for Element<T> {
                 let result = fragment.cut(from, to)?;
 
                 Ok(Rc::new(Self {
+                    schema_token: self.schema_token.clone(),
                     attributes: self.attributes.clone(),
                     children: Some(result),
                 }))
@@ -92,6 +95,7 @@ impl<T: NodeType> Node for Element<T> {
 
     fn replace_children(&self, new_children: Rc<Fragment>) -> Result<Rc<dyn Node>, String> {
         Ok(Rc::new(Self {
+            schema_token: self.schema_token.clone(),
             attributes: self.attributes.clone(),
             children: Some(new_children),
         }))
@@ -139,8 +143,8 @@ impl<T: NodeType> Node for Element<T> {
 }
 
 impl<T: NodeType> Element<T> {
-    pub(crate) fn new(attributes: Rc<T::Attributes>, children: Option<Rc<Fragment>>) -> Rc<Self> {
-        Rc::new(Self { attributes, children })
+    pub(crate) fn new(attributes: Rc<T::Attributes>, children: Option<Rc<Fragment>>, schema_token: SchemaToken) -> Rc<Self> {
+        Rc::new(Self { attributes, children, schema_token })
     }
 
     fn children_eq(&self, other: Rc<dyn Node>) -> bool {

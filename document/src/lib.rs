@@ -2,52 +2,76 @@ use std::rc::Rc;
 use renderer::Renderer;
 use renderer::html::div::HTMLDivElement;
 use editor::node::slice::Slice;
-use editor::node::utils::{create_text, create_element};
 use editor::node_types::paragraph::{Paragraph, ParagraphAttributes};
-use editor::node_types::root::{Root, RootAttributes};
+use editor::node_types::root::{Root};
 use editor::view::View;
 use editor::state::State;
 use editor::state::text_selection::TextSelection;
 use editor::state::transaction::Transaction;
+use editor::editor::Editor;
+use std::cell::RefCell;
+use editor::schema::Schema;
+use editor::Doc;
 
 pub struct Document {
-    view: View,
+    editor: Rc<RefCell<Editor>>,
 }
 
 impl Document {
     pub fn new(renderer: Rc<Renderer>) -> Self {
-        let div = renderer.create_element::<HTMLDivElement>();
+        let dom = Self::create_dom(renderer.clone());
+        let schema= Self::create_schema();
+        let doc = Self::create_doc(&schema);
+        let editor = Editor::builder(renderer, dom, schema, doc).build();
 
-        renderer.root().append_child(&div.clone().into());
+        Self { editor }
+    }
 
+    pub fn editor(&self) -> Rc<RefCell<Editor>> {
+        self.editor.clone()
+    }
+
+    pub fn trigger_test(&mut self) {
+        // let slice = self.editor.state().doc().slice(0, 201).unwrap();
+        // let selection = Rc::new(TextSelection::new(self.editor.state().doc(), 0, 0).unwrap());
+        // let mut transaction = self.editor.create_transaction();
+        //
+        // transaction.set_selection(Some(selection)).replace_selection(slice);
+        //
+        // self.editor.dispatch(&transaction)
+    }
+
+    fn create_dom(renderer: Rc<Renderer>) -> HTMLDivElement {
+        let dom = renderer.create_element::<HTMLDivElement>();
+
+        renderer.root().append_child(&dom.clone().into());
+
+        dom
+    }
+
+    fn create_schema() -> Schema {
+        let mut schema = Schema::new();
+
+        schema.register_node_type::<Root>();
+        schema.register_node_type::<Paragraph>();
+
+        schema
+    }
+
+    fn create_doc(schema: &Schema) -> Doc {
         let mut content = vec![];
 
-        for _ in 0..500 {
-            let hello = create_text("helloworldhelloworldhelloworldhelloworldhelloworldhelloworldhelloworldhelloworldhelloworldhelloworldhelloworldhelloworldhelloworldhelloworldhelloworldhelloworldhelloworldhelloworldhelloworldhelloworld");
-            let paragraph = create_element::<Paragraph>(
-                ParagraphAttributes::new(),
+        for _ in 0..5 {
+            let hello = schema.create_text_node("hello, world! hello, world!");
+            let paragraph = schema.create_node::<Paragraph>(
+                Rc::new(ParagraphAttributes::new()),
                 Some(vec![hello]),
             );
 
             content.push(paragraph);
         }
 
-        let doc = create_element::<Root>(RootAttributes::new(), Some(content));
-        let state = State::new(doc);
-
-        Self {
-            view: View::new(renderer, div, state),
-        }
-    }
-
-    pub fn trigger_test(&mut self) {
-        let slice = self.view.state().doc().slice(0, 201).unwrap();
-        let selection = Rc::new(TextSelection::new(self.view.state().doc(), 0, 0).unwrap());
-        let mut transaction = self.view.state().create_transaction();
-
-        transaction.set_selection(Some(selection)).replace_selection(slice);
-
-        self.view.dispatch(&transaction)
+        schema.create_node::<Root>(Rc::new(()), Some(content))
     }
 }
 

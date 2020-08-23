@@ -16,6 +16,14 @@ impl PartialEq for HTMLNode {
 impl Eq for HTMLNode {}
 
 impl HTMLNode {
+    pub fn host(&self) -> Rc<dyn Host> {
+        self.host.clone()
+    }
+
+    pub fn instance(&self) -> Rc<dyn HostInstance> {
+        self.instance.clone()
+    }
+
     pub fn log(&self, info: String) {
        self.host.log(info);
     }

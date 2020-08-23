@@ -42,12 +42,11 @@ impl ExtraInfo for TypedExtraInfo {
 
 pub struct View {
     renderer: Rc<Renderer>,
-    state: State,
     doc_view: Rc<dyn ViewDesc>
 }
 
 impl View {
-    pub fn new(renderer: Rc<Renderer>, dom: HTMLDivElement, state: State) -> Self {
+    pub fn new(renderer: Rc<Renderer>, dom: HTMLDivElement, state: &State) -> Self {
         let doc_view = NodeViewDesc::new(
             None,
             state.doc(),
@@ -59,34 +58,25 @@ impl View {
 
         Self {
             renderer,
-            state,
             doc_view,
         }
-    }
-
-    pub fn state(&self) -> &State {
-        &self.state
     }
 
     pub fn renderer(&self) -> Rc<Renderer> {
         self.renderer.clone()
     }
 
-    pub fn dispatch(&mut self, transaction: &Transaction) {
-        self.state = self.state.apply(transaction);
-
-        if !self.doc_view.clone().update(self.state.doc()) {
+    pub fn render(&mut self, state: &State) {
+        if !self.doc_view.clone().update(state.doc()) {
             self.doc_view = NodeViewDesc::new(
                 None,
-                self.state.doc(),
+                state.doc(),
                 self.doc_view.dom(),
                 self.doc_view.content_dom(),
                 0,
                 self.renderer(),
             );
         }
-
-        // self.renderer.log("Render result", self.doc_view.to_debug_string());
     }
 }
 

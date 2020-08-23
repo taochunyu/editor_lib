@@ -1,0 +1,10 @@
+[package]
+name = "learn_rust"
+version = "0.1.0"
+authors = ["taochunyu <tao_chunyu@icloud.com>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+learn_rust_lib = { path = "../learn_rust_lib" }

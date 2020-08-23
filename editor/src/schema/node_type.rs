@@ -8,10 +8,9 @@ use crate::node::fragment::Fragment;
 use crate::node::element::Element;
 use crate::view::View;
 
-// pub struct NodeSchema {
-//     name: String,
-//     parse_html: Box<dyn Fn() -> Slice>
-// }
+pub type Match = Box<dyn Fn(&Box<dyn HTMLAnyNode>) -> bool>;
+pub type Parse<Result> = Box<dyn Fn(&Box<dyn HTMLAnyNode>) -> Rc<Result>>;
+pub type ParseRules<Result> = Vec<(Match, Parse<Result>)>;
 
 pub trait NodeType: Sized + 'static {
     type Attributes: PartialEq + Eq;
@@ -20,23 +19,9 @@ pub trait NodeType: Sized + 'static {
 
     fn name() -> &'static str;
 
-    fn parse_from_html(node: Box<dyn HTMLAnyNode>) -> Option<Rc<Self::Attributes>>;
+    fn parse_from_html() -> ParseRules<Self::Attributes> { unimplemented!() }
 
-    fn serialize_to_html(attrs: Rc<Self::Attributes>, children: String) -> String {
-        String::new()
-    }
-
-    fn create(
-        attrs: Rc<Self::Attributes>,
-        children: Option<Vec<Rc<dyn Node>>>
-    ) -> Rc<dyn Node> {
-        let element_children = match children {
-            Some(nodes) => Some(Rc::new(Fragment::from(nodes))),
-            None => None,
-        };
-
-        Element::<Self>::new(attrs, element_children)
-    }
+    fn serialize_to_html(attrs: Rc<Self::Attributes>, children: String) -> String { unimplemented!() }
 
     fn render(renderer: Rc<Renderer>, node: Rc<dyn Node>, attrs: Rc<Self::Attributes>) -> (HTMLNode, Option<HTMLElement>);
 }

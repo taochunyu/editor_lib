@@ -7,6 +7,7 @@ use renderer::html::text::HTMLTextNode;
 use std::any::Any;
 use crate::view::view_desc::ViewDesc;
 use crate::node::Node;
+use crate::view::TypedExtraInfo;
 
 struct TextViewDescMeta {
     parent: Option<Rc<dyn ViewDesc>>,
@@ -53,7 +54,7 @@ impl ViewDesc for TextViewDesc {
     }
 
     fn update(self: Rc<Self>, node: Rc<dyn Node>) -> bool {
-        let meta = self.meta.borrow_mut();
+        let mut meta = self.meta.borrow_mut();
 
         if !meta.node.clone().same_mark_up(node.clone()) {
             return false;
@@ -62,6 +63,8 @@ impl ViewDesc for TextViewDesc {
         if let Some(text) = node.clone().as_text() {
             meta.dom.set_node_value(Some(text.content().as_str()));
         }
+
+        meta.node = node.clone();
 
         true
     }
@@ -84,13 +87,17 @@ impl TextViewDesc {
         dom: HTMLTextNode,
         renderer: Rc<Renderer>,
     ) -> Rc<dyn ViewDesc> {
-        Rc::new(Self {
+        let desc = Rc::new(Self {
             meta: RefCell::new(TextViewDescMeta {
                 parent,
                 node,
-                dom,
+                dom: dom.clone(),
             }),
             renderer,
-        })
+        });
+
+        HTMLNode::from(dom).set_extra_info(TypedExtraInfo::new(desc.clone()));
+
+        desc
     }
 }

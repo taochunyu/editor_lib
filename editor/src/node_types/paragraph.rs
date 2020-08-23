@@ -29,10 +29,6 @@ impl NodeType for Paragraph {
         NAME
     }
 
-    fn parse_from_html(node: Box<dyn HTMLAnyNode>) -> Option<Rc<Self::Attributes>> {
-        unimplemented!()
-    }
-
     fn render(renderer: Rc<Renderer>, _node: Rc<dyn Node>, _attrs: Rc<Self::Attributes>) -> (HTMLNode, Option<HTMLElement>) {
         let paragraph = renderer.create_element::<HTMLParagraphElement>();
 

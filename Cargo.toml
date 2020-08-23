@@ -6,4 +6,5 @@ members=[
     "editor",
     "renderer",
     "scratch/learn_rust",
+    "scratch/learn_rust_lib",
 ]

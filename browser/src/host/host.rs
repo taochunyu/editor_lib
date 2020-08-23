@@ -6,8 +6,14 @@ use wasm_bindgen::JsCast;
 use editor::view::TypedExtraInfo;
 use crate::host::dom_pointer::{EXTRA_INFO_NAME, DOMPointer};
 
-struct BrowserHostInstance {
+pub struct BrowserHostInstance {
     host_instance: web_sys::Node,
+}
+
+impl BrowserHostInstance {
+    pub fn node(&self) -> web_sys::Node {
+        self.host_instance.clone()
+    }
 }
 
 pub struct Browser {
