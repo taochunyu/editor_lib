@@ -1,3 +1,5 @@
+mod layout;
+
 use druid::widget::{Button, Flex, Label, TextBox, LabelText};
 use druid::{AppLauncher, LocalizedString, PlatformError, Widget, WidgetExt, WindowDesc, Env};
 use druid::piet::{Text, PietText, FontBuilder, TextLayoutBuilder, TextLayout};

@@ -16,5 +16,41 @@
 
         init();
     </script>
+    <script>
+        const throttle = (ms, callback) => {
+            let token = true;
+
+            return (...args) => {
+                if (token) {
+                    setTimeout(() => token = true, ms)
+
+                    token = false;
+                    callback(...args)
+                }
+            }
+        }
+
+        const f = () => console.log(1);
+
+        const g = throttle(3000, f);
+
+        const debounce = (ms, callback) => {
+            let timer = null;
+
+            return (...args) => {
+                if (timer !== null) {
+                    clearTimeout(timer);
+                }
+
+                timer = setTimeout(() => callback(...args), ms);
+            }
+        }
+
+        const h = debounce(2000, f);
+
+        // setInterval(g, 100)
+
+        setInterval(h , 1000);
+    </script>
 </body>
 </html>
